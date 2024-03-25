@@ -23,26 +23,26 @@
   Updating its Availability
   7) Generate Reports on borrowings and overdue books - Youssef
 
-# Book Class: Abdo Mahdi
+## Book Class: Abdo Mahdi
   Represents a book with Data 
   Title
   Author
   ISBN
   Publication year
   Genre 
-  Availability status
+  Availability Status
   Due date for checked-out books.
 
-# Loan Class: Amr Edris
+## Loan Class: Amr Edris
   Tracks borrowed books with details like member ID, book ID, borrow date,
   due date, etc
   
-# Custom Sting Class Function: Youssef Haytham
+## Custom Sting Class Function: Youssef Haytham
   Function overloading
  
-Additional Functions:
-Book Reservations
-waitlists
-Overdue Fines
-Generate Reports on borrowing statistics
-DN - Youssef Haytham
+## Additional Functions:
+  Book Reservations
+  waitlists
+  Overdue Fines
+  Generate Reports on borrowing statistics
+  DN - Youssef Haytham
