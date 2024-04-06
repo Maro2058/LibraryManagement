@@ -41,8 +41,8 @@
   Function overloading
  
 ## Additional Functions:
-  Book Reservations
-  waitlists
-  Overdue Fines
-  Generate Reports on borrowing statistics
-  DN - Youssef Haytham
+  - Book Reservations
+  - Waitlists
+  - Overdue Fines
+  - Generate Reports on borrowing statistics
+  - DN - Youssef Haytham
