@@ -81,25 +81,38 @@ public:
     Librarian(string id, string user, int pass) : Member(id, user, pass) {}
 
     void addBook(){ // Adds book to file and returns Book
-        string num;
+        string anyInput;
         Book tempBook;
         fstream file("Books.txt", ios :: out);
 
         if (file.is_open()){
-            cout << "Enter the Books Info:\n ISBN:";
-            cin >> num;
 
-            while(num.length()!=13 || !all_of(num.begin(), num.end(), ::isdigit) ) {
+            cout << "Enter the Books Info:\n ISBN: ";
+            cin >> anyInput;
+            while(anyInput.length() != 13 || !all_of(anyInput.begin(), anyInput.end(), ::isdigit) ) {
                 cout << "Error! Make sure the ISBN is 13 digits" << endl;
-                cout << "Enter the Books Info:\n ISBN:";
+                cout << "Enter the Books Info:\n ISBN: ";
                 cin.clear(); // Clear error flags
-                cin >> num;
+                cin >> anyInput;
             }
-            tempBook.setISBN(num);
-            file << num;
+            tempBook.setISBN(anyInput);
+            file << anyInput;
+
+            cout << "Enter the book's title: ";
+            cin >> anyInput;
+            tempBook.setTitle(anyInput);
+
+            cout << "Enter the Author's name: ";
+            cin >> anyInput;
+            tempBook.setAuthor(anyInput);
+
+            cout << "Enter the Publisher: ";
+            cin >> anyInput;
+            tempBook.setPublisher(anyInput);
+
         } else{
             cout << "File Failed to Open\n Press any Number to continue"<<endl;
-            cin >> num;
+            cin >> anyInput;
             cin.clear();
         }
     }
