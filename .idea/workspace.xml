@@ -9,10 +9,9 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0f72166b-b99b-4fb5-b8b7-ebe2a6f71f29" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Books.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main.exe" afterDir="false" />
+    <list default="true" id="0f72166b-b99b-4fb5-b8b7-ebe2a6f71f29" name="Changes" comment="Bug Fixing">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Books.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Books.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -75,12 +74,37 @@
       <updated>1712668383817</updated>
       <workItem from="1712668387035" duration="10000" />
       <workItem from="1712668573005" duration="117000" />
-      <workItem from="1712668753862" duration="1420000" />
+      <workItem from="1712668753862" duration="4449000" />
     </task>
+    <task id="LOCAL-00001" summary="Bug Fixing">
+      <option name="closed" value="true" />
+      <created>1712670342508</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1712670342508</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="CLion Configuration" />
+    <MESSAGE value="Bug Fixing" />
+    <option name="LAST_COMMIT_MESSAGE" value="Bug Fixing" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

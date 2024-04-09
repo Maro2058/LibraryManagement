@@ -17,6 +17,7 @@ private:
         HealthAndNutrition, Language, Mathematics, Music, Physics, Psychology};
     int publicationYear;
     bool availabilityStatus;
+    int available;
 
 public:
     void setISBN(string num){
@@ -24,6 +25,15 @@ public:
     }
     string getISBN(){
         return ISBN;
+    }
+    void setTitle(string n){
+        title = n;
+    }
+    void setAuthor(string n){
+        author = n;
+    }
+    void setPublisher(string n){
+        publisher = n;
     }
 };
 
@@ -36,6 +46,7 @@ private:
     int fines;
 
 public:
+    Member(){}
     Member(string ID, string user, int pass) : userID(ID), userName(user), password(pass) {}
     void login(){
         cout << " Enter User ID" << endl;
@@ -66,6 +77,7 @@ class Librarian : public Member{
 private:
 
 public:
+    Librarian(){}
     Librarian(string id, string user, int pass) : Member(id, user, pass) {}
 
     void addBook(){ // Adds book to file and returns Book
@@ -85,13 +97,11 @@ public:
             }
             tempBook.setISBN(num);
             file << num;
-
         } else{
             cout << "File Failed to Open\n Press any Number to continue"<<endl;
             cin >> num;
             cin.clear();
         }
-
     }
     void removeBook(Book& book){
 
@@ -130,12 +140,11 @@ public:
 
         }
     }
-
 };
 
 int main()
 {
-    Librarian librarian(std::string(), std::string(), 0);
+    Librarian librarian;
     librarian.addBook();
     cout<<"Hello World";
 
