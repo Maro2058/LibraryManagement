@@ -2,12 +2,14 @@
 #include <fstream>
 #include <chrono>
 #include <ctime>
+#include <algorithm> // for std::all_of
+#include <cctype>    // for std::isdigit
 
 using namespace std;
 
 class Book{
 private:
-    int ISBN;
+    string ISBN; // Easier to use as String, otherwise it would long int, which is incompatible with some functions
     string title;
     string author;
     string publisher;
@@ -17,10 +19,10 @@ private:
     bool availabilityStatus;
 
 public:
-    void setISBN(int num){
+    void setISBN(string num){
         ISBN = num;
     }
-    int getISBN(){
+    string getISBN(){
         return ISBN;
     }
 };
@@ -34,6 +36,7 @@ private:
     int fines;
 
 public:
+    Member(string ID, string user, int pass) : userID(ID), userName(user), password(pass) {}
     void login(){
         cout << " Enter User ID" << endl;
         cout << "Enter Password" << endl;
@@ -45,8 +48,6 @@ public:
 
     }
 };
-
-
 
 class Student : public Member{
 private:
@@ -64,31 +65,29 @@ public:
 class Librarian : public Member{
 private:
 
-
 public:
-    Book addBook(){ // Adds book to file and returns Book
-        int num;
-        int anyInput;
+    Librarian(string id, string user, int pass) : Member(id, user, pass) {}
+
+    void addBook(){ // Adds book to file and returns Book
+        string num;
         Book tempBook;
-        fstream file("output.txt", ios::in);
+        fstream file("C:\\Users\\Morad Elshorbagy\\Desktop\\University\\LibraryMangementSystem\\Books.txt", ios::in);
 
         if (file.is_open()){
             cout << "Enter the Books Info:\n ISBN:";
             cin >> num;
-            string temp  = reinterpret_cast<const char*>(num);
 
-            while(temp.length() != 13){
+            while(num.length()!=13 || !all_of(num.begin(), num.end(), ::isdigit) ) {
                 cout << "Error! Make sure the ISBN is 13 digits" << endl;
                 cout << "Enter the Books Info:\n ISBN:";
+                cin.clear(); // Clear error flags
                 cin >> num;
-                temp  = reinterpret_cast<const char*>(num);
             }
             tempBook.setISBN(num);
-
+            file >> num;
 
         } else{
             cout << "File Failed to Open\n Press any Number to continue"<<endl;
-            cin >> anyInput;
         }
 
     }
@@ -102,7 +101,7 @@ public:
 
     }
     void addMember(){
-        Member* memberRef = new Member;
+        Member tempMember();
     }
     void removeMember(Member member){
 
@@ -114,8 +113,6 @@ public:
 
     }
 };
-
-
 
 class Loan{
 private:
@@ -136,7 +133,7 @@ public:
 
 int main()
 {
-    Librarian librarian;
+    Librarian librarian(std::string(), std::string(), 0);
     librarian.addBook();
     cout<<"Hello World";
 
