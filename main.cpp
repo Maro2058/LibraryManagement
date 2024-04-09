@@ -71,7 +71,7 @@ public:
     void addBook(){ // Adds book to file and returns Book
         string num;
         Book tempBook;
-        fstream file("C:\\Users\\Morad Elshorbagy\\Desktop\\University\\LibraryMangementSystem\\Books.txt", ios::in);
+        fstream file("Books.txt", ios :: out);
 
         if (file.is_open()){
             cout << "Enter the Books Info:\n ISBN:";
@@ -84,10 +84,12 @@ public:
                 cin >> num;
             }
             tempBook.setISBN(num);
-            file >> num;
+            file << num;
 
         } else{
             cout << "File Failed to Open\n Press any Number to continue"<<endl;
+            cin >> num;
+            cin.clear();
         }
 
     }
