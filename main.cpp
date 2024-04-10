@@ -101,14 +101,17 @@ public:
             cout << "Enter the book's title: ";
             cin >> anyInput;
             tempBook.setTitle(anyInput);
+            file << anyInput;
 
             cout << "Enter the Author's name: ";
             cin >> anyInput;
             tempBook.setAuthor(anyInput);
+            file << anyInput;
 
             cout << "Enter the Publisher: ";
             cin >> anyInput;
             tempBook.setPublisher(anyInput);
+            file << anyInput;
 
         } else{
             cout << "File Failed to Open\n Press any Number to continue"<<endl;
