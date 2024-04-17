@@ -5,9 +5,6 @@
 #include <algorithm> // for std::all_of
 #include <cctype>    // for std::isdigit
 
-// Amr is so sexy
-
-
 using namespace std;
 
 class Book{
