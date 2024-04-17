@@ -35,6 +35,9 @@ public:
     void setPublisher(string n){
         publisher = n;
     }
+
+    void setGenre( ){
+    }
 };
 
 class Member{
@@ -56,6 +59,7 @@ public:
 
     }
     void searchBooks(){
+        fstream file("Books.txt", ios::out);
 
     }
 };
@@ -81,7 +85,7 @@ public:
     Librarian(string id, string user, int pass) : Member(id, user, pass) {}
 
     void addBook(){ // Adds book to file and returns Book
-        string anyInput;
+        string Input;
         Book tempBook;
         fstream file("Books.txt", ios :: app);
         //Adding stuff to test branch
@@ -89,36 +93,50 @@ public:
         if (file.is_open()){
 
             cout << "Enter the Books Info:\n ISBN: ";
-            cin >> anyInput;
-            while(anyInput.length() != 13 || !all_of(anyInput.begin(), anyInput.end(), ::isdigit) ) {
+            cin >> Input;
+            while(Input.length() != 13 || !all_of(Input.begin(), Input.end(), ::isdigit) ) {
                 cout << "Error! Make sure the ISBN is 13 digits" << endl;
                 cout << "Enter the Books Info:\n ISBN: ";
                 cin.clear(); // Clear error flags
-                cin >> anyInput;
+                cin.ignore('\n'); // reads and discards all characters up to the newline character ('\n')
+                cin >> Input;
             }
-            tempBook.setISBN(anyInput);
-            file << anyInput;
+            tempBook.setISBN(Input);
+            file << Input << '\n';
+            cin.ignore(); //discards
 
-            cout << "Enter the book's title: ";
-            cin >> anyInput;
-            tempBook.setTitle(anyInput);
-            file << anyInput;
+            cout << "Enter the Book's title: ";
+            getline(cin, Input);
+            tempBook.setTitle(Input);
+            file << Input << '\n';
 
             cout << "Enter the Author's name: ";
-            cin >> anyInput;
-            tempBook.setAuthor(anyInput);
-            file << anyInput;
+            getline(cin, Input);
+            tempBook.setAuthor(Input);
+            file << Input << '\n';
 
             cout << "Enter the Publisher: ";
-            cin >> anyInput;
-            tempBook.setPublisher(anyInput);
-            file << anyInput;
+            cin >> Input;
+            tempBook.setPublisher(Input);
+            file << Input << '\n';
+
+            /*
+            cout << "Enter the Genre: ";  // New input for genre
+            getline(cin, Input);
+            tempBook.setGenre(Input);  // Set genre for tempBook
+            file << Input << '\n';      // Write genre to file
+            */
+
+            file << "-1" << '\n';
+
+            file.close();
 
         } else{
             cout << "File Failed to Open\n Press any Number to continue"<<endl;
-            cin >> anyInput;
+            cin >> Input;
             cin.clear();
         }
+
     }
     void removeBook(Book& book){
 
