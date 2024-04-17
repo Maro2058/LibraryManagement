@@ -83,7 +83,7 @@ public:
     void addBook(){ // Adds book to file and returns Book
         string anyInput;
         Book tempBook;
-        fstream file("Books.txt", ios :: out);
+        fstream file("Books.txt", ios :: app);
 
         if (file.is_open()){
 
