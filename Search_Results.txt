@@ -1,5 +1,0 @@
-ternational
--1
-9781491946008
-Fluent Python
-Luciano Ramalho

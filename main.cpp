@@ -56,6 +56,9 @@ public:
     void setPublisher(const string n){
         publisher = n;
     }
+    void setGenre(const int n){
+        genre = static_cast<Genre>(n);
+    }
 
     string getISBN() const {
         return ISBN;
@@ -98,10 +101,19 @@ public:
         Book temp;
 
         string readLine;
+        Book tempBook;
+        string tempString;
+        int tempInt;
         ifstream readFile("Books.txt");
         ofstream writeFile("Search_Results.txt");
         if (readFile.is_open()){
             while(!readFile.eof()) {
+                getline(readFile, tempString); tempBook.setTitle(tempString);
+                getline(readFile, tempString); tempBook.setAuthor(tempString);
+                getline(readFile, tempString); tempInt = stoi(tempString); tempBook.setGenre(tempInt);
+                getline(readFile, tempString); tempBook.setISBN(tempString);
+                getline(readFile, tempString); tempBook.setISBN(tempString);
+                getline(readFile, tempString); tempBook.setISBN(tempString);
 
                 getline(readFile, readLine);
                 cout << readLine<< endl;
@@ -117,6 +129,7 @@ public:
                         writeFile << readLine << endl;
                     }
                 }
+
             }
 
         } else {
@@ -125,6 +138,7 @@ public:
 
 
     }*/
+    }
 };
 
 
@@ -219,9 +233,6 @@ public:
             cin >> Input;
             tempBook.setPublisher(Input);
             file << Input << '\n';
-
-            //To print -1 in the text file(for the search function ig)
-            file << "-1" << '\n';
 
             file.close();
 
