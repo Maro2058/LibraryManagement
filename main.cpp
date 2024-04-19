@@ -178,7 +178,17 @@ public:
             tempBook.setTitle(Input);
             file << Input << '\n';
 
-// Enter Genre
+            cout << "Enter the Author's name: ";
+            getline(cin, Input);
+            tempBook.setAuthor(Input);
+            file << Input << '\n';
+
+            cout << "Enter the Publisher: ";
+            cin >> Input;
+            tempBook.setPublisher(Input);
+            file << Input << '\n';
+
+            // Enter Genre
             cout << "Select Genre:\n";
             cout << "1. Fiction\n";
             cout << "2. NonFiction\n";
@@ -214,18 +224,8 @@ public:
             // Write to file
             file << static_cast<int>(tempBook.getGenre()) << '\n';  // Write enum value as integer
 
-            cout << "Enter the Author's name: ";
-            getline(cin, Input);
-            tempBook.setAuthor(Input);
-            file << Input << '\n';
-
-            cout << "Enter the Publisher: ";
-            cin >> Input;
-            tempBook.setPublisher(Input);
-            file << Input << '\n';
-
             //To print -1 in the text file(for the search function ig)
-            file << "-1" << '\n';
+            //file << "-1" << '\n';
 
             file.close();
 
@@ -254,16 +254,14 @@ public:
             tempBook.setISBN(line);
 
             getline(file, line); tempBook.setTitle(line);
+            getline(file, line); tempBook.setAuthor(line);
+            getline(file, line); tempBook.setPublisher(line);
+
             int genreValue;
             file >> genreValue;  // Read genre as integer
             file.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear newline character
             Genre genre = static_cast<Genre>(genreValue);  // Convert integer to Genre enum
             tempBook.setGenre(genre);
-
-            getline(file, line); tempBook.setAuthor(line);
-            getline(file, line); tempBook.setPublisher(line);
-
-
             books.push_back(tempBook);  // Add book to vector
         }
         file.close();  // Close the file
@@ -341,16 +339,16 @@ public:
 
 int main()
 {
-    /*Librarian librarian;
-    librarian.addBook();
-    librarian.addBook();
-    librarian.addBook();
+    Librarian librarian;
+    //librarian.addBook();
+    //librarian.addBook();
+    //librarian.addBook();
     librarian.removeBook();
-    cout<<"Hello World";*/
+    cout<<"Hello World";
 
-   Member mem;
+   /*Member mem;
    mem.searchBooks("Morad");
-
+*/
     return 0;
 }
 
