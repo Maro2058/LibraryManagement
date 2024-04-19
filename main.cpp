@@ -19,7 +19,7 @@ I ALso did the getters in the book class since they were required for the remove
 
 using namespace std;
 
-enum class Genre {
+enum Genre {
     Fiction,
     NonFiction,
     Mystery,
@@ -93,11 +93,44 @@ public:
     void manageAccount(){
 
     }
-    void searchBooks(){
-        fstream file("Books.txt", ios::out);
+    void searchBooks(string input){
+
+        if (input == "-1"){
+            cout << "This Input is not allowed" << endl;
+        }
+        streampos pos = 0;
+        string readLine;
+        ifstream readFile("Books.txt");
+        ofstream writeFile("Search_Results.txt");
+        if (readFile.is_open()){
+            while(!readFile.eof()) {
+
+                getline(readFile, readLine);
+
+                cout << readLine<< endl;
+
+                if (readLine == "-1") {
+                    pos = readFile.tellg();
+                }
+                if (readLine == input) {
+                    cout << endl;
+                    readFile.seekg(pos);
+                    for (int i = 1; i <= 5; i++){
+                        getline(readFile, readLine);
+                        writeFile << readLine << endl;
+                    }
+
+                }
+            }
+
+        } else {
+            cout << "File failed to open";
+        }
+
 
     }
 };
+
 
 class Student : public Member{
 private:
@@ -133,7 +166,7 @@ public:
                 cout << "Error! Make sure the ISBN is 13 digits" << endl;
                 cout << "Enter the Books Info:\n ISBN: ";
                 cin.clear(); // Clear error flags
-                cin.ignore('\n'); // reads and discards all characters up to the newline character ('\n')
+                cin.ignore(numeric_limits<streamsize>::max(),'\n'); // reads and discards all characters up to the newline character ('\n')
                 cin >> Input;
             }
             tempBook.setISBN(Input);
@@ -308,12 +341,15 @@ public:
 
 int main()
 {
-    Librarian librarian;
+    /*Librarian librarian;
     librarian.addBook();
     librarian.addBook();
     librarian.addBook();
     librarian.removeBook();
-    cout<<"Hello World";
+    cout<<"Hello World";*/
+
+   Member mem;
+   mem.searchBooks("Morad");
 
     return 0;
 }
