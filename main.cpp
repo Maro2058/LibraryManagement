@@ -53,7 +53,7 @@ public:
         cout << "Enter Password" << endl;
     }
     void manageAccount(){
-
+        //change password?
     }
     void searchBooks(){
 
@@ -65,7 +65,9 @@ private:
 
 public:
     void requestLoan(){
+        Loan loan;
 
+        loan.set_loan();
     }
     void returnBook(){
 
@@ -142,19 +144,36 @@ public:
     }
 };
 
-class Loan{
-private:
-    int memberID;
-    int bookISBN;
-    time_t borrowDate;
-    time_t dueDate;
-
+class Loan :public Member
+{
 public:
-    void setBorrowDate(){
-        borrowDate = time(nullptr);
-        if(borrowDate == -1){ //Error Handling, in case time() returns error value
+    time_t loandate;
+    time_t duedate;
+    struct tm * duetime = localtime(&duedate);
+    struct tm * loantime = localtime(&loandate);
+    int days;
+public:
+    Loan()
+    {
+        //member id and book
+        loandate = time(nullptr);
+        duedate = loandate;
+    }
 
-        }
+    void set_loan()
+    {
+        cout<<"how long will you be having the book for (in days): "<<endl;
+        cin>> days;
+
+        duedate = loandate+days *24*60*60;
+
+        //remove book from available book secion
+    }
+
+    bool is_overdue() {
+        time_t now;
+        time(&now); // Get current time
+        return difftime(now, duedate) > 0; // Check if current time is past the due date
     }
 };
 
