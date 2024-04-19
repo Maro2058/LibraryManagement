@@ -6,7 +6,7 @@
 #include <cctype>    // for std::isdigit
 #include <vector>
 /*
-hello niggas this is abdo here soooo i changed some stuff in the addbook function
+hello niggers this is abdo here soooo i changed some stuff in the addbook function
 so we can add a genre using an enum, i added an enum class for the genre but tbh i'd rather
 we just enter the genre as is since the enum just makes it more complicated, but who cares.
 
