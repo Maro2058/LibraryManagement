@@ -1,1 +1,64 @@
+<<<<<<< Updated upstream
 1234567890123Amr'sNudesAmrMourad
+=======
+9781593279288
+Python Crash Course
+Eric Matthes
+No Starch Press
+-1
+9781593275990
+Automate the Boring Stuff with Python
+Al Sweigart
+No Starch Press
+-1
+1234567890123
+Why I am the Best
+Morad
+Truth International
+-1
+9781491946008
+Fluent Python
+Luciano Ramalho
+O'Reilly Media
+-1
+9780596009205
+Head First Java
+Kathy Sierra and Bert Bates
+O'Reilly Media
+-1
+9781260440217
+Java: A Beginner's Guide
+Herbert Schildt
+McGraw-Hill Education
+-1
+9780134685991
+Effective Java
+Joshua Bloch
+Addison-Wesley Professional
+-1
+9781593279509
+Eloquent JavaScript: A Modern Introduction to Programming
+Marijn Haverbeke
+No Starch Press
+-1
+9780596517748
+JavaScript: The Good Parts
+Douglas Crockford
+O'Reilly Media
+-1
+9781491904244 (Book 1)
+You Don't Know JS: Up & Going
+Kyle Simpson
+O'Reilly Media
+-1
+9780321714114
+C++ Primer
+Stanley B. Lippman, Josée Lajoie, and Barbara E. Moo
+Addison-Wesley Professional
+-1
+9780201703535
+Accelerated C++: Practical Programming by Example
+Andrew Koenig and Barbara E. Moo
+Addison-Wesley Professional
+-1
+>>>>>>> Stashed changes

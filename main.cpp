@@ -55,9 +55,42 @@ public:
     void manageAccount(){
 
     }
+<<<<<<< Updated upstream
     void searchBooks(){
+=======
+    /*void searchBooks(string input){
 
-    }
+        Book temp;
+
+        string readLine;
+        ifstream readFile("Books.txt");
+        ofstream writeFile("Search_Results.txt");
+        if (readFile.is_open()){
+            while(!readFile.eof()) {
+
+                getline(readFile, readLine);
+                cout << readLine<< endl;
+
+                if (readLine == "-1") {
+                    pos = readFile.tellg();
+                }
+                if (readLine == input) {
+                    cout << endl;
+                    readFile.seekg(pos);
+                    for (int i = 1; i <= 5; i++){
+                        getline(readFile, readLine);
+                        writeFile << readLine << endl;
+                    }
+                }
+            }
+
+        } else {
+            cout << "File failed to open";
+        }
+
+>>>>>>> Stashed changes
+
+    }*/
 };
 
 class Student : public Member{
@@ -163,7 +196,17 @@ int main()
 {
     Librarian librarian;
     librarian.addBook();
+<<<<<<< Updated upstream
     cout<<"Hello World";
+=======
+    /*librarian.addBook();
+    librarian.addBook();
+    librarian.removeBook();
+    cout<<"Hello World";*/
+
+   Member mem;
+   //mem.searchBooks("Morad");
+>>>>>>> Stashed changes
 
     return 0;
 }
