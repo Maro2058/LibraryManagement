@@ -58,3 +58,45 @@ Accelerated C++: Practical Programming by Example
 Andrew Koenig and Barbara E. Moo
 Addison-Wesley Professional
 -1
+1234567890234
+a
+3
+Abdo
+Morad
+-1
+1234567890123
+a
+8
+Morad's ass
+Abdo
+-1
+1234567890123
+asdf
+8
+asdf
+adsf
+-1
+1234567890123
+a
+3
+af
+af
+-1
+1234567890123
+title
+7
+Abdo
+Morad
+-1
+1234567890123
+Ur MOM
+5
+Dumby
+abdo
+-1
+1234567890123
+q
+3
+1
+2
+-1
