@@ -4,8 +4,33 @@
 #include <ctime>
 #include <algorithm> // for std::all_of
 #include <cctype>    // for std::isdigit
+#include <vector>
+/*
+hello niggas this is abdo here soooo i changed some stuff in the addbook function
+so we can add a genre using an enum, i added an enum class for the genre but tbh i'd rather
+we just enter the genre as is since the enum just makes it more complicated, but who cares.
+
+Also the remove book function i made it using chatgpt since am not that smart but, it basically
+copies all the data in the text file into a vector then it deletes the book the user chooses,
+and writes the remaining books back in the file
+
+I ALso did the getters in the book class since they were required for the remove book function.
+ */
 
 using namespace std;
+
+enum Genre {
+    Fiction,
+    NonFiction,
+    Mystery,
+    Romance,
+    ScienceFiction,
+    Biography,
+    History,
+    Poetry,
+    Philosophy,
+    Other
+};
 
 class Book{
 private:
@@ -13,28 +38,41 @@ private:
     string title;
     string author;
     string publisher;
-    enum genre {Art = 1, Biology, BusinessAndEconomics, Chemistry, ComputerScience, Education, Engineering,
-        HealthAndNutrition, Language, Mathematics, Music, Physics, Psychology};
+    Genre genre;
     int publicationYear;
     bool availabilityStatus;
     int available;
 
 public:
-    void setISBN(string num){
+    void setISBN(const string num){
         ISBN = num;
     }
-    string getISBN(){
-        return ISBN;
-    }
-    void setTitle(string n){
+    void setTitle(const string n){
         title = n;
     }
-    void setAuthor(string n){
+    void setAuthor(const string n){
         author = n;
     }
-    void setPublisher(string n){
+    void setPublisher(const string n){
         publisher = n;
     }
+
+    string getISBN() const {
+        return ISBN;
+    }
+    string getTitle() const {
+        return title;
+    }
+    string getAuthor() const {
+        return author;
+    }
+    string getPublisher() const {
+        return publisher;
+    }
+
+    // Getter and Setter methods for each member variable
+    void setGenre(Genre g) { genre = g; }
+    Genre getGenre() const { return genre; }
 };
 
 class Member{
@@ -55,9 +93,6 @@ public:
     void manageAccount(){
 
     }
-<<<<<<< Updated upstream
-    void searchBooks(){
-=======
     /*void searchBooks(string input){
 
         Book temp;
@@ -88,10 +123,10 @@ public:
             cout << "File failed to open";
         }
 
->>>>>>> Stashed changes
 
     }*/
 };
+
 
 class Student : public Member{
 private:
@@ -114,7 +149,7 @@ public:
     Librarian(string id, string user, int pass) : Member(id, user, pass) {}
 
     void addBook(){ // Adds book to file and returns Book
-        string anyInput;
+        string Input;
         Book tempBook;
         fstream file("Books.txt", ios :: app);
         //Adding stuff to test branch
@@ -122,40 +157,146 @@ public:
         if (file.is_open()){
 
             cout << "Enter the Books Info:\n ISBN: ";
-            cin >> anyInput;
-            while(anyInput.length() != 13 || !all_of(anyInput.begin(), anyInput.end(), ::isdigit) ) {
+            cin >> Input;
+            while(Input.length() != 13 || !all_of(Input.begin(), Input.end(), ::isdigit) ) {
                 cout << "Error! Make sure the ISBN is 13 digits" << endl;
                 cout << "Enter the Books Info:\n ISBN: ";
                 cin.clear(); // Clear error flags
-                cin >> anyInput;
+                cin.ignore(numeric_limits<streamsize>::max(),'\n'); // reads and discards all characters up to the newline character ('\n')
+                cin >> Input;
             }
-            tempBook.setISBN(anyInput);
-            file << anyInput;
+            tempBook.setISBN(Input);
+            file << Input << '\n';
+            cin.ignore(); //discards
 
-            cout << "Enter the book's title: ";
-            cin >> anyInput;
-            tempBook.setTitle(anyInput);
-            file << anyInput;
+            cout << "Enter the Book's title: ";
+            getline(cin, Input);
+            tempBook.setTitle(Input);
+            file << Input << '\n';
+
+// Enter Genre
+            cout << "Select Genre:\n";
+            cout << "1. Fiction\n";
+            cout << "2. NonFiction\n";
+            cout << "3. Mystery\n";
+            cout << "4. Romance\n";
+            cout << "5. ScienceFiction\n";
+            cout << "6. Biography\n";
+            cout << "7. History\n";
+            cout << "8. Poetry\n";
+            cout << "9. Philosophy\n";
+            cout << "10. Other\n";
+            int choice;
+            cin >> choice;
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear input buffer
+
+            switch(choice) {
+                case 1: tempBook.setGenre(Genre::Fiction); break;
+                case 2: tempBook.setGenre(Genre::NonFiction); break;
+                case 3: tempBook.setGenre(Genre::Mystery); break;
+                case 4: tempBook.setGenre(Genre::Romance); break;
+                case 5: tempBook.setGenre(Genre::ScienceFiction); break;
+                case 6: tempBook.setGenre(Genre::Biography); break;
+                case 7: tempBook.setGenre(Genre::History); break;
+                case 8: tempBook.setGenre(Genre::Poetry); break;
+                case 9: tempBook.setGenre(Genre::Philosophy); break;
+                case 10: tempBook.setGenre(Genre::Other); break;
+                default:
+                    cout << "Invalid choice. Setting genre to Other." << endl;
+                    tempBook.setGenre(Genre::Other);
+                    break;
+            }
+
+            // Write to file
+            file << static_cast<int>(tempBook.getGenre()) << '\n';  // Write enum value as integer
 
             cout << "Enter the Author's name: ";
-            cin >> anyInput;
-            tempBook.setAuthor(anyInput);
-            file << anyInput;
+            getline(cin, Input);
+            tempBook.setAuthor(Input);
+            file << Input << '\n';
 
             cout << "Enter the Publisher: ";
-            cin >> anyInput;
-            tempBook.setPublisher(anyInput);
-            file << anyInput;
+            cin >> Input;
+            tempBook.setPublisher(Input);
+            file << Input << '\n';
+
+            //To print -1 in the text file(for the search function ig)
+            file << "-1" << '\n';
+
+            file.close();
 
         } else{
             cout << "File Failed to Open\n Press any Number to continue"<<endl;
-            cin >> anyInput;
+            cin >> Input;
             cin.clear();
         }
-    }
-    void removeBook(Book& book){
 
     }
+
+   void removeBook() {
+        string ISBN;
+        vector<Book> books;  // Vector to store books read from file
+        fstream file("Books.txt", ios::in);  // Open file for reading
+
+        if (!file.is_open()) {
+            cout << "Unable to open file." << endl;
+            return;
+        }
+
+        // Read books from file
+        string line;
+        while (getline(file, line)) {
+            Book tempBook;
+            tempBook.setISBN(line);
+            getline(file, line); tempBook.setTitle(line);
+            getline(file, line); tempBook.setAuthor(line);
+            getline(file, line); tempBook.setPublisher(line);
+
+            int genreValue;
+            file >> genreValue;  // Read genre as integer
+            file.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear newline character
+            Genre genre = static_cast<Genre>(genreValue);  // Convert integer to Genre enum
+            tempBook.setGenre(genre);
+
+            books.push_back(tempBook);  // Add book to vector
+        }
+        file.close();  // Close the file
+
+        // Display available books and prompt user to select a book to remove
+        cout << "Available Books:" << endl;
+        for (size_t i = 0; i < books.size(); ++i) {
+            cout << i + 1 << ". " << books[i].getTitle() << " by " << books[i].getAuthor() << endl;
+        }
+
+        int choice;
+        cout << "Enter the number of the book to remove: ";
+        cin >> choice;
+
+        if (choice >= 1 && choice <= static_cast<int>(books.size())) {
+            books.erase(books.begin() + choice - 1);  // Remove selected book from vector
+
+            // Write remaining books back to file
+            file.open("Books.txt", ios::out | ios::trunc);  // Open file for writing (truncating the existing content)
+            if (!file.is_open()) {
+                cout << "Unable to open file." << endl;
+                return;
+            }
+
+            for (const auto& book : books) {
+                file << book.getISBN() << '\n';
+                file << book.getTitle() << '\n';
+                file << book.getAuthor() << '\n';
+                file << book.getPublisher() << '\n';
+                file << static_cast<int>(book.getGenre()) << '\n';
+            }
+            file.close();  // Close the file
+            cout << "Book removed successfully." << endl;
+        } else {
+            cout << "Invalid choice." << endl;
+        }
+    }
+
+
     void updateBook(){
 
     }
@@ -196,9 +337,6 @@ int main()
 {
     Librarian librarian;
     librarian.addBook();
-<<<<<<< Updated upstream
-    cout<<"Hello World";
-=======
     /*librarian.addBook();
     librarian.addBook();
     librarian.removeBook();
@@ -206,7 +344,6 @@ int main()
 
    Member mem;
    //mem.searchBooks("Morad");
->>>>>>> Stashed changes
 
     return 0;
 }
