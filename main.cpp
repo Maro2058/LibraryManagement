@@ -6,7 +6,7 @@
 #include <cctype>    // for std::isdigit
 #include <vector>
 /*
-hello niggers this is abdo here soooo i changed some stuff in the addbook function
+hello niggas this is abdo here soooo i changed some stuff in the addbook function
 so we can add a genre using an enum, i added an enum class for the genre but tbh i'd rather
 we just enter the genre as is since the enum just makes it more complicated, but who cares.
 
@@ -56,6 +56,9 @@ public:
     void setPublisher(const string n){
         publisher = n;
     }
+    void setGenre(const int n){
+        genre = static_cast<Genre>(n);
+    }
 
     string getISBN() const {
         return ISBN;
@@ -93,20 +96,26 @@ public:
     void manageAccount(){
 
     }
-    void searchBooks(string input){
+    /*void searchBooks(string input){
 
-        if (input == "-1"){
-            cout << "This Input is not allowed" << endl;
-        }
-        streampos pos = 0;
+        Book temp;
+
         string readLine;
+        Book tempBook;
+        string tempString;
+        int tempInt;
         ifstream readFile("Books.txt");
         ofstream writeFile("Search_Results.txt");
         if (readFile.is_open()){
             while(!readFile.eof()) {
+                getline(readFile, tempString); tempBook.setTitle(tempString);
+                getline(readFile, tempString); tempBook.setAuthor(tempString);
+                getline(readFile, tempString); tempInt = stoi(tempString); tempBook.setGenre(tempInt);
+                getline(readFile, tempString); tempBook.setISBN(tempString);
+                getline(readFile, tempString); tempBook.setISBN(tempString);
+                getline(readFile, tempString); tempBook.setISBN(tempString);
 
                 getline(readFile, readLine);
-
                 cout << readLine<< endl;
 
                 if (readLine == "-1") {
@@ -119,8 +128,8 @@ public:
                         getline(readFile, readLine);
                         writeFile << readLine << endl;
                     }
-
                 }
+
             }
 
         } else {
@@ -128,6 +137,7 @@ public:
         }
 
 
+    }*/
     }
 };
 
@@ -178,17 +188,7 @@ public:
             tempBook.setTitle(Input);
             file << Input << '\n';
 
-            cout << "Enter the Author's name: ";
-            getline(cin, Input);
-            tempBook.setAuthor(Input);
-            file << Input << '\n';
-
-            cout << "Enter the Publisher: ";
-            cin >> Input;
-            tempBook.setPublisher(Input);
-            file << Input << '\n';
-
-            // Enter Genre
+// Enter Genre
             cout << "Select Genre:\n";
             cout << "1. Fiction\n";
             cout << "2. NonFiction\n";
@@ -224,8 +224,15 @@ public:
             // Write to file
             file << static_cast<int>(tempBook.getGenre()) << '\n';  // Write enum value as integer
 
-            //To print -1 in the text file(for the search function ig)
-            //file << "-1" << '\n';
+            cout << "Enter the Author's name: ";
+            getline(cin, Input);
+            tempBook.setAuthor(Input);
+            file << Input << '\n';
+
+            cout << "Enter the Publisher: ";
+            cin >> Input;
+            tempBook.setPublisher(Input);
+            file << Input << '\n';
 
             file.close();
 
@@ -252,7 +259,6 @@ public:
         while (getline(file, line)) {
             Book tempBook;
             tempBook.setISBN(line);
-
             getline(file, line); tempBook.setTitle(line);
             getline(file, line); tempBook.setAuthor(line);
             getline(file, line); tempBook.setPublisher(line);
@@ -262,6 +268,7 @@ public:
             file.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear newline character
             Genre genre = static_cast<Genre>(genreValue);  // Convert integer to Genre enum
             tempBook.setGenre(genre);
+
             books.push_back(tempBook);  // Add book to vector
         }
         file.close();  // Close the file
@@ -340,15 +347,15 @@ public:
 int main()
 {
     Librarian librarian;
-    //librarian.addBook();
-    //librarian.addBook();
-    //librarian.addBook();
+    librarian.addBook();
+    /*librarian.addBook();
+    librarian.addBook();
     librarian.removeBook();
-    cout<<"Hello World";
+    cout<<"Hello World";*/
 
-   /*Member mem;
-   mem.searchBooks("Morad");
-*/
+   Member mem;
+   //mem.searchBooks("Morad");
+
     return 0;
 }
 
