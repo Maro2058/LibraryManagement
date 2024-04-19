@@ -219,15 +219,17 @@ public:
         while (getline(file, line)) {
             Book tempBook;
             tempBook.setISBN(line);
-            getline(file, line); tempBook.setTitle(line);
-            getline(file, line); tempBook.setAuthor(line);
-            getline(file, line); tempBook.setPublisher(line);
 
+            getline(file, line); tempBook.setTitle(line);
             int genreValue;
             file >> genreValue;  // Read genre as integer
             file.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear newline character
             Genre genre = static_cast<Genre>(genreValue);  // Convert integer to Genre enum
             tempBook.setGenre(genre);
+
+            getline(file, line); tempBook.setAuthor(line);
+            getline(file, line); tempBook.setPublisher(line);
+
 
             books.push_back(tempBook);  // Add book to vector
         }
