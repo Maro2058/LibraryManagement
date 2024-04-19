@@ -58,8 +58,42 @@ public:
     void manageAccount(){
 
     }
-    void searchBooks(){
-        fstream file("Books.txt", ios::out);
+    void searchBooks(string input){
+
+        if (input == "-1"){
+            cout << "This Input is not allowed" << endl;
+        }
+        long long int pos = 0;
+        string readLine;
+        ifstream readFile("Books.txt");
+        ofstream writeFile("Search_Results.txt");
+        if (readFile.is_open()){
+            while(!readFile.eof()) {
+
+                getline(readFile, readLine);
+                cout << readLine<< endl;
+
+                if (readLine == "-1") {
+                    cout<<"found -1"<<endl;
+                    //readFile.seekg(-3, ios_base::cur);
+                    pos = readFile.tellg();
+                    //readFile.ignore(numeric_limits<streamsize>::max(), '\n');
+                }
+                if (readLine == input) {
+                    cout << endl;
+                    readFile.seekg(pos);
+                    for (int i = 1; i <= 5; i++){
+                        getline(readFile, readLine);
+                        writeFile << readLine << endl;
+                    }
+
+                }
+            }
+
+        } else {
+            cout << "File failed to open";
+        }
+
 
     }
 };
@@ -179,8 +213,8 @@ public:
 
 int main()
 {
-    Librarian librarian;
-    librarian.addBook();
+    Member mem;
+    mem.searchBooks("Morad");
     cout<<"Hello World";
 
     return 0;
