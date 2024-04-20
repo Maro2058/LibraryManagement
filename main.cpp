@@ -6,17 +6,18 @@
 #include <algorithm> // for std::all_of
 #include <cctype>    // for std::isdigit
 #include <vector>
-/*
-hello niggas this is abdo here soooo i changed some stuff in the addbook function
-so we can add a genre using an enum, i added an enum class for the genre but tbh i'd rather
-we just enter the genre as is since the enum just makes it more complicated, but who cares.
 
-Also the remove book function i made it using chatgpt since am not that smart but, it basically
-copies all the data in the text file into a vector then it deletes the book the user chooses,
-and writes the remaining books back in the file
 
-I ALso did the getters in the book class since they were required for the remove book function.
+/* To Do List:
+ * Genre:
+ *   Change Genre from enum, to user defined list.
+ *   Add Base Genres
+ *
+ * Reading from Books:
+ *   Currently 3 different versions of the same code
+ *   Unify all into 1
  */
+
 
 using namespace std;
 
@@ -32,7 +33,24 @@ enum Genre {
     Philosophy,
     Other
 };
+
 string genreToString(Genre genre) {
+    switch(genre) {
+        case Genre::Fiction: return "Fiction";
+        case Genre::NonFiction: return "Non-Fiction";
+        case Genre::Mystery: return "Mystery";
+        case Genre::Romance: return "Romance";
+        case Genre::ScienceFiction: return "Science Fiction";
+        case Genre::Biography: return "Biography";
+        case Genre::History: return "History";
+        case Genre::Poetry: return "Poetry";
+        case Genre::Philosophy: return "Philosophy";
+        case Genre::Other: return "Other";
+        default: return "Unknown";
+    }
+}
+
+string genreToString(int genre) {
     switch(genre) {
         case Genre::Fiction: return "Fiction";
         case Genre::NonFiction: return "Non-Fiction";
@@ -56,42 +74,27 @@ private:
     string publisher;
     Genre genre;
     int publicationYear;
-    bool availabilityStatus;
-    int available;
+    int available = 0;
+    bool availabilityStatus = (available > 0);
 
 public:
-    void setISBN(const string num){
-        ISBN = num;
-    }
-    void setTitle(const string n){
-        title = n;
-    }
-    void setAuthor(const string n){
-        author = n;
-    }
-    void setPublisher(const string n){
-        publisher = n;
-    }
-    void setGenre(const int n){
-        genre = static_cast<Genre>(n);
-    }
 
-    string getISBN() const {
-        return ISBN;
-    }
-    string getTitle() const {
-        return title;
-    }
-    string getAuthor() const {
-        return author;
-    }
-    string getPublisher() const {
-        return publisher;
-    }
+    // Setter and Getter methods for each member variable
+    void setISBN(const string num){ ISBN = num; }
+    void setTitle(const string n){ title = n; }
+    void setAuthor(const string n){ author = n; }
+    void setGenre(const int n){ genre = static_cast<Genre>(n); }
+    void setPublisher(const string n){ publisher = n; }
+    void setAvailableNum(int n){ available = n; }
 
-    // Getter and Setter methods for each member variable
-    void setGenre(Genre g) { genre = g; }
-    Genre getGenre() const { return genre; }
+    string getISBN() const { return ISBN; }
+    string getTitle() const { return title; }
+    string getAuthor() const { return author; }
+    string getPublisher()const{ return publisher; }
+    int getGenre() const { return genre; }
+    int getAvailableNum() const { return available; }
+
+
 };
 
 class Member{
@@ -112,49 +115,52 @@ public:
     void manageAccount(){
         //change password?
     }
-    /*void searchBooks(string input){
+    void searchBooks(string input){
 
-        Book temp;
-
-        string readLine;
         Book tempBook;
         string tempString;
         int tempInt;
+
         ifstream readFile("Books.txt");
         ofstream writeFile("Search_Results.txt");
         if (readFile.is_open()){
-            while(!readFile.eof()) {
-                getline(readFile, tempString); tempBook.setTitle(tempString);
-                getline(readFile, tempString); tempBook.setAuthor(tempString);
-                getline(readFile, tempString); tempInt = stoi(tempString); tempBook.setGenre(tempInt);
-                getline(readFile, tempString); tempBook.setISBN(tempString);
-                getline(readFile, tempString); tempBook.setISBN(tempString);
-                getline(readFile, tempString); tempBook.setISBN(tempString);
-
-                getline(readFile, readLine);
-                cout << readLine<< endl;
-
-                if (readLine == "-1") {
-                    pos = readFile.tellg();
+            for (size_t i = 1; i <= 6 && !readFile.eof(); i++){
+                cout << i << endl;
+                switch(i){
+                    case 1:
+                        getline(readFile, tempString); tempBook.setISBN(tempString);
+                        break;
+                    case 2:
+                        getline(readFile, tempString); tempBook.setTitle(tempString);
+                        break;
+                    case 3:
+                        getline(readFile, tempString); tempBook.setAuthor(tempString);
+                        break;
+                    case 4:
+                        getline(readFile, tempString); tempBook.setGenre(stoi(tempString));
+                        cout << "Here:";
+                        break;
+                    case 5:
+                        getline(readFile, tempString); tempBook.setPublisher(tempString);
+                        break;
+                    case 6:
+                        getline(readFile, tempString); tempBook.setAvailableNum(stoi(tempString));
+                        i = 0;
+                        if (input == tempBook.getISBN() || input == tempBook.getTitle() || input == tempBook.getAuthor() ||
+                            input == to_string(tempBook.getGenre()) || input == tempBook.getPublisher()){
+                                writeFile << tempBook.getISBN() << endl << tempBook.getTitle() << endl
+                                << tempBook.getAuthor() << endl << tempBook.getGenre() << endl
+                                << tempBook.getPublisher() << endl << tempBook.getAvailableNum() << endl;
+                        }
+                        break;
                 }
-                if (readLine == input) {
-                    cout << endl;
-                    readFile.seekg(pos);
-                    for (int i = 1; i <= 5; i++){
-                        getline(readFile, readLine);
-                        writeFile << readLine << endl;
-                    }
-                }
-
             }
-
         } else {
             cout << "File failed to open";
         }
 
 
     }
-    }*/
 };
 
 class Loan :public Member
@@ -189,6 +195,7 @@ public:
         return difftime(now, duedate) > 0; // Check if current time is past the due date
     }
 };
+
 
 class Student : public Member{
 private:
@@ -238,14 +245,8 @@ public:
             file << Input << '\n';
 
             cout << "Enter the Author's name: ";
-
             getline(cin, Input);
             tempBook.setAuthor(Input);
-            file << Input << '\n';
-
-            cout << "Enter the Publisher: ";
-            getline(cin, Input);
-            tempBook.setPublisher(Input);
             file << Input << '\n';
 
 // Enter Genre
@@ -280,12 +281,17 @@ public:
                     tempBook.setGenre(Genre::Other);
                     break;
             }
-
             // Write to file
             file << static_cast<int>(tempBook.getGenre()) << '\n';  // Write enum value as integer
 
+            cout << "Enter the Publisher: ";
+            getline(cin, Input);
+            tempBook.setPublisher(Input);
+            file << Input << '\n';
 
-
+            cout << "Enter Number Available ";
+            getline(cin, Input);
+            file << Input << '\n';
             file.close();
 
         } else{
@@ -293,7 +299,6 @@ public:
             cin >> Input;
             cin.clear();
         }
-
     }
 
    void removeBook() {
@@ -370,23 +375,20 @@ public:
 
         // Read books from file
         string line;
+        int genreValue;
+
         while (getline(file, line)) {
             Book tempBook;
             tempBook.setISBN(line);
             getline(file, line); tempBook.setTitle(line);
             getline(file, line); tempBook.setAuthor(line);
+            file >> genreValue; tempBook.setGenre(genreValue);
             getline(file, line); tempBook.setPublisher(line);
-
-            int genreValue;
-            file >> genreValue;  // Read genre as integer
-            file.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear newline character
-            Genre genre = static_cast<Genre>(genreValue);  // Convert integer to Genre enum
-            tempBook.setGenre(genre);
 
             books.push_back(tempBook);  // Add book to vector
         }
-        file.close();// Close the file
 
+        file.close();// Close the file
         cout << "Available Books:" << endl;
         for (size_t i = 0; i < books.size(); ++i) {
             cout << i + 1 << ". " << books[i].getTitle() << " by " << books[i].getAuthor() << endl;
@@ -438,7 +440,6 @@ public:
                     cin.ignore();
                     getline(cin, tauthor);
                     books[choice-1].setAuthor(tauthor);
-
                     break;
                 case 4:
                     cout<<"Please enter the new Publisher's name: "<<endl;
@@ -495,8 +496,8 @@ public:
                 file << book.getISBN() << '\n';
                 file << book.getTitle() << '\n';
                 file << book.getAuthor() << '\n';
+                file << book.getGenre() << '\n';
                 file << book.getPublisher() << '\n';
-                file << static_cast<int>(book.getGenre()) << '\n';
             }
             file.close();  // Close the file
             cout << "Book modified successfully." << endl;
@@ -521,20 +522,13 @@ public:
     }
 };
 
-
-
 int main()
 {
     Librarian librarian;
+    //librarian.addBook();
 
-    librarian.updateBook();
-     /*
-    librarian.removeBook();
-    cout<<"Hello World";
-
-   Member mem;
-   //mem.searchBooks("Morad");*/
+    Member mem;
+    mem.searchBooks("Morad");
 
     return 0;
 }
-
