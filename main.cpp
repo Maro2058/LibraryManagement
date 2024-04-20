@@ -34,6 +34,13 @@ enum Genre {
     Other
 };
 
+enum Role
+{
+    Admin,
+    Student
+};
+
+
 string genreToString(Genre genre) {
     switch(genre) {
         case Genre::Fiction: return "Fiction";
@@ -101,13 +108,14 @@ class Member{
 private:
     string userID;
     string userName;
-    int password;
+    string password;
+    Role role;
     Book *checkedOut;
     int fines;
 
 public:
     Member(){}
-    Member(string ID, string user, int pass) : userID(ID), userName(user), password(pass) {}
+    Member(string ID, string user, string pass) : userID(ID), userName(user), password(pass) {}
     void login(){
         cout << " Enter User ID" << endl;
         cout << "Enter Password" << endl;
@@ -115,6 +123,16 @@ public:
     void manageAccount(){
         //change password?
     }
+    void setRole(Role n){role = static_cast<Role>(n);}
+    void setname (string name) {userName = name;}
+    void setID(string id){userID = id;}
+    void setpassword(string pass){password = pass;}
+    string getname()const{return userName;}
+    string getID() const {return userID;}
+    string getpassword() const {return password;}
+    int getrole()const{return role;}
+
+
     void searchBooks(string input){
 
         Book tempBook;
@@ -217,7 +235,7 @@ private:
 
 public:
     Librarian(){}
-    Librarian(string id, string user, int pass) : Member(id, user, pass) {}
+    Librarian(string id, string user, string pass) : Member(id, user, pass) {}
 
     void addBook(){ // Adds book to file and returns Book
         string Input;
@@ -556,13 +574,132 @@ public:
         }
     }
     void viewMembers(){
+        vector<Member> members;  // Vector to store books read from file
+        ifstream file("Members.txt");  // Open file for reading
 
+        if (!file.is_open()) {
+            cout << "Unable to open file." << endl;
+            return;
+        }
+
+        // Read books from file
+        string line;
+        while (getline(file, line)) {
+            Member tempmember;
+            int r = stoi(line);
+            tempmember.setRole(static_cast<Role>(r));
+            getline(file, line); tempmember.setname(line);
+            getline(file, line); tempmember.setID(line);
+            getline(file, line); tempmember.setpassword(line);
+
+            members.push_back(tempmember);  // Add book to vector
+        }
+        file.close();  // Close the file
+
+        // Display available books and prompt user to select a book to remove
+        cout << "Members:" << endl;
+        for (size_t i = 0; i < members.size(); i++) {
+            cout << i + 1 << ". " << members[i].getname() << " || " << members[i].getID() << endl;
+        }
     }
     void addMember(){
+        string Input;
+        Member tempMember;
+        fstream file("Members.txt", ios :: app);
 
+        if (file.is_open()){
+            int userchoice;
+            cout << "Enter the Member Info:\n Is the member:\n1. Librarian\n2. Student \n";
+            cin>>userchoice;
+            while(userchoice < 1 || userchoice > 2)
+            {
+                cout<<"Invalid choice! Pick again."<<endl;
+                cin>>userchoice;
+            }
+            file << userchoice << '\n';
+            cin.ignore();
+            tempMember.setRole(static_cast<Role>(userchoice));
+
+
+            cout << "Enter the Member's Name: ";
+            getline(cin, Input);
+            tempMember.setname(Input);
+            file << Input << '\n';
+
+            cout << "Enter the Member's ID: ";
+            getline(cin, Input);
+            //searches if ID exists somewhere
+            tempMember.setID(Input);
+            file << Input << '\n';
+
+            cout << "Enter the Member's Password: ";
+            getline(cin, Input);
+            tempMember.setpassword(Input);
+            file << Input << '\n';
+
+            file.close();
+
+        } else{
+            cout << "File Failed to Open\n Press any Number to continue"<<endl;
+            cin >> Input;
+            cin.clear();
+        }
     }
-    void removeMember(Member member){
+    void removeMember(){
+        vector<Member> members;  // Vector to store books read from file
+        fstream file("Members.txt", ios::in);  // Open file for reading
 
+        if (!file.is_open()) {
+            cout << "Unable to open file." << endl;
+            return;
+        }
+
+        // Read books from file
+        string line;
+        while (getline(file, line)) {
+            Member tempmember;
+            int r = stoi(line);
+            tempmember.setRole(static_cast<Role>(r));
+            getline(file, line); tempmember.setname(line);
+            getline(file, line); tempmember.setID(line);
+            getline(file, line); tempmember.setpassword(line);
+
+            members.push_back(tempmember);  // Add book to vector
+        }
+        file.close();  // Close the file
+
+        // Display available books and prompt user to select a book to remove
+        cout << "Members:" << endl;
+        for (size_t i = 0; i < members.size(); ++i) {
+            cout << i + 1 << ". " << members[i].getname() << " || " << members[i].getID() << endl;
+        }
+
+        int choice;
+        cout << "Enter the number of the Member to remove: ";
+        cin >> choice;
+
+        if (choice >= 1 && choice <= static_cast<int>(members.size())) {
+            members.erase(members.begin() + choice - 1);  // Remove selected book from vector
+
+
+            // Write remaining books back to file
+            file.open("Members.txt", ios::out | ios::trunc);  // Open file for writing (truncating the existing content)
+            if (!file.is_open()) {
+                cout << "Unable to open file." << endl;
+                return;
+            }
+
+            for (const auto& member : members) {
+                file << static_cast<int>(member.getrole()) << '\n';
+                file << member.getname() << '\n';
+                file << member.getID() << '\n';
+                file << member.getpassword() << '\n';
+            }
+            file.close();  // Close the file
+            cout << "Member removed successfully." << endl;
+        } else {
+            cout << "Invalid choice." << endl;
+        }
     }
     void processLoanRequest(){
 
@@ -574,9 +711,11 @@ public:
 
 int main()
 {
-    Librarian librarian;
-    librarian.addBook();
-    librarian.updateBook();
+
+    Librarian morad;
+    morad.viewMembers();
+    morad.addMember();
+    morad.removeMember();
 
 
     return 0;
