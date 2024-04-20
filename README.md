@@ -48,8 +48,8 @@
  
 ## Additional Functions:
   - Book Reservations
-  - Waitlists
+  - Wait lists
   - Overdue Fines
   - Generate Reports on borrowing statistics
   - DN - Youssef Haytham
-  - Librarian Writes the Number of Possible Loans alowwed for each type of member.
+  - Librarian Writes the Number of Possible Loans allowed for each type of member.
