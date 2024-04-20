@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <string>
 #include <chrono>
 #include <ctime>
 #include <algorithm> // for std::all_of
@@ -31,6 +32,21 @@ enum Genre {
     Philosophy,
     Other
 };
+string genreToString(Genre genre) {
+    switch(genre) {
+        case Genre::Fiction: return "Fiction";
+        case Genre::NonFiction: return "Non-Fiction";
+        case Genre::Mystery: return "Mystery";
+        case Genre::Romance: return "Romance";
+        case Genre::ScienceFiction: return "Science Fiction";
+        case Genre::Biography: return "Biography";
+        case Genre::History: return "History";
+        case Genre::Poetry: return "Poetry";
+        case Genre::Philosophy: return "Philosophy";
+        case Genre::Other: return "Other";
+        default: return "Unknown";
+    }
+}
 
 class Book{
 private:
@@ -141,6 +157,38 @@ public:
     }*/
 };
 
+class Loan :public Member
+{
+public:
+    time_t loandate;
+    time_t duedate;
+    struct tm * duetime = localtime(&duedate);
+    struct tm * loantime = localtime(&loandate);
+    int days;
+public:
+    Loan()
+    {
+        //member id and book
+        loandate = time(nullptr);
+        duedate = loandate;
+    }
+
+    void set_loan()
+    {
+        cout<<"how long will you be having the book for (in days): "<<endl;
+        cin>> days;
+
+        duedate = loandate+days *24*60*60;
+
+        //remove book from available book secion
+    }
+
+    bool is_overdue() {
+        time_t now;
+        time(&now); // Get current time
+        return difftime(now, duedate) > 0; // Check if current time is past the due date
+    }
+};
 
 class Student : public Member{
 private:
@@ -172,7 +220,7 @@ public:
         if (file.is_open()){
 
             cout << "Enter the Books Info:\n ISBN: ";
-            cin >> Input;
+            cin>>Input;
             while(Input.length() != 13 || !all_of(Input.begin(), Input.end(), ::isdigit) ) {
                 cout << "Error! Make sure the ISBN is 13 digits" << endl;
                 cout << "Enter the Books Info:\n ISBN: ";
@@ -187,6 +235,17 @@ public:
             cout << "Enter the Book's title: ";
             getline(cin, Input);
             tempBook.setTitle(Input);
+            file << Input << '\n';
+
+            cout << "Enter the Author's name: ";
+
+            getline(cin, Input);
+            tempBook.setAuthor(Input);
+            file << Input << '\n';
+
+            cout << "Enter the Publisher: ";
+            getline(cin, Input);
+            tempBook.setPublisher(Input);
             file << Input << '\n';
 
 // Enter Genre
@@ -225,15 +284,7 @@ public:
             // Write to file
             file << static_cast<int>(tempBook.getGenre()) << '\n';  // Write enum value as integer
 
-            cout << "Enter the Author's name: ";
-            getline(cin, Input);
-            tempBook.setAuthor(Input);
-            file << Input << '\n';
 
-            cout << "Enter the Publisher: ";
-            cin >> Input;
-            tempBook.setPublisher(Input);
-            file << Input << '\n';
 
             file.close();
 
@@ -308,15 +359,156 @@ public:
         }
     }
 
-
     void updateBook(){
+        vector<Book> books;  // Vector to store books read from file
+        fstream file("Books.txt", ios::in);  // Open file for reading
 
+        if (!file.is_open()) {
+            cout << "Unable to open file." << endl;
+            return;
+        }
+
+        // Read books from file
+        string line;
+        while (getline(file, line)) {
+            Book tempBook;
+            tempBook.setISBN(line);
+            getline(file, line); tempBook.setTitle(line);
+            getline(file, line); tempBook.setAuthor(line);
+            getline(file, line); tempBook.setPublisher(line);
+
+            int genreValue;
+            file >> genreValue;  // Read genre as integer
+            file.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear newline character
+            Genre genre = static_cast<Genre>(genreValue);  // Convert integer to Genre enum
+            tempBook.setGenre(genre);
+
+            books.push_back(tempBook);  // Add book to vector
+        }
+        file.close();// Close the file
+
+        cout << "Available Books:" << endl;
+        for (size_t i = 0; i < books.size(); ++i) {
+            cout << i + 1 << ". " << books[i].getTitle() << " by " << books[i].getAuthor() << endl;
+        }
+
+        int choice;
+        cout << "Enter the number of the book to modify: ";
+        cin >> choice;
+
+        if (choice >= 1 && choice <= static_cast<int>(books.size())) {
+            int choice2;
+            cout<<"1.ISBN: "<<books[choice-1].getISBN()<<endl;
+            cout<<"2.Title Name: "<<books[choice-1].getTitle()<<endl;
+            cout<<"3.Author's Name: "<<books[choice-1].getAuthor()<<endl;
+            cout<<"4.Publisher's Name: "<<books[choice-1].getPublisher()<<endl;
+            cout<<"5.Genre: "<<genreToString(books[choice-1].getGenre())<<endl;
+            cout<<"What do you want to modify?"<<endl;
+            cin>>choice2;
+
+            string tISBN;
+            string ttitle;
+            string tauthor;
+            string tpublish;
+            int gnre;
+            int choice3;
+
+            switch(choice2)
+            {
+                case 1:
+                    cout<<"Please enter the new ISBN: "<<endl;
+                    cin.ignore();
+                    getline(cin, tISBN);
+                    while(tISBN.length()!= 13)
+                    {
+                        cout<<"Invalid ISBN, Please try to enter a 13 digit ISBN"<<endl;
+                        cin.ignore();
+                        getline(cin, tISBN);
+                    }
+                    books[choice-1].setISBN(tISBN);
+                    break;
+                case 2:
+                    cout<<"Please enter the new title: "<<endl;
+                    cin.ignore();
+                    getline(cin, ttitle);
+                    books[choice-1].setTitle(ttitle);
+                    break;
+                case 3:
+                    cout<<"Please enter the new author name: "<<endl;
+                    cin.ignore();
+                    getline(cin, tauthor);
+                    books[choice-1].setAuthor(tauthor);
+
+                    break;
+                case 4:
+                    cout<<"Please enter the new Publisher's name: "<<endl;
+                    cin.ignore();
+                    getline(cin, tpublish);
+                    books[choice-1].setPublisher(tpublish);
+                    break;
+                case 5:
+                    cout<<"Please choose the new genre: "<<endl;
+                    cout << "1. Fiction\n";
+                    cout << "2. NonFiction\n";
+                    cout << "3. Mystery\n";
+                    cout << "4. Romance\n";
+                    cout << "5. ScienceFiction\n";
+                    cout << "6. Biography\n";
+                    cout << "7. History\n";
+                    cout << "8. Poetry\n";
+                    cout << "9. Philosophy\n";
+                    cout << "10. Other\n";
+                    cin >> choice3;
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear input buffer
+
+                    switch(choice3) {
+                        case 1: books[choice-1].setGenre(Genre::Fiction); break;
+                        case 2: books[choice-1].setGenre(Genre::NonFiction); break;
+                        case 3: books[choice-1].setGenre(Genre::Mystery); break;
+                        case 4: books[choice-1].setGenre(Genre::Romance); break;
+                        case 5: books[choice-1].setGenre(Genre::ScienceFiction); break;
+                        case 6: books[choice-1].setGenre(Genre::Biography); break;
+                        case 7: books[choice-1].setGenre(Genre::History); break;
+                        case 8: books[choice-1].setGenre(Genre::Poetry); break;
+                        case 9: books[choice-1].setGenre(Genre::Philosophy); break;
+                        case 10: books[choice-1].setGenre(Genre::Other); break;
+                        default:
+                            cout << "Invalid choice. Setting genre to Other." << endl;
+                            books[choice-1].setGenre(Genre::Other);
+                            break;
+                    }
+                    break;
+
+                default:
+                    cout<<"Invalid choice, Try Again."<<endl;
+                    break;
+            }
+
+            // Write remaining books back to file
+            file.open("Books.txt", ios::out | ios::trunc);  // Open file for writing (truncating the existing content)
+            if (!file.is_open()) {
+                cout << "Unable to open file." << endl;
+                return;
+            }
+
+            for (const auto &book: books) {
+                file << book.getISBN() << '\n';
+                file << book.getTitle() << '\n';
+                file << book.getAuthor() << '\n';
+                file << book.getPublisher() << '\n';
+                file << static_cast<int>(book.getGenre()) << '\n';
+            }
+            file.close();  // Close the file
+            cout << "Book modified successfully." << endl;
+        }else{
+            cout<<"Invalid choice";
+        }
     }
     void viewMembers(){
 
     }
     void addMember(){
-        Member tempMember();
+
     }
     void removeMember(Member member){
 
@@ -329,50 +521,19 @@ public:
     }
 };
 
-class Loan :public Member
-{
-public:
-    time_t loandate;
-    time_t duedate;
-    struct tm * duetime = localtime(&duedate);
-    struct tm * loantime = localtime(&loandate);
-    int days;
-public:
-    Loan()
-    {
-        //member id and book
-        loandate = time(nullptr);
-        duedate = loandate;
-    }
 
-    void set_loan()
-    {
-        cout<<"how long will you be having the book for (in days): "<<endl;
-        cin>> days;
-
-        duedate = loandate+days *24*60*60;
-
-        //remove book from available book secion
-    }
-
-    bool is_overdue() {
-        time_t now;
-        time(&now); // Get current time
-        return difftime(now, duedate) > 0; // Check if current time is past the due date
-    }
-};
 
 int main()
 {
     Librarian librarian;
-    librarian.addBook();
-    /*librarian.addBook();
-    librarian.addBook();
+
+    librarian.updateBook();
+     /*
     librarian.removeBook();
-    cout<<"Hello World";*/
+    cout<<"Hello World";
 
    Member mem;
-   //mem.searchBooks("Morad");
+   //mem.searchBooks("Morad");*/
 
     return 0;
 }
