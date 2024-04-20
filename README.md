@@ -1,8 +1,11 @@
 # Library Management System Workload:
 # The Plan for now (WIP):
   Morad and Kareem: Member and Library Class + Associated Functions
+
   Abdo Mahdi: Book Class + GUI (maybe?)
+
   Amr: Loan Class + Associated Functions
+
   Youssef: Custom String Class + Other Functions
 
 ## Member Functions:
@@ -38,7 +41,7 @@
 
 ## Loan Class: Amr Edris
   Tracks borrowed books with details like member ID, book ID, borrow date,
-  due date, etc. - Amr ✅
+  due date, etc. - Amr ✅❗❗❗
   
 ## Custom Sting Class Function: Youssef Haytham
   Function overloading
