@@ -249,6 +249,10 @@ public:
             tempBook.setAuthor(Input);
             file << Input << '\n';
 
+            cout << "Enter the Publisher: ";
+            getline(cin, Input);
+            tempBook.setPublisher(Input);
+            file << Input << '\n';
 // Enter Genre
             cout << "Select Genre:\n";
             cout << "1. Fiction\n";
@@ -284,14 +288,17 @@ public:
             // Write to file
             file << static_cast<int>(tempBook.getGenre()) << '\n';  // Write enum value as integer
 
-            cout << "Enter the Publisher: ";
-            getline(cin, Input);
-            tempBook.setPublisher(Input);
-            file << Input << '\n';
 
-            cout << "Enter Number Available ";
-            getline(cin, Input);
-            file << Input << '\n';
+            int num;
+            cout << "Enter The Number of Books Available: "<<endl;
+            cin>>num;
+            while(num < 1)
+            {
+                cout<<"Invalid Amount! Please try again.";
+                cin>>num;
+            }
+            tempBook.setAvailableNum(num);
+            file << num << '\n';
             file.close();
 
         } else{
@@ -319,12 +326,16 @@ public:
             getline(file, line); tempBook.setTitle(line);
             getline(file, line); tempBook.setAuthor(line);
             getline(file, line); tempBook.setPublisher(line);
-
             int genreValue;
             file >> genreValue;  // Read genre as integer
             file.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear newline character
             Genre genre = static_cast<Genre>(genreValue);  // Convert integer to Genre enum
             tempBook.setGenre(genre);
+
+            int availableNum;  // Declare variable to store availableNum
+            file >> availableNum;  // Read availableNum as integer
+            file.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear newline character
+            tempBook.setAvailableNum(availableNum);  // Set availableNum for the book
 
             books.push_back(tempBook);  // Add book to vector
         }
@@ -341,7 +352,14 @@ public:
         cin >> choice;
 
         if (choice >= 1 && choice <= static_cast<int>(books.size())) {
-            books.erase(books.begin() + choice - 1);  // Remove selected book from vector
+            if(books[choice-1].getAvailableNum() == 1) {
+                books.erase(books.begin() + choice - 1);  // Remove selected book from vector
+            }
+            else
+            {
+                int num = books[choice-1].getAvailableNum();
+                books[choice-1].setAvailableNum(--(num));
+            }
 
             // Write remaining books back to file
             file.open("Books.txt", ios::out | ios::trunc);  // Open file for writing (truncating the existing content)
@@ -356,6 +374,7 @@ public:
                 file << book.getAuthor() << '\n';
                 file << book.getPublisher() << '\n';
                 file << static_cast<int>(book.getGenre()) << '\n';
+                file << book.getAvailableNum() << '\n';
             }
             file.close();  // Close the file
             cout << "Book removed successfully." << endl;
@@ -376,14 +395,24 @@ public:
         // Read books from file
         string line;
         int genreValue;
+        int avalnum;
 
         while (getline(file, line)) {
             Book tempBook;
             tempBook.setISBN(line);
             getline(file, line); tempBook.setTitle(line);
             getline(file, line); tempBook.setAuthor(line);
-            file >> genreValue; tempBook.setGenre(genreValue);
             getline(file, line); tempBook.setPublisher(line);
+            int genreValue;
+            file >> genreValue;  // Read genre as integer
+            file.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear newline character
+            Genre genre = static_cast<Genre>(genreValue);  // Convert integer to Genre enum
+            tempBook.setGenre(genre);
+
+            int availableNum;  // Declare variable to store availableNum
+            file >> availableNum;  // Read availableNum as integer
+            file.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear newline character
+            tempBook.setAvailableNum(availableNum);  // Set availableNum for the book
 
             books.push_back(tempBook);  // Add book to vector
         }
@@ -405,6 +434,7 @@ public:
             cout<<"3.Author's Name: "<<books[choice-1].getAuthor()<<endl;
             cout<<"4.Publisher's Name: "<<books[choice-1].getPublisher()<<endl;
             cout<<"5.Genre: "<<genreToString(books[choice-1].getGenre())<<endl;
+            cout<<"6.Available no.: "<<books[choice-1].getAvailableNum()<<endl;
             cout<<"What do you want to modify?"<<endl;
             cin>>choice2;
 
@@ -413,6 +443,7 @@ public:
             string tauthor;
             string tpublish;
             int gnre;
+            int tavb;
             int choice3;
 
             switch(choice2)
@@ -479,6 +510,23 @@ public:
                             break;
                     }
                     break;
+                case 6:
+                    cout<<"Please enter the new available number: "<<endl;
+                    cin.ignore();
+                    cin>>tavb;
+                    while(tavb < 0)
+                    {
+                        cout<<"Invalid Number! Try Again: ";
+                        cin>>tavb;
+                    }
+                    if(tavb == 0)
+                    {
+                        books.erase(books.begin() + choice - 1);
+                    }
+                    else {
+                        books[choice - 1].setAvailableNum(tavb);
+                    }
+                    break;
 
                 default:
                     cout<<"Invalid choice, Try Again."<<endl;
@@ -496,8 +544,10 @@ public:
                 file << book.getISBN() << '\n';
                 file << book.getTitle() << '\n';
                 file << book.getAuthor() << '\n';
-                file << book.getGenre() << '\n';
                 file << book.getPublisher() << '\n';
+                file << book.getGenre() << '\n';
+                file << book.getAvailableNum() << '\n';
+
             }
             file.close();  // Close the file
             cout << "Book modified successfully." << endl;
@@ -525,10 +575,9 @@ public:
 int main()
 {
     Librarian librarian;
-    //librarian.addBook();
+    librarian.addBook();
+    librarian.updateBook();
 
-    Member mem;
-    mem.searchBooks("Morad");
 
     return 0;
 }
