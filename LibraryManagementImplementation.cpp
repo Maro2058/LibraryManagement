@@ -664,12 +664,9 @@ void Librarian::removeMember(){
         cout << "Invalid choice." << endl;
     }
 }
-void processLoanRequest(){
+void Librarian ::processLoanRequest(){}
+void Librarian::generateReports(){}
 
-}
-void generateReports(){
-
-}
 
 //End of Librarian Derived class functions
 //-----------------------------------------------
