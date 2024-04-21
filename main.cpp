@@ -1,11 +1,11 @@
-#include <iostream>
+/*#include <iostream>
 #include <fstream>
 #include <string>
 #include <chrono>
 #include <ctime>
 #include <algorithm> // for std::all_of
 #include <cctype>    // for std::isdigit
-#include <vector>
+#include <vector>*/
 #include "LibraryManagment.h"
 
 /* To Do List:
@@ -19,7 +19,7 @@
  */
 
 
-using namespace std;
+/*using namespace std;
 
 enum Genre {
     Fiction,
@@ -179,7 +179,7 @@ public:
 
 
     }
-};
+};*/
 
 class Loan :public Member
 {

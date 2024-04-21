@@ -26,11 +26,16 @@ enum Genre {
     Other
 };
 
+enum Role {
+    Admin,
+    Student
+};
+
 std::string genreToString(Genre genre);
 
 std::string genreToString(int genre);
 
-class Book{
+class Book {
 private:
     string ISBN; // Easier to use as String, otherwise it would long int, which is incompatible with some functions
     string title;
@@ -45,19 +50,56 @@ public:
 
     // Setter and Getter methods for each member variable
     void setISBN(const string num);
+
     void setTitle(const string n);
+
     void setAuthor(const string n);
+
     void setGenre(const int n);
+
     void setPublisher(const string n);
+
     void setAvailableNum(int n);
 
-    string getISBN()const;
-    string getTitle()const;
-    string getAuthor()const;
-    string getPublisher()const;
-    int getGenre()const;
-    int getAvailableNum()const;
+    string getISBN() const;
 
+    string getTitle() const;
 
+    string getAuthor() const;
+
+    string getPublisher() const;
+
+    int getGenre() const;
+
+    int getAvailableNum() const;
 };
+
+class Member{
+private:
+    string userID;
+    string userName;
+    string password;
+    Role role;
+    Book *checkedOut;
+    int fines;
+
+public:
+    Member();
+    Member(string ID, string user, string pass);
+    void login();
+    void manageAccount();
+    void setRole(Role n);
+    void setname (string name);
+    void setID(string id);
+    void setpassword(string pass);
+    string getname()const;
+    string getID() const;
+    string getpassword() const;
+    int getrole()const;
+
+
+    void searchBooks(string input);
+};
+
+
 #endif //LIBRARYMANAGEMENT_H
