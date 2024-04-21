@@ -25,12 +25,15 @@
 int main()
 {
 
-    Librarian morad;
+    /*Librarian morad;
     morad.addBook();
     morad.viewMembers();
     morad.addMember();
     morad.removeMember();
+*/
 
+    Student Amr;
+    Amr.requestLoan();
 
     return 0;
 }

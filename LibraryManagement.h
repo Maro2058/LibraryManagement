@@ -28,7 +28,7 @@ enum Genre {
 
 enum Role {
     Admin,
-    Student
+    student
 };
 
 std::string genreToString(Genre genre);
@@ -101,17 +101,20 @@ public:
     void searchBooks(string input);
 };
 
-class Loan :public Member
+class Loan :public Member, public Book
 {
-public:
+private:
     time_t loandate;
     time_t duedate;
     struct tm * duetime = localtime(&duedate);
     struct tm * loantime = localtime(&loandate);
     int days;
+    char loanstatus;
 public:
     Loan();
     void set_loan();
+    void setloanstatus(int a);
+    int getloanstatus () const;
     bool is_overdue();
 
 };
