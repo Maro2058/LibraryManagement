@@ -25,6 +25,7 @@ int main()
 {
 
     Librarian morad;
+    morad.addBook();
     morad.viewMembers();
     morad.addMember();
     morad.removeMember();
