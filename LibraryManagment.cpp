@@ -60,20 +60,19 @@ std::string genreToString(int genre) {
 //start of Book class functions
 
 // Setter and Getter methods for each member variable
-void Book::setISBN(const string num){ ISBN = num; };
-void Book::setTitle(const string n){title = n; };
-void Book::setAuthor(const string n){author = n;};
-void Book::setGenre(const int n){genre = static_cast<Genre>(n); };
-void Book::setPublisher(const string n){publisher = n;};
-void Book::setAvailableNum(int n){available = n;};
+void Book::setISBN(const string num){ ISBN = num; }
+void Book::setTitle(const string n){title = n; }
+void Book::setAuthor(const string n){author = n;}
+void Book::setGenre(const int n){genre = static_cast<Genre>(n); }
+void Book::setPublisher(const string n){publisher = n;}
+void Book::setAvailableNum(int n){available = n;}
 
-string Book:: getISBN() const { return ISBN; };
-string Book:: getTitle() const { return title; };
-string Book::getAuthor() const { return author; };
-string Book::getPublisher()const{ return publisher; };
-int Book::getGenre() const { return genre; };
-int Book::getAvailableNum() const { return available; };
-
+string Book:: getISBN() const { return ISBN; }
+string Book:: getTitle() const { return title; }
+string Book::getAuthor() const { return author; }
+string Book::getPublisher()const{ return publisher; }
+int Book::getGenre() const { return genre; }
+int Book::getAvailableNum() const { return available; }
 //end of Book class functions
 
 //---------------------------------------------
@@ -148,7 +147,7 @@ void Member::searchBooks(string input) {
     } else {
         cout << "File failed to open";
     }
-};
+}
 //end of member class functions
 
 //-------------------------------------------
@@ -176,7 +175,7 @@ bool Loan::is_overdue() {
     time_t now;
     time(&now); // Get current time
     return difftime(now, duedate) > 0; // Check if current time is past the due date
-};
+}
 
 //End of Loan Derived class functions
 
@@ -188,10 +187,10 @@ void Student::requestLoan(){
     Loan loan;
 
     loan.set_loan();
-};
+}
 void Student::returnBook(){
 
-};
+}
 
 //End of Student Derived class functions
 
@@ -199,8 +198,8 @@ void Student::returnBook(){
 
 //Start of Librarian Derived class functions
 
-Librarian::Librarian(){};
-Librarian::Librarian(string id, string user, string pass) : Member(id, user, pass) {};
+Librarian::Librarian(){}
+Librarian::Librarian(string id, string user, string pass) : Member(id, user, pass) {}
 
 void Librarian::addBook(){ // Adds book to file and returns Book
     string Input;
@@ -289,7 +288,7 @@ void Librarian::addBook(){ // Adds book to file and returns Book
         cin >> Input;
         cin.clear();
     }
-};
+}
 
 void Librarian::removeBook() {
     string ISBN;
@@ -364,7 +363,7 @@ void Librarian::removeBook() {
     } else {
         cout << "Invalid choice." << endl;
     }
-};
+}
 
 void Librarian::updateBook(){
     vector<Book> books;  // Vector to store books read from file
@@ -537,7 +536,7 @@ void Librarian::updateBook(){
     }else{
         cout<<"Invalid choice";
     }
-};
+}
 void Librarian::viewMembers(){
     vector<Member> members;  // Vector to store books read from file
     ifstream file("Members.txt");  // Open file for reading
@@ -566,7 +565,7 @@ void Librarian::viewMembers(){
     for (size_t i = 0; i < members.size(); i++) {
         cout << i + 1 << ". " << members[i].getname() << " || " << members[i].getID() << endl;
     }
-};
+}
 void Librarian::addMember(){
     string Input;
     Member tempMember;
@@ -609,7 +608,7 @@ void Librarian::addMember(){
         cin >> Input;
         cin.clear();
     }
-};
+}
 void Librarian::removeMember(){
     vector<Member> members;  // Vector to store books read from file
     fstream file("Members.txt", ios::in);  // Open file for reading
@@ -617,7 +616,7 @@ void Librarian::removeMember(){
     if (!file.is_open()) {
         cout << "Unable to open file." << endl;
         return;
-    };
+    }
 
     // Read books from file
     string line;
@@ -665,7 +664,7 @@ void Librarian::removeMember(){
     } else {
         cout << "Invalid choice." << endl;
     }
-};
+}
 void processLoanRequest(){
 
 }
