@@ -12,6 +12,9 @@
  * Genre:
  *   Change Genre from enum, to user defined list.
  *   Add Base Genres
+ *   return book function in student class
+ *   process loan request function at librarian class
+ *   generate reports function in librarian class
  *
  * Reading from Books:
  *   Currently 3 different versions of the same code
