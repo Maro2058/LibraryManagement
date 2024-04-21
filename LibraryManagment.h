@@ -111,9 +111,7 @@ public:
     int days;
 public:
     Loan();
-
     void set_loan();
-
     bool is_overdue();
 
 };
@@ -123,33 +121,23 @@ private:
 
 public:
     void requestLoan();
-
     void returnBook();
 
 };
-#endif //LIBRARYMANAGEMENT_H
 
 class Librarian : public Member{
 private:
 
 public:
     Librarian();
-
     Librarian(string id, string user, string pass);
-
     void addBook();
-
     void removeBook();
-
     void updateBook();
-
     void viewMembers();
-
     void addMember();
-
     void removeMember();
-
     void processLoanRequest();
-
     void generateReports();
 };
+#endif //LIBRARYMANAGEMENT_H

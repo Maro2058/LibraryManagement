@@ -60,7 +60,7 @@ std::string genreToString(int genre) {
 //start of Book class functions
 
 // Setter and Getter methods for each member variable
-void Book::setISBN(const string num){ISBN = num;};
+void Book::setISBN(const string num){ ISBN = num; };
 void Book::setTitle(const string n){title = n; };
 void Book::setAuthor(const string n){author = n;};
 void Book::setGenre(const int n){genre = static_cast<Genre>(n); };
@@ -155,14 +155,14 @@ void Member::searchBooks(string input) {
 
 //start of loan Derived class functions
 
-loan::Loan()
+Loan::Loan()
 {
     //member id and book
     loandate = time(nullptr);
     duedate = loandate;
 }
 
-void loan::set_loan()
+void Loan::set_loan()
 {
     cout<<"how long will you be having the book for (in days): "<<endl;
     cin>> days;
@@ -172,7 +172,7 @@ void loan::set_loan()
     //remove book from available book secion
 }
 
-bool loan::is_overdue() {
+bool Loan::is_overdue() {
     time_t now;
     time(&now); // Get current time
     return difftime(now, duedate) > 0; // Check if current time is past the due date
@@ -202,7 +202,7 @@ void Student::returnBook(){
 Librarian::Librarian(){};
 Librarian::Librarian(string id, string user, string pass) : Member(id, user, pass) {};
 
-Librarian::void addBook(){ // Adds book to file and returns Book
+void Librarian::addBook(){ // Adds book to file and returns Book
     string Input;
     Book tempBook;
     fstream file("Books.txt", ios :: app);
@@ -291,7 +291,7 @@ Librarian::void addBook(){ // Adds book to file and returns Book
     }
 };
 
-Librarian::void removeBook() {
+void Librarian::removeBook() {
     string ISBN;
     vector<Book> books;  // Vector to store books read from file
     fstream file("Books.txt", ios::in);  // Open file for reading
