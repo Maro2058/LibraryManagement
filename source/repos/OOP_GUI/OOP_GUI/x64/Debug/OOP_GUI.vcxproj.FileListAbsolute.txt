@@ -1,3 +1,0 @@
-C:\Users\3bdel\source\repos\OOP_GUI\OOP_GUI\x64\Debug\OOP_GUI.vcxproj.AssemblyReference.cache
-C:\Users\3bdel\source\repos\OOP_GUI\OOP_GUI\x64\Debug\OOPGUI.MyForm.resources
-C:\Users\3bdel\source\repos\OOP_GUI\OOP_GUI\x64\Debug\OOP_GUI.vcxproj.GenerateResource.cache
