@@ -385,7 +385,6 @@ void Librarian::updateBook(){
         getline(file, line); tempBook.setTitle(line);
         getline(file, line); tempBook.setAuthor(line);
         getline(file, line); tempBook.setPublisher(line);
-        int genreValue;
         file >> genreValue;  // Read genre as integer
         file.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear newline character
         Genre genre = static_cast<Genre>(genreValue);  // Convert integer to Genre enum
