@@ -6,7 +6,7 @@
 #include <algorithm> // for std::all_of
 #include <cctype>    // for std::isdigit
 #include <vector>*/
-#include "LibraryManagment.h"
+#include "LibraryManagement.h"
 
 /* To Do List:
  * Genre:
@@ -17,9 +17,6 @@
  *   Currently 3 different versions of the same code
  *   Unify all into 1
  */
-
-
-
 
 int main()
 {

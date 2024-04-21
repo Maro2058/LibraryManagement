@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 14)
 include_directories(.)
 
 add_executable(LibraryManagement
-        LibraryManagment.h
+        LibraryManagement.h
         main.cpp
-        LibraryManagment.cpp
+        LibraryManagementImplementation.cpp
 )
