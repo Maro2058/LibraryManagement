@@ -40,7 +40,6 @@ void Book::setAuthor(const string n){author = n;}
 void Book::setGenre(const int n){genre = static_cast<Genre>(n); }
 void Book::setPublisher(const string n){publisher = n;}
 void Book::setAvailableNum(int n){available = n;}
-
 string Book:: getISBN() const { return ISBN; }
 string Book:: getTitle() const { return title; }
 string Book::getAuthor() const { return author; }
@@ -53,73 +52,107 @@ int Book::getAvailableNum() const { return available; }
 
 //start of Member class functions
 
-Member::Member(){userID = "22-101097"; userName = "Amro Edris"; password = "amro123";}
-Member::Member(string ID, string user, string pass) : userID(ID), userName(user), password(pass) {}
-void Member::login(){
-    cout << " Enter User ID" << endl;
-    cout << "Enter Password" << endl;
-}
-void Member::manageAccount(){
-    //change password?
-}
-void Member::setRole(Role n){role = static_cast<Role>(n);}
+void Member::setRole(Role n){role = (n);}
 void Member::setname (string name) {userName = name;}
 void Member::setID(string id){userID = id;}
 void Member::setpassword(string pass){password = pass;}
 string Member::getname()const{return userName;}
 string Member::getID() const {return userID;}
 string Member::getpassword() const {return password;}
-int Member::getrole()const{return role;}
+Role Member::getrole()const{return role;}
 
+Member::Member(){userID = "22-101097"; userName = "Amro Edris"; password = "amro123";}
+Member::Member(string ID, string user, string pass) : userID(ID), userName(user), password(pass) {}
+void Member::login(){
+    string tempID;
+    string tempPass;
+    cout << " Enter User ID: ";
+    getline(cin,  tempID);
+    cout << endl << "Enter Password: " << endl;
+    getline(cin,  tempPass);
+
+    vector<Member> members;
+
+    readFile("Members.txt", members);
+
+    for (size_t i = 0; i <members.size(); i++) {
+        if (members[i].getID() == tempID && members[i].getpassword() != tempPass) {
+            cout << "Incorrect Password. " <<endl;
+
+        } else if(members[i].getID() == tempID && members[i].getpassword() == tempPass) {
+            this->setname(members[i].getname());
+            this->setRole(members[i].getrole());
+            this->setID(members[i].getID());
+            this->setpassword(members[i].getpassword());
+        }
+    }
+
+}
+
+vector<Member> Member::readFile(string fileName, vector<Member> &members) {
+    ifstream file(fileName);  // Open file for reading
+
+    if (!file.is_open()) {
+        cout << "Unable to open file." << endl;
+        return members;
+    }
+
+    int num;
+    string line;
+    Member tempmember;
+
+    while (getline(file, line)) {
+        num = stoi(line);
+        tempmember.setRole(static_cast<Role>(num));
+        getline(file, line); tempmember.setname(line);
+        getline(file, line); tempmember.setID(line);
+        getline(file, line); tempmember.setpassword(line);
+        members.push_back(tempmember);  // Add Member to vector
+    }
+    file.close();
+    return members;
+
+}
+
+vector<Book> Member:: readFile(string fileName, vector<Book> &books) {
+    ifstream file(fileName);  // Open file for reading
+    if (!file.is_open()) {
+        cout << "Unable to open file." << endl;
+        return books;
+    }
+
+    string line;
+    while (getline(file, line)) {
+        int num;
+        Book tempBook;
+        tempBook.setISBN(line);
+        getline(file, line); tempBook.setTitle(line);
+        getline(file, line); tempBook.setAuthor(line);
+        getline(file, line); tempBook.setGenre(static_cast<Genre>(stoi(line)));
+        getline(file, line); tempBook.setPublisher(line);
+        getline(file, line); tempBook.setAvailableNum(stoi(line));
+        books.push_back(tempBook);  // Add book to vector
+    }
+    file.close();
+    return books;
+}
+
+void Member::manageAccount(){
+    //change password?
+}
 
 void Member::searchBooks(string input) {
 
-    Book tempBook;
-    string tempString;
-    int tempInt;
-
-    ifstream readFile("Books.txt");
+    vector<Book> books;
+    readFile("Books.txt", books);
     ofstream writeFile("Search_Results.txt");
-    if (readFile.is_open()) {
-        for (size_t i = 1; i <= 6 && !readFile.eof(); i++) {
-            cout << i << endl;
-            switch (i) {
-                case 1:
-                    getline(readFile, tempString);
-                    tempBook.setISBN(tempString);
-                    break;
-                case 2:
-                    getline(readFile, tempString);
-                    tempBook.setTitle(tempString);
-                    break;
-                case 3:
-                    getline(readFile, tempString);
-                    tempBook.setAuthor(tempString);
-                    break;
-                case 4:
-                    getline(readFile, tempString);
-                    tempBook.setGenre(stoi(tempString));
-                    cout << "Here:";
-                    break;
-                case 5:
-                    getline(readFile, tempString);
-                    tempBook.setPublisher(tempString);
-                    break;
-                case 6:
-                    getline(readFile, tempString);
-                    tempBook.setAvailableNum(stoi(tempString));
-                    i = 0;
-                    if (input == tempBook.getISBN() || input == tempBook.getTitle() || input == tempBook.getAuthor() ||
-                        input == to_string(tempBook.getGenre()) || input == tempBook.getPublisher()) {
-                        writeFile << tempBook.getISBN() << endl << tempBook.getTitle() << endl
-                                  << tempBook.getAuthor() << endl << tempBook.getGenre() << endl
-                                  << tempBook.getPublisher() << endl << tempBook.getAvailableNum() << endl;
-                    }
-                    break;
-            }
+    for (size_t i = 0; i <books.size(); i++) {
+        if (input == books[i].getISBN() || input == books[i].getTitle() || input == books[i].getAuthor() ||
+        input == to_string(books[i].getGenre()) || input == books[i].getPublisher()) {
+            writeFile << books[i].getISBN() << endl << books[i].getTitle() << endl
+            << books[i].getAuthor() << endl << books[i].getGenre() << endl
+            << books[i].getPublisher() << endl << books[i].getAvailableNum() << endl;
         }
-    } else {
-        cout << "File failed to open";
     }
 }
 //end of member class functions
@@ -159,7 +192,7 @@ bool Loan::is_overdue() {
 
 //Start of Student Derived class functions
 
-void Student::requestLoan(){
+void Student::  requestLoan(){
     vector<Book> books;// Vector to store books read from file
     vector<Loan> loans;
     fstream file("Books.txt", ios::in);  // Open file for reading
@@ -628,34 +661,17 @@ void Librarian::updateBook(){
     }
 }
 void Librarian::viewMembers(){
-    vector<Member> members;  // Vector to store books read from file
-    ifstream file("Members.txt");  // Open file for reading
-
-    if (!file.is_open()) {
-        cout << "Unable to open file." << endl;
-        return;
-    }
-
-    // Read books from file
-    string line;
-    while (getline(file, line)) {
-        Member tempmember;
-        int r = stoi(line);
-        tempmember.setRole(static_cast<Role>(r));
-        getline(file, line); tempmember.setname(line);
-        getline(file, line); tempmember.setID(line);
-        getline(file, line); tempmember.setpassword(line);
-
-        members.push_back(tempmember);  // Add book to vector
-    }
-    file.close();  // Close the file
-
+    vector<Member> members;
+    readFile("Members.txt", members);  // Vector to store books read from file
     // Display available books and prompt user to select a book to remove
     cout << "Members:" << endl;
     for (size_t i = 0; i < members.size(); i++) {
         cout << i + 1 << ". " << members[i].getname() << " || " << members[i].getID() << endl;
     }
 }
+
+
+
 void Librarian::addMember(){
     string Input;
     Member tempMember;
@@ -700,27 +716,8 @@ void Librarian::addMember(){
     }
 }
 void Librarian::removeMember(){
-    vector<Member> members;  // Vector to store books read from file
-    fstream file("Members.txt", ios::in);  // Open file for reading
-
-    if (!file.is_open()) {
-        cout << "Unable to open file." << endl;
-        return;
-    }
-
-    // Read books from file
-    string line;
-    while (getline(file, line)) {
-        Member tempmember;
-        int r = stoi(line);
-        tempmember.setRole(static_cast<Role>(r));
-        getline(file, line); tempmember.setname(line);
-        getline(file, line); tempmember.setID(line);
-        getline(file, line); tempmember.setpassword(line);
-
-        members.push_back(tempmember);  // Add book to vector
-    }
-    file.close();  // Close the file
+    vector<Member> members;
+    readFile("Members.txt", members);  // Vector to store books read from file
 
     // Display available books and prompt user to select a book to remove
     cout << "Members:" << endl;
@@ -735,16 +732,14 @@ void Librarian::removeMember(){
     if (choice >= 1 && choice <= static_cast<int>(members.size())) {
         members.erase(members.begin() + choice - 1);  // Remove selected book from vector
 
-
         // Write remaining books back to file
-        file.open("Members.txt", ios::out | ios::trunc);  // Open file for writing (truncating the existing content)
+        ofstream file("Members.txt");  // Open file for writing (truncating the existing content)
         if (!file.is_open()) {
             cout << "Unable to open file." << endl;
             return;
         }
-
         for (const auto& member : members) {
-            file << static_cast<int>(member.getrole()) << '\n';
+            file << (member.getrole()) << '\n';
             file << member.getname() << '\n';
             file << member.getID() << '\n';
             file << member.getpassword() << '\n';

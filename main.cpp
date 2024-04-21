@@ -13,13 +13,27 @@
  * Genre:
  *   Change Genre from enum, to user defined list.
  *   Add Base Genres
- *   return book function in student class
- *   process loan request function at librarian class
- *   generate reports function in librarian class
  *
- * Reading from Books:
- *   Currently 3 different versions of the same code
- *   Unify all into 1
+ * Replace all appropriate parts of code with ReadFile Function
+ *
+ * Make it so there can't be more than one account with the same ID (cout << "ID already exists";)
+ *
+ * Make it so there can't be more than one book with the same ISBN (cout << "ISBN already exists" << endl <<
+ * "Do you want to add copies?";)
+ *
+ * Make a function (with function overloading) for printing books / members / loans.
+ *
+ * Make it so there can't be a loan request if there are no available copies
+ *
+ * Return book function in student class
+ *
+ * Process loan request function at librarian class
+ *
+ * Generate reports function in librarian class
+ *
+ * Write ReadFile Function for Loan.txt
+ *
+ * Comment Code (+ fix old comments)
  */
 
 int main()

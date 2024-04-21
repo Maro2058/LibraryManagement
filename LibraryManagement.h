@@ -95,7 +95,10 @@ public:
     string getname()const;
     string getID() const;
     string getpassword() const;
-    int getrole()const;
+    Role getrole()const;
+    vector<Member> readFile(string fileName, vector<Member> &book);
+    vector<Book> readFile(string fileName, vector<Book> &book);
+
 
 
     void searchBooks(string input);
@@ -116,7 +119,6 @@ public:
     void setloanstatus(int a);
     int getloanstatus () const;
     bool is_overdue();
-
 };
 
 class Student : public Member{
@@ -125,7 +127,6 @@ private:
 public:
     void requestLoan();
     void returnBook();
-
 };
 
 class Librarian : public Member{

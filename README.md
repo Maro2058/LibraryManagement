@@ -11,8 +11,8 @@
 ## Member Functions:
   1) Search for books (by Author / Title, etc.) - Morad ✅
   2) View Books - Morad (To Do)
-  3) Request Loan (To Do)
-  4) Return Borrowed Book (To Do)
+  3) Request Loan - Amr✅❗
+  4) Return Borrowed Book - Amr & Kareem✅❗
   5) Check Due Dates (To Do)
 
 ## Library Class Functions:
