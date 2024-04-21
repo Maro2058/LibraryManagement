@@ -101,5 +101,55 @@ public:
     void searchBooks(string input);
 };
 
+class Loan :public Member
+{
+public:
+    time_t loandate;
+    time_t duedate;
+    struct tm * duetime = localtime(&duedate);
+    struct tm * loantime = localtime(&loandate);
+    int days;
+public:
+    Loan();
 
+    void set_loan();
+
+    bool is_overdue();
+
+};
+
+class Student : public Member{
+private:
+
+public:
+    void requestLoan();
+
+    void returnBook();
+
+};
 #endif //LIBRARYMANAGEMENT_H
+
+class Librarian : public Member{
+private:
+
+public:
+    Librarian();
+
+    Librarian(string id, string user, string pass);
+
+    void addBook();
+
+    void removeBook();
+
+    void updateBook();
+
+    void viewMembers();
+
+    void addMember();
+
+    void removeMember();
+
+    void processLoanRequest();
+
+    void generateReports();
+};

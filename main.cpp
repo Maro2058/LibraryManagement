@@ -179,7 +179,7 @@ public:
 
 
     }
-};*/
+};
 
 class Loan :public Member
 {
@@ -707,7 +707,7 @@ public:
     void generateReports(){
 
     }
-};
+};*/
 
 int main()
 {
