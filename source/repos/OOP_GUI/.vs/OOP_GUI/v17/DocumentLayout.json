@@ -1,0 +1,69 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\3bdel\\source\\repos\\OOP_GUI\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{68B65DF8-6536-4C0A-B69B-DFB1957FC720}|OOP_GUI\\OOP_GUI.vcxproj|C:\\Users\\3bdel\\source\\repos\\OOP_GUI\\OOP_GUI\\MyForm.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}|Form",
+      "RelativeMoniker": "D:0:0:{68B65DF8-6536-4C0A-B69B-DFB1957FC720}|OOP_GUI\\OOP_GUI.vcxproj|solutionrelative:OOP_GUI\\MyForm.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{68B65DF8-6536-4C0A-B69B-DFB1957FC720}|OOP_GUI\\OOP_GUI.vcxproj|C:\\Users\\3bdel\\source\\repos\\OOP_GUI\\OOP_GUI\\MyForm.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{68B65DF8-6536-4C0A-B69B-DFB1957FC720}|OOP_GUI\\OOP_GUI.vcxproj|solutionrelative:OOP_GUI\\MyForm.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{68B65DF8-6536-4C0A-B69B-DFB1957FC720}|OOP_GUI\\OOP_GUI.vcxproj|C:\\Users\\3bdel\\source\\repos\\OOP_GUI\\OOP_GUI\\MyForm.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{68B65DF8-6536-4C0A-B69B-DFB1957FC720}|OOP_GUI\\OOP_GUI.vcxproj|solutionrelative:OOP_GUI\\MyForm.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MyForm.h",
+              "DocumentMoniker": "C:\\Users\\3bdel\\source\\repos\\OOP_GUI\\OOP_GUI\\MyForm.h",
+              "RelativeDocumentMoniker": "OOP_GUI\\MyForm.h",
+              "ToolTip": "C:\\Users\\3bdel\\source\\repos\\OOP_GUI\\OOP_GUI\\MyForm.h*",
+              "RelativeToolTip": "OOP_GUI\\MyForm.h*",
+              "ViewState": "AQIAAPcBAAAAAAAAAAAAAAICAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2024-04-20T17:08:19.094Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MyForm.h [Design]",
+              "DocumentMoniker": "C:\\Users\\3bdel\\source\\repos\\OOP_GUI\\OOP_GUI\\MyForm.h",
+              "RelativeDocumentMoniker": "OOP_GUI\\MyForm.h",
+              "ToolTip": "C:\\Users\\3bdel\\source\\repos\\OOP_GUI\\OOP_GUI\\MyForm.h [Design]*",
+              "RelativeToolTip": "OOP_GUI\\MyForm.h [Design]*",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2024-04-20T16:50:52.179Z",
+              "EditorCaption": " [Design]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MyForm.cpp",
+              "DocumentMoniker": "C:\\Users\\3bdel\\source\\repos\\OOP_GUI\\OOP_GUI\\MyForm.cpp",
+              "RelativeDocumentMoniker": "OOP_GUI\\MyForm.cpp",
+              "ToolTip": "C:\\Users\\3bdel\\source\\repos\\OOP_GUI\\OOP_GUI\\MyForm.cpp",
+              "RelativeToolTip": "OOP_GUI\\MyForm.cpp",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAAaAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-04-20T16:39:57.49Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
