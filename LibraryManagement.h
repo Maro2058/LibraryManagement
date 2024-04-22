@@ -4,6 +4,8 @@
 #define LIBRARYMANAGEMENT_H
 #include <iostream>
 #include <fstream>
+#include <iomanip>
+#include <sstream>
 #include <string>
 #include <chrono>
 #include <ctime>
@@ -34,6 +36,37 @@ enum Role {
 std::string genreToString(Genre genre);
 
 std::string genreToString(int genre);
+
+class MyString {
+private:
+    string str;
+
+public:
+    // Default constructor
+    MyString();
+
+    // Parameterized constructor
+    MyString(const string& s);
+
+    // Copy constructor
+    MyString(const MyString& other);
+
+    // Destructor
+    ~MyString();
+
+    // Display method
+    void display() const;
+
+    // Concatenation operator
+    MyString operator+(const MyString& other) const;
+
+    // Assignment operator
+    MyString& operator=(const MyString& other);
+
+    // Comparison operator
+    bool operator==(const MyString& other) const;
+};
+
 
 class Book {
 private:
@@ -104,7 +137,7 @@ public:
     void searchBooks(string input);
 };
 
-class Loan :public Member, public Book
+class Loan :public Member, public Book, public MyString
 {
 private:
     time_t loandate;
@@ -115,13 +148,19 @@ private:
     char loanstatus;
 public:
     Loan();
-    void set_loan();
+    void set_loan(int days);
     void setloanstatus(int a);
     int getloanstatus () const;
+    void setloandate(time_t a);
+    void setduedate(time_t a);
+    time_t getloandate()const;
+    time_t getduedate()const;
+    string formatdate (time_t);
+    time_t stringToTime(string& dateStr);
     bool is_overdue();
 };
 
-class Student : public Member{
+class Student : public Member, public MyString{
 private:
 
 public:

@@ -45,9 +45,10 @@ int main()
     morad.addMember();
     morad.removeMember();
 */
-
-    Student Amr;
-    Amr.requestLoan();
+    Student amr;
+    Librarian Morad;
+    Morad.processLoanRequest();
+    amr.returnBook();
 
     return 0;
 }

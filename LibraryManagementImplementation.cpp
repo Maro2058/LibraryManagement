@@ -31,6 +31,43 @@ std::string genreToString(int genre) {
 }
 //-----------------------------------------------------
 
+MyString::MyString() : str("") {}
+
+// Parameterized constructor
+MyString::MyString(const std::string& s) : str(s) {}
+
+// Copy constructor
+MyString::MyString(const MyString& other) : str(other.str) {}
+
+// Destructor
+MyString::~MyString() {}
+
+// Display method
+void MyString::display() const {
+    std::cout << str;
+}
+
+// Concatenation operator
+MyString MyString::operator+(const MyString& other) const {
+    MyString newString;
+    newString.str = str + other.str;
+    return newString;
+}
+
+// Assignment operator
+MyString& MyString::operator=(const MyString& other) {
+    if (this != &other) {
+        str = other.str;
+    }
+    return *this;
+}
+
+// Comparison operator
+bool MyString::operator==(const MyString& other) const {
+    return (str == other.str);
+}
+
+
 //start of Book class functions
 
 // Setter and Getter methods for each member variable
@@ -170,14 +207,50 @@ Loan::Loan()
 void Loan::setloanstatus(int a) {loanstatus = a;}
 
 int Loan::getloanstatus() const {return loanstatus;}
-void Loan::set_loan()
+void Loan::set_loan(int days)
 {
-    cout<<"how long will you be having the book for (in days): "<<endl;
-    cin>> days;
-
     duedate = loandate+days *24*60*60;
+    duetime = localtime(&duedate);
+    loantime = localtime(&loandate);
+}
 
-    //remove book from available book secion
+time_t Loan :: getloandate()const
+{
+    return loandate;
+}
+time_t Loan :: getduedate()const
+{
+    return duedate;
+}
+
+void Loan ::setduedate(time_t a) {
+    duedate = a;
+    duetime = localtime(&duedate);
+}
+
+void Loan::setloandate(time_t a) {
+    loandate = a;
+    loantime = localtime(&loandate);
+}
+
+string Loan ::formatdate(time_t a) {
+    string s;
+    struct tm * date = localtime(&a);
+    s = to_string(date->tm_mday) + "/" + to_string(date->tm_mon + 1) + "/" + to_string(date->tm_year + 1900);
+    return s;
+}
+
+time_t Loan::stringToTime(string& dateStr) {
+    struct tm timeStruct = {};
+    stringstream ss(dateStr);
+    ss >> timeStruct.tm_mday;
+    ss.ignore(); // Skip the '/'
+    ss >> timeStruct.tm_mon;
+    ss.ignore(); // Skip the '/'
+    ss >> timeStruct.tm_year;
+    timeStruct.tm_mon--; // Adjust month (0-based)
+    timeStruct.tm_year -= 1900; // Adjust year (years since 1900)
+    return mktime(&timeStruct);
 }
 
 bool Loan::is_overdue() {
@@ -192,7 +265,7 @@ bool Loan::is_overdue() {
 
 //Start of Student Derived class functions
 
-void Student::  requestLoan(){
+void Student ::  requestLoan(){
     vector<Book> books;// Vector to store books read from file
     vector<Loan> loans;
     fstream file("Books.txt", ios::in);  // Open file for reading
@@ -232,10 +305,16 @@ void Student::  requestLoan(){
     }
 
     int choice;
-    cout<<"Enter the Book you want to request to Loan: ";
+    cout<<"Enter the Book you want to request to Loan: "<<endl;
     cin>>choice;
-    if(choice>=1 && choice < (books.size()))
+    if(choice>=1 && choice <= (books.size()))
     {
+        Loan temp;
+        int days;
+        cout<<"How long will you take the book for? (in days): "<<endl;
+        cin >> days;
+        temp.set_loan(days);
+
         fstream file("Loan.txt", ios :: app);  // Open file for writing (truncating the existing content)
         if (!file.is_open()) {
             cout << "Unable to open file." << endl;
@@ -248,6 +327,8 @@ void Student::  requestLoan(){
         file <<books[choice-1].getAuthor() << endl;
         file << amr.getname()<<endl;
         file << amr.getID()<<endl;
+        file << temp.formatdate(temp.getloandate()) << endl;
+        file << temp.formatdate(temp.getduedate()) << endl;
         file << "0" << endl;
         file.close();  // Close the file
     }
@@ -269,43 +350,106 @@ void Student::returnBook(){
         tempLoan.setISBN(line);
         getline(file, line); tempLoan.setTitle(line);
         getline(file, line); tempLoan.setAuthor(line);
-        getline(file, line); tempLoan.setPublisher(line);
         getline(file, line); tempLoan.setname(line);
         getline(file, line); tempLoan.setID(line);
-        getline(file, line); tempLoan.setloanstatus(stoi(line));
-
+        getline(file, line); tempLoan.setloandate(tempLoan.stringToTime(line));
+        getline(file, line); tempLoan.setduedate(tempLoan.stringToTime(line));
+        getline(file, line);
+        if(line == "0")
+        tempLoan.setloanstatus(0);
+        else
+            tempLoan.setloanstatus(1);
         loans.push_back(tempLoan);  // Add book to vector
     }
     file.close();  // Close the file
 
     // Display available books and prompt user to select a book to remove
     cout << "Books you've taken:" << endl;
+    int count = 1;
     for (size_t i = 0; i < loans.size(); ++i) {
-        if((loans[i].getID()).compare(amr.getID()) && loans[i].getloanstatus() == '1')
-        cout << i + 1 << ". " << loans[i].getTitle() << " by " << loans[i].getAuthor() << endl;
+        if((loans[i].getID()==amr.getID()) && loans[i].getloanstatus() == 1)
+        cout << count << ". " << loans[i].getTitle() << " by " << loans[i].getAuthor() << " due: "<<loans[i].formatdate(loans[i].getloandate()) << endl;
+        count++;
     }
 
     int choice;
     cout << "Enter the number of the book you want to return: ";
     cin >> choice;
 
+    fstream file2("Books.txt", ios::in);  // Open file for reading
+
+    if (!file2.is_open()) {
+        cout << "Unable to open file number 1." << endl;
+        return;
+    }
+    // Read books from file
+    string line2;
+    vector<Book> books;
+    while (getline(file2, line2)) {
+        Book tempBook;
+        tempBook.setISBN(line2);
+        getline(file2, line2); tempBook.setTitle(line2);
+        getline(file2, line2); tempBook.setAuthor(line2);
+        getline(file2, line2); tempBook.setPublisher(line2);
+        int genreValue;
+        file2 >> genreValue;  // Read genre as integer
+        file2.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear newline character
+        Genre genre = static_cast<Genre>(genreValue);  // Convert integer to Genre enum
+        tempBook.setGenre(genre);
+
+        int availableNum;  // Declare variable to store availableNum
+        file2 >> availableNum;  // Read availableNum as integer
+        file2.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear newline character
+        tempBook.setAvailableNum(availableNum);  // Set availableNum for the book
+
+        books.push_back(tempBook);  // Add book to vector
+    }
+    file2.close();
+
     if (choice >= 1 && choice <= static_cast<int>(loans.size())) {
-            loans.erase(loans.begin() + choice - 1);  // Remove selected book from vector
+            for(int i = 0; i < books.size();i++)
+            {
+                if(books[i].getISBN() == loans[choice-1].getISBN())
+                {
+                    int n = books[i].getAvailableNum();
+                    books[i].setAvailableNum(++(n));
+                }
+            }
+        loans.erase(loans.begin() + choice - 1);
+
+        // Write remaining books back to file
+        file.open("Books.txt", ios::out | ios::trunc);  // Open file for writing (truncating the existing content)
+        if (!file.is_open()) {
+            cout << "Unable to open file number 2." << endl;
+            return;
+        }
+
+        for (const auto& book : books) {
+            file << book.getISBN() << '\n';
+            file << book.getTitle() << '\n';
+            file << book.getAuthor() << '\n';
+            file << book.getPublisher() << '\n';
+            file << static_cast<int>(book.getGenre()) << '\n';
+            file << book.getAvailableNum() << '\n';
+        }
+        file.close();  // Close the file
 
 
         // Write remaining books back to file
-        file.open("Loans.txt", ios::out | ios::trunc);  // Open file for writing (truncating the existing content)
+        file.open("Loan.txt", ios::out | ios::trunc);  // Open file for writing (truncating the existing content)
         if (!file.is_open()) {
             cout << "Unable to open file." << endl;
             return;
         }
 
-        for (const auto& loan : loans) {
+        for (auto& loan : loans) {
             file << loan.getISBN() << '\n';
             file << loan.getTitle() << '\n';
             file << loan.getAuthor() << '\n';
             file << loan.getname() << '\n';
             file << loan.getID() << '\n';
+            file << loan.formatdate(loan.getloandate()) << '\n';
+            file << loan.formatdate(loan.getduedate()) << '\n';
             file << loan.getloanstatus() << '\n';
 
         }
@@ -458,14 +602,12 @@ void Librarian::removeBook() {
     cin >> choice;
 
     if (choice >= 1 && choice <= static_cast<int>(books.size())) {
-        if(books[choice-1].getAvailableNum() == 1) {
-            books.erase(books.begin() + choice - 1);  // Remove selected book from vector
-        }
-        else
-        {
             int num = books[choice-1].getAvailableNum();
+            if (num > 0)
             books[choice-1].setAvailableNum(--(num));
-        }
+            else
+                books[choice-1].setAvailableNum(0);
+
 
         // Write remaining books back to file
         file.open("Books.txt", ios::out | ios::trunc);  // Open file for writing (truncating the existing content)
@@ -624,13 +766,7 @@ void Librarian::updateBook(){
                     cout<<"Invalid Number! Try Again: ";
                     cin>>tavb;
                 }
-                if(tavb == 0)
-                {
-                    books.erase(books.begin() + choice - 1);
-                }
-                else {
-                    books[choice - 1].setAvailableNum(tavb);
-                }
+                books[choice - 1].setAvailableNum(tavb);
                 break;
 
             default:
@@ -750,7 +886,135 @@ void Librarian::removeMember(){
         cout << "Invalid choice." << endl;
     }
 }
-void Librarian ::processLoanRequest(){}
+void Librarian ::processLoanRequest(){
+    vector<Loan> loans; // Vector to store books read from file
+    Member amr;
+    fstream file("Loan.txt", ios::in);  // Open file for reading
+
+    if (!file.is_open()) {
+        cout << "Unable to open file." << endl;
+        return;
+    }
+
+    // Read books from file
+    string line;
+    while (getline(file, line)) {
+        Loan tempLoan;
+        tempLoan.setISBN(line);
+        getline(file, line); tempLoan.setTitle(line);
+        getline(file, line); tempLoan.setAuthor(line);
+        getline(file, line); tempLoan.setname(line);
+        getline(file, line); tempLoan.setID(line);
+        getline(file, line); tempLoan.setloandate(tempLoan.stringToTime(line));
+        getline(file, line); tempLoan.setduedate(tempLoan.stringToTime(line));
+        getline(file, line);
+        if(line == "0")
+            tempLoan.setloanstatus(0);
+        else
+            tempLoan.setloanstatus(1);
+        loans.push_back(tempLoan);  // Add book to vector
+    }
+    file.close();  // Close the file
+
+    // Display available books and prompt user to select a book to remove
+    cout << "Books that were requested for loan" << endl;
+    int count = 1;
+    for (size_t i = 0; i < loans.size(); ++i) {
+        if(loans[i].getloanstatus() == 0) {
+            cout << count << ". " << loans[i].getTitle() << " by " << loans[i].getAuthor() << " Student ID: "
+                 << loans[i].getID() << " till: " << loans[i].formatdate(loans[i].getduedate()) << endl;
+            count++;
+        }
+    }
+
+    int choice;
+    cout << "Enter the number of the book you want to approve: ";
+    cin >> choice;
+
+    fstream file2("Books.txt", ios::in);  // Open file for reading
+
+    if (!file2.is_open()) {
+        cout << "Unable to open file number 1." << endl;
+        return;
+    }
+    // Read books from file
+    string line2;
+    vector<Book> books;
+    while (getline(file2, line2)) {
+        Book tempBook;
+        tempBook.setISBN(line2);
+        getline(file2, line2); tempBook.setTitle(line2);
+        getline(file2, line2); tempBook.setAuthor(line2);
+        getline(file2, line2); tempBook.setPublisher(line2);
+        int genreValue;
+        file2 >> genreValue;  // Read genre as integer
+        file2.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear newline character
+        Genre genre = static_cast<Genre>(genreValue);  // Convert integer to Genre enum
+        tempBook.setGenre(genre);
+
+        int availableNum;  // Declare variable to store availableNum
+        file2 >> availableNum;  // Read availableNum as integer
+        file2.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear newline character
+        tempBook.setAvailableNum(availableNum);  // Set availableNum for the book
+
+        books.push_back(tempBook);  // Add book to vector
+    }
+    file2.close();
+
+    if (choice >= 1 && choice <= static_cast<int>(loans.size())) {
+        for(int i = 0; i < books.size();i++)
+        {
+            if(books[i].getISBN() == loans[choice-1].getISBN())
+            {
+                int n = books[i].getAvailableNum();
+                books[i].setAvailableNum(--(n));
+            }
+        }
+        loans[choice-1].setloanstatus(1);
+
+        // Write remaining books back to file
+        file.open("Books.txt", ios::out | ios::trunc);  // Open file for writing (truncating the existing content)
+        if (!file.is_open()) {
+            cout << "Unable to open file number 2." << endl;
+            return;
+        }
+
+        for (const auto& book : books) {
+            file << book.getISBN() << '\n';
+            file << book.getTitle() << '\n';
+            file << book.getAuthor() << '\n';
+            file << book.getPublisher() << '\n';
+            file << static_cast<int>(book.getGenre()) << '\n';
+            file << book.getAvailableNum() << '\n';
+        }
+        file.close();  // Close the file
+
+
+        // Write remaining books back to file
+        file.open("Loan.txt", ios::out | ios::trunc);  // Open file for writing (truncating the existing content)
+        if (!file.is_open()) {
+            cout << "Unable to open file." << endl;
+            return;
+        }
+
+        for (auto& loan : loans) {
+            file << loan.getISBN() << '\n';
+            file << loan.getTitle() << '\n';
+            file << loan.getAuthor() << '\n';
+            file << loan.getname() << '\n';
+            file << loan.getID() << '\n';
+            file << loan.formatdate(loan.getloandate()) << '\n';
+            file << loan.formatdate(loan.getduedate()) << '\n';
+            file << loan.getloanstatus() << '\n';
+
+        }
+        file.close();  // Close the file
+        cout << "Book removed successfully." << endl;
+    } else {
+        cout << "Invalid choice." << endl;
+    }
+
+}
 void Librarian::generateReports(){}
 
 
