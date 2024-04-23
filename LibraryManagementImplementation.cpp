@@ -31,6 +31,31 @@ std::string genreToString(int genre) {
 }
 //-----------------------------------------------------
 
+void updateBooksFile(vector<Book> books) {
+    // Open file for writing (assuming the path is correct and accessible)
+    ofstream file("Books.txt", ios::out | ios::trunc); // This will clear the existing content
+    if (!file.is_open()) {
+        cout << "Unable to open file." << endl;
+        return;
+    }
+
+    // You should ideally have access to the vector of books from your application
+
+    // Write all books back, including the updated availability of this book
+    for (const auto& book : books) {
+        file << book.getISBN() << '\n'
+             << book.getTitle() << '\n'
+             << book.getAuthor() << '\n'
+             << book.getPublisher() << '\n'
+             << book.getGenre() << '\n'
+             << book.getAvailableNum() << '\n';
+    }
+
+    file.close();  // Close the file after writing
+}
+
+//-----------------------------------------------------
+
 MyString::MyString() : str("") {}
 
 // Parameterized constructor
@@ -83,6 +108,51 @@ string Book::getAuthor() const { return author; }
 string Book::getPublisher()const{ return publisher; }
 int Book::getGenre() const { return genre; }
 int Book::getAvailableNum() const { return available; }
+//Unary function overloading:
+// Prefix Increment Operator
+Book& Book::operator++() {
+    string file = "Books.txt";
+    if (available > 0) {
+        ++available;
+        cout << "A copy of " << title << " has been successfully added to the library" << endl;
+    } else {
+        cout << "The book doesn't exist." << endl;
+    }
+    return *this;
+}
+// Prefix Decrement Operator
+Book& Book::operator--() {
+    string file = "Books.txt";
+    if (available > 0) {
+        --available;
+        cout << "A copy of " << title << " has been successfully added to the library" << endl;
+    } else {
+        cout << "The book doesn't exist." << endl;
+    }
+    return *this;
+}
+// Postfix Increment Operator
+Book Book::operator++(int) {
+    Book temp = *this;
+    if (available > 0) {
+        ++available;
+        cout << "A copy of " << title << " has been successfully added to the library" << endl;
+    } else {
+        cout << "The book doesn't exist." << endl;
+    }
+    return temp; // Return the saved state
+}
+// Postfix Decrement Operator
+Book Book::operator--(int) {
+    Book temp = *this;
+    if (available > 0) {
+        --available;
+        cout << "A copy of " << title << " has been successfully added to the library" << endl;
+    } else {
+        cout << "The book doesn't exist." << endl;
+    }
+    return temp; // Return the saved state
+}
 //end of Book class functions
 
 //---------------------------------------------
@@ -165,8 +235,8 @@ vector<Book> Member:: readFile(string fileName, vector<Book> &books) {
         tempBook.setISBN(line);
         getline(file, line); tempBook.setTitle(line);
         getline(file, line); tempBook.setAuthor(line);
-        getline(file, line); tempBook.setGenre(static_cast<Genre>(stoi(line)));
         getline(file, line); tempBook.setPublisher(line);
+        getline(file, line); tempBook.setGenre(static_cast<Genre>(stoi(line)));
         getline(file, line); tempBook.setAvailableNum(stoi(line));
         books.push_back(tempBook);  // Add book to vector
     }

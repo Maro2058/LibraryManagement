@@ -45,10 +45,18 @@ int main()
     morad.addMember();
     morad.removeMember();
 */
-    Student amr;
-    Librarian Morad;
-    Morad.processLoanRequest();
-    amr.returnBook();
+    Member Kareem;
+    vector<Book> nBooks;
+    nBooks = Kareem.readFile("Books.txt", nBooks);
+    cout<< nBooks[1].getAvailableNum() << endl;
+    nBooks[1]++;
+    cout<< nBooks[1].getAvailableNum() << endl;
+    nBooks[1]--;
+    cout<< nBooks[1].getAvailableNum() << endl;
+    --nBooks[1];
+    cout<< nBooks[1].getAvailableNum() << endl;
+    --nBooks[1];
+    updateBooksFile(nBooks);
 
     return 0;
 }

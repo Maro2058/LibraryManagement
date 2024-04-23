@@ -37,6 +37,8 @@ std::string genreToString(Genre genre);
 
 std::string genreToString(int genre);
 
+
+
 class MyString {
 private:
     string str;
@@ -105,7 +107,17 @@ public:
     int getGenre() const;
 
     int getAvailableNum() const;
+
+    // Prototypes for the Unary Functions Overloading
+    Book& operator++();
+    Book operator++(int);
+    Book& operator--();
+    Book operator--(int);
+
 };
+
+// Prototype to update the books file after doing any operations on it; only takes the current vector of Book
+void updateBooksFile(vector<Book> books);
 
 class Member{
 private:
