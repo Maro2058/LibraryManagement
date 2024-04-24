@@ -14,10 +14,6 @@
  *   Change Genre from enum, to user defined list.
  *   Add Base Genres
  *
- * Replace all appropriate parts of code with ReadFile Function
- *
- * Make a WriteFunction
- *
  * Make it so there can't be more than one account with the same ID (cout << "ID already exists";)
  *
  * Make it so there can't be more than one book with the same ISBN (cout << "ISBN already exists" << endl <<
@@ -25,11 +21,8 @@
  *
  * Make a function (with function overloading) for printing books / members / loans.
  *
- * Make it so there can't be a loan request if there are no available copies
- *
- * Return book function in student class
- *
- * Process loan request function at librarian class
+ * Make it so there can't be a loan request if there are no available copies.
+ * (Or Maybe Don't. Depends on Amr's Implementation)
  *
  * Generate reports function in librarian class
  *
