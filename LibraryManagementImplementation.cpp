@@ -134,6 +134,13 @@ Book Book::operator--(int) {
 
 //start of Member class functions
 
+// Parameterized constructor
+Member::Member(std::string ID, std::string user, std::string pass):userID(ID), userName(user), password(pass) {}
+// Copy constructor
+Member::Member(const Member& other): userID(other.userID), userName(other.userName), password(other.password) {}
+// Destructor
+Member::~Member() {}
+
 void Member::setRole(Role n){role = (n);}
 void Member::setname (string name) {userName = name;}
 void Member::setID(string id){userID = id;}
@@ -143,31 +150,29 @@ string Member::getID() const {return userID;}
 string Member::getpassword() const {return password;}
 Role Member::getrole()const{return role;}
 
-void Member::login(){
+Member* Member::login() {
     string tempID;
     string tempPass;
-    cout << " Enter User ID: ";
-    getline(cin,  tempID);
-    cout << endl << "Enter Password: " << endl;
-    getline(cin,  tempPass);
+    cout << "Enter User ID: ";
+    getline(cin, tempID);
+    cout << "Enter Password: ";
+    getline(cin, tempPass);
 
     vector<Member> members;
 
     readFile("Members.txt", members);
 
-    for (size_t i = 0; i <members.size(); i++) {
-        if (members[i].getID() == tempID && members[i].getpassword() != tempPass) {
-            cout << "Incorrect Password. " <<endl;
-            return;
-
-        } if(members[i].getID() == tempID && members[i].getpassword() == tempPass) {
-            this->setname(members[i].getname());
-            this->setRole(members[i].getrole());
-            this->setID(members[i].getID());
-            this->setpassword(members[i].getpassword());
+    // Iterate over all members
+    for (size_t i = 0; i < members.size(); i++) {
+        if (members[i].getID() == tempID && members[i].getpassword() == tempPass) {
+            // Correct user ID and password, return pointer to Member object
+            Member* loggedInMember = new Member(members[i]); // copy constructor is called
+            cout<<"Logged in successfull"<<endl;
+            return loggedInMember;
         }
     }
-
+    // User ID or password incorrect, return nullptr
+    return nullptr;
 }
 
 vector<Member> Member::readFile(string fileName, vector<Member> &members) {

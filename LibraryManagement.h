@@ -130,8 +130,11 @@ private:
 
 public:
     Member() = default;
-    void login();
-     void manageAccount();
+    Member(const Member& other);
+    Member(std::string ID, std::string user, std::string pass);
+    ~Member();
+    Member* login();
+    void manageAccount();
     void setRole(Role n);
     void setname (string name);
     void setID(string id);
