@@ -1,5 +1,3 @@
-
-
 #include "LibraryManagement.h"
 
 
@@ -145,8 +143,6 @@ string Member::getID() const {return userID;}
 string Member::getpassword() const {return password;}
 Role Member::getrole()const{return role;}
 
-Member::Member(){userID = "22-101097"; userName = "Amro Edris"; password = "amro123";}
-Member::Member(string ID, string user, string pass) : userID(ID), userName(user), password(pass) {}
 void Member::login(){
     string tempID;
     string tempPass;
@@ -229,23 +225,44 @@ vector<Book>  Member:: readFile(string fileName, vector<Book> &books) {
     return books;
 }
 
-void Member ::writeFile( string fileName, Book book) {
-    ofstream file(fileName);
+void Member ::writeFile(string fileName, vector<Book> books) {
+    // Open file for writing (assuming the path is correct and accessible)
+    ofstream file(fileName, ios::out | ios::trunc); // This will clear the existing content
     if (!file.is_open()) {
         cout << "Unable to open file." << endl;
         return;
     }
-    file << book.getISBN() << '\n';
-    file << book.getTitle() << '\n';
-    file << book.getAuthor() << '\n';
-    file << static_cast<int>(book.getGenre()) << '\n';
-    file << book.getPublisher() << '\n';
-    file << book.getAvailableNum() << '\n';
 
-    file.close();
+    // Write all books back, including the updated availability of this book
+    for (const auto& book : books) {
+        file << book.getISBN() << '\n';
+        file << book.getTitle() << '\n';
+        file << book.getAuthor() << '\n';
+        file << book.getPublisher() << '\n';
+        file << book.getGenre() << '\n';
+        file << book.getAvailableNum() << '\n';
+    }
+
+    file.close();  // Close the file after writing
 
 }
-void Member ::writeFile(string fileName, Member member) {
+void Member ::writeFile(string fileName, vector<Member> members) {
+    // Open file for writing (assuming the path is correct and accessible)
+    ofstream file(fileName, ios::out | ios::trunc); // This will clear the existing content
+    if (!file.is_open()) {
+        cout << "Unable to open file." << endl;
+        return;
+    }
+
+    // Write all books back, including the updated availability of this book
+    for (const auto& member : members) {
+        file << (member.getrole()) << '\n';
+        file << member.getname() << '\n';
+        file << member.getID() << '\n';
+        file << member.getpassword() << '\n';
+    }
+
+    file.close();  // Close the file after writing
 
 }
 
@@ -253,91 +270,26 @@ void Member::manageAccount(){
     //change password?
 }
 
-void Member::searchBooks(string input) {
+vector<Book> Member::searchBooks(string input) {
 
     vector<Book> books;
     readFile("Books.txt", books);
-    for (size_t i = 0; i <books.size(); i++) {
-        if (input == books[i].getISBN() || input == books[i].getTitle() || input == books[i].getAuthor() ||
-        input == to_string(books[i].getGenre()) || input == books[i].getPublisher()) {
-        writeFile("Search_Results.txt", books[i]);
+    vector<Book> searchResults;
+    for (const auto & book : books) {
+        if (input == book.getISBN() || input == book.getTitle() || input == book.getAuthor() ||
+        input == to_string(book.getGenre()) || input == book.getPublisher()) {
+            searchResults.push_back(book);
         }
     }
+    return searchResults;
 }
 //end of member class functions
 
 //-------------------------------------------
 
-//start of loan Derived class functions
-
-Loan::Loan()
-{
-    //member id and book
-    loandate = time(nullptr);
-    duedate = loandate;
-}
-void Loan::setloanstatus(int a) {loanstatus = a;}
-
-int Loan::getloanstatus() const {return loanstatus;}
-void Loan::set_loan(int days)
-{
-    duedate = loandate+days *24*60*60;
-    duetime = localtime(&duedate);
-    loantime = localtime(&loandate);
-}
-
-time_t Loan :: getloandate()const
-{
-    return loandate;
-}
-time_t Loan :: getduedate()const
-{
-    return duedate;
-}
-
-void Loan ::setduedate(time_t a) {
-    duedate = a;
-    duetime = localtime(&duedate);
-}
-
-void Loan::setloandate(time_t a) {
-    loandate = a;
-    loantime = localtime(&loandate);
-}
-
-string Loan ::formatdate(time_t a) {
-    string s;
-    struct tm * date = localtime(&a);
-    s = to_string(date->tm_mday) + "/" + to_string(date->tm_mon + 1) + "/" + to_string(date->tm_year + 1900);
-    return s;
-}
-
-time_t Loan::stringToTime(string& dateStr) {
-    struct tm timeStruct = {};
-    stringstream ss(dateStr);
-    ss >> timeStruct.tm_mday;
-    ss.ignore(); // Skip the '/'
-    ss >> timeStruct.tm_mon;
-    ss.ignore(); // Skip the '/'
-    ss >> timeStruct.tm_year;
-    timeStruct.tm_mon--; // Adjust month (0-based)
-    timeStruct.tm_year -= 1900; // Adjust year (years since 1900)
-    return mktime(&timeStruct);
-}
-
-bool Loan::is_overdue() {
-    time_t now;
-    time(&now); // Get current time
-    return difftime(now, duedate) > 0; // Check if current time is past the due date
-}
-
-//End of Loan Derived class functions
-
-//------------------------------------------
-
 //Start of Student Derived class functions
 
-void Student ::  requestLoan(){
+void Student :: requestLoan(){
     vector<Book> books;// Vector to store books read from file
     vector<Loan> loans;
     readFile("Book.txt", books);
@@ -437,9 +389,7 @@ void Student::returnBook(){
         loans.erase(loans.begin() + choice - 1);
 
         // Write remaining books back to file
-        for (const auto & book : books) {
-            writeFile("Books.txt", book);
-        }
+        writeFile("Books.txt", books);
 
 
         // Write remaining books back to file
@@ -474,7 +424,6 @@ void Student::returnBook(){
 //Start of Librarian Derived class functions
 
 Librarian::Librarian(){}
-Librarian::Librarian(string id, string user, string pass) : Member(id, user, pass) {}
 
 /* Writes to Book file in the following order:
  * Book ISBN
@@ -557,6 +506,13 @@ void Librarian::addBook(){ // Adds book to file and returns Book
             cin>>num;
         }
         tempBook.setAvailableNum(num);
+
+        file << tempBook.getISBN() << '\n'
+             << tempBook.getTitle() << '\n'
+             << tempBook.getAuthor() << '\n'
+             << tempBook.getPublisher() << '\n'
+             << tempBook.getGenre() << '\n'
+             << tempBook.getAvailableNum() << '\n';
         file.close();
 
     } else{
@@ -565,7 +521,7 @@ void Librarian::addBook(){ // Adds book to file and returns Book
         cin.clear();
     }
 
-    writeFile("Books.txt", tempBook);
+
 }
 
 void Librarian::removeBook() {
@@ -591,9 +547,9 @@ void Librarian::removeBook() {
 
 
         // Write remaining books back to file
-        for (const auto& book : books) {
-            writeFile("Books.txt", book);
-        }
+
+            writeFile("Books.txt", books);
+
         cout << "Book removed successfully." << endl;
 
     } else {
@@ -717,10 +673,9 @@ void Librarian::updateBook(){
         }
 
         // Write remaining books back to file
-        for (const auto &book: books) {
-            writeFile("Books.txt", book);
+            writeFile("Books.txt", books);
 
-        }
+
         cout << "Book modified successfully." << endl;
     }else{
         cout<<"Invalid choice";
@@ -802,19 +757,7 @@ void Librarian::removeMember(){
     if (choice >= 1 && choice <= static_cast<int>(members.size())) {
         members.erase(members.begin() + choice - 1);  // Remove selected book from vector
 
-        // Write remaining Members back to file
-        ofstream file("Members.txt");  // Open file for writing (truncating the existing content)
-        if (!file.is_open()) {
-            cout << "Unable to open file." << endl;
-            return;
-        }
-        for (const auto& member : members) {
-            file << (member.getrole()) << '\n';
-            file << member.getname() << '\n';
-            file << member.getID() << '\n';
-            file << member.getpassword() << '\n';
-        }
-        file.close();  // Close the file
+        writeFile("Members.txt", members);
         cout << "Member removed successfully." << endl;
     } else {
         cout << "Invalid choice." << endl;
@@ -880,9 +823,9 @@ void Librarian ::processLoanRequest(){
         loans[choice-1].setloanstatus(1);
 
 
-        for (const auto& book : books) {
-            writeFile("Books.txt", book);
-        }
+
+            writeFile("Books.txt", books);
+
 
 
         // Write remaining books back to file
@@ -914,4 +857,87 @@ void Librarian::generateReports(){}
 
 
 //End of Librarian Derived class functions
+
 //-----------------------------------------------
+
+//start of loan Derived class functions
+
+Loan::Loan()
+{
+    //member id and book
+    loandate = time(nullptr);
+    duedate = loandate;
+}
+void Loan::setloanstatus(int a) {loanstatus = a;}
+
+int Loan::getloanstatus() const {return loanstatus;}
+void Loan::set_loan(int days)
+{
+    duedate = loandate+days *24*60*60;
+    duetime = localtime(&duedate);
+    loantime = localtime(&loandate);
+}
+
+time_t Loan :: getloandate()const
+{
+    return loandate;
+}
+time_t Loan :: getduedate()const
+{
+    return duedate;
+}
+
+void Loan ::setduedate(time_t a) {
+    duedate = a;
+    duetime = localtime(&duedate);
+}
+
+void Loan::setloandate(time_t a) {
+    loandate = a;
+    loantime = localtime(&loandate);
+}
+
+string Loan ::formatdate(time_t a) {
+    string s;
+    struct tm * date = localtime(&a);
+    s = to_string(date->tm_mday) + "/" + to_string(date->tm_mon + 1) + "/" + to_string(date->tm_year + 1900);
+    return s;
+}
+
+time_t Loan::stringToTime(string& dateStr) {
+    struct tm timeStruct = {};
+    stringstream ss(dateStr);
+    ss >> timeStruct.tm_mday;
+    ss.ignore(); // Skip the '/'
+    ss >> timeStruct.tm_mon;
+    ss.ignore(); // Skip the '/'
+    ss >> timeStruct.tm_year;
+    timeStruct.tm_mon--; // Adjust month (0-based)
+    timeStruct.tm_year -= 1900; // Adjust year (years since 1900)
+    return mktime(&timeStruct);
+}
+
+bool Loan::is_overdue() {
+    time_t now;
+    time(&now); // Get current time
+    return difftime(now, duedate) > 0; // Check if current time is past the due date
+}
+
+void Loan::readFile(string fileName, vector<Loan> &loans) {
+
+}
+
+void Loan::writeFile(string fileName, vector<Loan> loans) {
+
+}
+
+//End of Loan Derived class functions
+
+//-----------------------------------------------
+
+
+void initializeVectors(vector<Book> &books, vector<Member> &members, vector<Loan> &loans) {
+    Member :: readFile("Books.txt", books);
+    Member :: readFile("Members.txt", members);
+    Loan :: readFile("Loans.txt", loans);
+}

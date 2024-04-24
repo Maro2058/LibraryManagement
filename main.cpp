@@ -26,7 +26,7 @@
  *
  * Generate reports function in librarian class
  *
- * Write ReadFile Function for Loan.txt
+ * Write writeFile and readFile Functions for Loans.
  *
  * Comment Code (+ fix old comments)
  *

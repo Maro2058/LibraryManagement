@@ -33,6 +33,8 @@ enum Role {
     student
 };
 
+
+
 std::string genreToString(Genre genre);
 
 std::string genreToString(int genre);
@@ -116,8 +118,6 @@ public:
 
 };
 
-// Prototype to update the books file after doing any operations on it; only takes the current vector of Book
-void updateBooksFile(vector<Book> books);
 
 class Member{
 private:
@@ -129,10 +129,9 @@ private:
     int fines;
 
 public:
-    Member();
-    Member(string ID, string user, string pass);
+    Member() = default;
     void login();
-    void manageAccount();
+     void manageAccount();
     void setRole(Role n);
     void setname (string name);
     void setID(string id);
@@ -141,13 +140,38 @@ public:
     string getID() const;
     string getpassword() const;
     Role getrole()const;
-    vector<Member> readFile(string fileName, vector<Member> &book);
-    vector<Book> readFile(string fileName, vector<Book> &book);
-    void searchBooks(string input);
-    void writeFile( string fileName, Book book);
-    void writeFile(string fileName, Member member);
+    static vector<Member> readFile(string fileName = "Members.txt", vector<Member> &book);
+    static vector<Book> readFile(string fileName = "Books.txt", vector<Book> &book);
+    static void writeFile(string fileName, vector<Book> books);
+    static void writeFile(string fileName, vector<Member> member);
+    vector<Book> searchBooks(string input);
 };
 
+
+
+class Student : public Member, public MyString{
+private:
+
+public:
+    void requestLoan();
+    void returnBook();
+};
+
+class Librarian : public Member{
+private:
+
+public:
+    Librarian();
+    void addBook();
+    void removeBook();
+    void updateBook();
+    void viewMembers();
+    void addMember();
+    void removeMember();
+    void processLoanRequest();
+    void generateReports();
+
+};
 class Loan :public Member, public Book, public MyString
 {
 private:
@@ -169,30 +193,10 @@ public:
     string formatdate (time_t);
     time_t stringToTime(string& dateStr);
     bool is_overdue();
-};
-
-class Student : public Member, public MyString{
-private:
-
-public:
-    void requestLoan();
-    void returnBook();
-};
-
-class Librarian : public Member{
-private:
-
-public:
-    Librarian();
-    Librarian(string id, string user, string pass);
-    void addBook();
-    void removeBook();
-    void updateBook();
-    void viewMembers();
-    void addMember();
-    void removeMember();
-    void processLoanRequest();
-    void generateReports();
+    static void readFile(string fileName, vector<Loan> &loans);
+    static void writeFile(string fileName, vector<Loan> loans);
 
 };
+
+void initializeVectors(vector<Book>& books, vector<Member>& members, vector<Loan>& loans);
 #endif //LIBRARYMANAGEMENT_H
