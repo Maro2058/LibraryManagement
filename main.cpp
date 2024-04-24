@@ -16,6 +16,8 @@
  *
  * Replace all appropriate parts of code with ReadFile Function
  *
+ * Make a WriteFunction
+ *
  * Make it so there can't be more than one account with the same ID (cout << "ID already exists";)
  *
  * Make it so there can't be more than one book with the same ISBN (cout << "ISBN already exists" << endl <<
@@ -34,6 +36,11 @@
  * Write ReadFile Function for Loan.txt
  *
  * Comment Code (+ fix old comments)
+ *
+ * Three global Vectors that store all the Books/Members/Outgoing Loans.
+ *
+ * Modify Code to work with three global vectors instead of reading in each function.
+ *      Read From file to vector on runtime, and whenever the file is modified.
  */
 
 int main()
@@ -44,7 +51,8 @@ int main()
     morad.viewMembers();
     morad.addMember();
     morad.removeMember();
-*/
+
+
     Member Kareem;
     vector<Book> nBooks;
     nBooks = Kareem.readFile("Books.txt", nBooks);
@@ -58,5 +66,12 @@ int main()
     --nBooks[1];
     updateBooksFile(nBooks);
 
+    Book boook;
+    Librarian librarian;
+    Student Amr;
+    Amr.requestLoan();
+
+
     return 0;
+    */
 }

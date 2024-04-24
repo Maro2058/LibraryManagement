@@ -143,10 +143,9 @@ public:
     Role getrole()const;
     vector<Member> readFile(string fileName, vector<Member> &book);
     vector<Book> readFile(string fileName, vector<Book> &book);
-
-
-
     void searchBooks(string input);
+    void writeFile( string fileName, Book book);
+    void writeFile(string fileName, Member member);
 };
 
 class Loan :public Member, public Book, public MyString
@@ -194,5 +193,6 @@ public:
     void removeMember();
     void processLoanRequest();
     void generateReports();
+
 };
 #endif //LIBRARYMANAGEMENT_H
