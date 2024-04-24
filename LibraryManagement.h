@@ -140,8 +140,8 @@ public:
     string getID() const;
     string getpassword() const;
     Role getrole()const;
-    static vector<Member> readFile(string fileName = "Members.txt", vector<Member> &book);
-    static vector<Book> readFile(string fileName = "Books.txt", vector<Book> &book);
+    static vector<Member> readFile(string fileName, vector<Member> &members);
+    static vector<Book> readFile(string fileName, vector<Book> &book);
     static void writeFile(string fileName, vector<Book> books);
     static void writeFile(string fileName, vector<Member> member);
     vector<Book> searchBooks(string input);
