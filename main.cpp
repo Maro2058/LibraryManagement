@@ -49,8 +49,7 @@ int main()
     9. log out;
     */
 
-    Librarian librarian;
-    librarian.addMember();
+
     int option = 0;
     Member* member = nullptr;
     member = member->login();
