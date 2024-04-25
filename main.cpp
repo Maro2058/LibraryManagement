@@ -7,6 +7,7 @@
 #include <cctype>    // for std::isdigit
 #include <vector>*/
 #include "LibraryManagement.h"
+#include "LibraryManagementImplementation.cpp";
 
 /* To Do List:
  * Genre:
@@ -37,9 +38,13 @@
 
 int main()
 {
+    Librarian abdo;
+    abdo.removeBook();
 
+    /*
     Member* member = nullptr;
     member =  member->login();
     member->addBook();
     member->addMember();
+     */
 }
