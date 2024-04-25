@@ -71,7 +71,7 @@ bool MyString::operator==(const MyString& other) const {
 
 
 template<typename T>
-void writeFile(string fileName,vector<T>& data) {
+void writeFile(string fileName,vector<T> data) {
     ofstream file(fileName, ios::out | ios::trunc); // Open file for writing (truncating the existing content)
     if (!file.is_open()) {
         cout << "Unable to open file." << endl;
@@ -194,21 +194,23 @@ Book Book::operator--(int) {
 //start of Member class functions
 
 // Parameterized constructor
-Member::Member(std::string ID, std::string user, std::string pass):userID(ID), userName(user), password(pass) {}
+Member::Member(string r, string ID, string user, string pass):role(r), userID(ID), userName(user), password(pass) {}
 // Copy constructor
-Member::Member(const Member& other): userID(other.userID), userName(other.userName), password(other.password) {}
+Member::Member(const Member& other):role(other.role), userID(other.userID), userName(other.userName), password(other.password) {}
 // Destructor
 Member::~Member() {}
-void Member::setRole(Role n){role = (n);}
+void Member::setRole(string n){role = (n);}
 void Member::setname (string name) {userName = name;}
 void Member::setID(string id){userID = id;}
 void Member::setpassword(string pass){password = pass;}
 string Member::getname()const{return userName;}
 string Member::getID() const {return userID;}
 string Member::getpassword() const {return password;}
-Role Member::getrole()const{return role;}
+string Member::getrole()const{return role;}
+
 string Member::serialize() const {
     stringstream ss;
+
     ss << role << '|'
        << userName << '|'
        << userID << '|'
@@ -219,10 +221,7 @@ void Member::deserialize(string serializedData) {
     stringstream ss(serializedData);
     string roleStr, name, id, pass;
     getline(ss, roleStr, '|');
-    istringstream iss(roleStr);
-    int num;
-    iss >> num;
-    role = static_cast<Role>(num); // Convert role string to enum
+    role = roleStr;
     getline(ss, name,'|');
     userName = name;
     getline(ss, id, '|');
@@ -246,7 +245,7 @@ Member* Member::login() {
 
     // Iterate over all members
     for (size_t i = 0; i < members.size(); i++) {
-        if(members[i].getrole()==0){
+        if(members[i].getrole()== "Admin"){
             if (members[i].getID() == tempID && members[i].getpassword() != tempPass) {
                 cout << "Incorrect Password "<<endl;
             } else if (members[i].getID() == tempID && members[i].getpassword() == tempPass) {
@@ -256,7 +255,7 @@ Member* Member::login() {
             return loggedInMember;
             }
         }
-        if(members[i].getrole()==1){
+        if(members[i].getrole()== "Student"){
             if (members[i].getID() == tempID && members[i].getpassword() != tempPass) {
                 cout << "Incorrect Password "<<endl;
             } else if (members[i].getID() == tempID && members[i].getpassword() == tempPass) {
@@ -336,7 +335,7 @@ vector<Book> Member::searchBooks(string input) {
 //Start of Student Derived class functions
 Student::Student() : Member() {}
 // Parameterized constructor
-Student::Student(const std::string& ID, const std::string& user, const std::string& pass): Member(ID, user, pass) {}
+Student::Student(const string& role, const string& ID, const string& user, const string& pass): Member(role, ID, user, pass) {}
 // Copy constructor
 Student::Student(const Member& other) : Member(other) {}
 // Destructor
@@ -438,7 +437,7 @@ void Student::returnBook(){
 
 Librarian::Librarian() : Member() {cout << "librarian created" ;}
 // Parameterized constructor
-Librarian::Librarian(const std::string& ID, const std::string& user, const std::string& pass): Member(ID, user, pass) {cout << "librarian created" ;}
+Librarian::Librarian(const string& role, const string& ID, const string& user, const string& pass): Member(role, ID, user, pass) {cout << "librarian created" ;}
 // Copy constructor
 Librarian::Librarian(const Member& other) : Member(other) {cout << "librarian created" ;}
 // Destructor
@@ -692,11 +691,11 @@ void Librarian::viewMembers(){
  * Member Password
  */
 void Librarian::addMember() {
+    members.clear();
+    readFile("Members.txt", members);
     string Input;
     Member tempMember;
 
-    members.clear();
-    readFile("Members.txt", members);
     int userchoice;
     cout << "Enter the Member Info:\n Is the member:\n1. Librarian\n2. Student \n";
     cin >> userchoice;
@@ -705,8 +704,13 @@ void Librarian::addMember() {
         cin >> userchoice;
     }
 
-    tempMember.setRole(static_cast<Role>(userchoice));
+    if (userchoice == 1) {
+        tempMember.setRole("Admin");
+    } else if (userchoice == 2) {
+        tempMember.setRole("Student");
+    }
     cin.ignore();
+    cout << tempMember.getrole();
 
     cout << "Enter the Member's Name: ";
     getline(cin, Input);
@@ -733,6 +737,9 @@ void Librarian::addMember() {
     tempMember.setpassword(Input);
 
     members.push_back(tempMember);
+    for (const auto& member : members) {
+        cout << member.getrole()<<endl;
+    }
 
     // Write the entire vector back to the file
     writeFile("Members.txt", members);
@@ -924,9 +931,6 @@ bool Loan::is_overdue() {
 
 //-----------------------------------------------
 
-vector<Book> allBooks;
-vector<Member> allMembers;
-vector<Loan> allLoans;
 
 void initializeVectors() {
     readFile("Books.txt", books);

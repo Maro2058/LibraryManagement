@@ -49,11 +49,13 @@ int main()
     9. log out;
     */
 
-
+    Librarian librarian;
+    librarian.addMember();
     int option = 0;
     Member* member = nullptr;
     member = member->login();
-    if (member->getrole() == 0) {
+    cout << "Here" << member->getrole() << "Bitch" <<endl;
+    if (typeid(*member) == typeid(Librarian)) {
         cout << "Please choose one of the below options" << endl;
         while (option != 9) {
             cout << "1: Add Book" << endl;
@@ -92,7 +94,7 @@ int main()
                 cout << "Invalid Input" << endl;
             }
         }
-    } else if (member->getrole() == 1) {
+    } else if (typeid(*member) == typeid(Student)) {
         cout << "Haven't coded this part yet"<<endl;
     }
 

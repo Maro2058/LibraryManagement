@@ -47,13 +47,6 @@ public:
 };
 
 
-enum Role {
-    Admin,
-    student
-};
-
-
-
 
 
 class MyString {
@@ -144,14 +137,14 @@ protected:
     string userID;
     string userName;
     string password;
-    Role role;
+    string role;
     Book *checkedOut;
     int fines;
 
 public:
     Member() = default;
     Member(const Member& other);
-    Member(std::string ID, std::string user, std::string pass);
+    Member(string role, string ID, string user, string pass);
     ~Member();
 
     static Member* login();
@@ -167,14 +160,14 @@ public:
     virtual void generateReports();
 
     void manageAccount();
-    void setRole(Role n);
+    void setRole(string n);
     void setname (string name);
     void setID(string id);
     void setpassword(string pass);
     string getname()const;
     string getID() const;
     string getpassword() const;
-    Role getrole()const;
+    string getrole()const;
     string serialize() const;
     bool is_There(string n);
     void deserialize(string);
@@ -189,7 +182,7 @@ private:
 
 public:
     Student();
-    Student(const string& ID, const string& user, const string& pass);
+    Student(const string& role, const string& ID, const string& user, const string& pass);
     Student(const Member& other);
     ~Student();
     void requestLoan();
@@ -201,7 +194,7 @@ private:
 
 public:
     Librarian();
-    Librarian(const string& ID, const string& user, const string& pass);
+    Librarian(const string& role, const string& ID, const string& user, const string& pass);
     Librarian(const Member& other);
     ~Librarian();
 
