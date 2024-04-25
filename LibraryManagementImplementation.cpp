@@ -666,60 +666,40 @@ void Librarian::addMember() {
         cin >> userchoice;
     }
 
-    fstream file("Members.txt", ios :: app);
 
-    if (file.is_open()){
-        int userchoice;
-        cout << "Enter the Member Info:\n Is the member:\n1. Librarian\n2. Student \n";
-        cin>>userchoice;
-        while(userchoice < 1 || userchoice > 2)
-        {
-            cout<<"Invalid choice! Pick again."<<endl;
-            cin>>userchoice;
-        }
-        cin.ignore();
-        tempMember.setRole(static_cast<Role>(userchoice));
+    cin.ignore();
+    tempMember.setRole(static_cast<Role>(userchoice));
 
-        cout << "Enter the Member's Name: ";
+    cout << "Enter the Member's Name: ";
+    getline(cin, Input);
+    tempMember.setname(Input);
+
+    bool flag = true;
+
+    while(flag == 1) {
+        flag = false;
+        cout << "Enter the Member's ID: ";
         getline(cin, Input);
-        tempMember.setname(Input);
-
-        bool flag = true;
-
-        while(flag == 1) {
-            flag = false;
-            cout << "Enter the Member's ID: ";
-            getline(cin, Input);
-            //searches if ID exists somewhere
-            for (const auto& member : members) {
-                if (Input == member.getID()) {
-                    cout << "This ID Already Exists" << endl;
-                    flag = true;
-                }
+        //searches if ID exists somewhere
+        for (const auto& member : members) {
+            if (Input == member.getID()) {
+                cout << "This ID Already Exists" << endl;
+                flag = true;
             }
         }
-        tempMember.setID(Input);
-
-        cout << "Enter the Member's Password: ";
-        getline(cin, Input);
-        tempMember.setpassword(Input);
-
-        file.close();
-
-
-    } else{
-        cout << "File Failed to Open\n Press any Number to continue"<<endl;
-        cin >> Input;
-        cin.clear();
-
     }
+    tempMember.setID(Input);
+
+    cout << "Enter the Member's Password: ";
+    getline(cin, Input);
+    tempMember.setpassword(Input);
 
     members.push_back(tempMember);
 
     // Write the entire vector back to the file
     writeFile("Members.txt", members);
 }
-    
+
 void Librarian :: removeMember() {
     members.clear();
     readFile("Members.txt", members);  // Vector to store books read from file

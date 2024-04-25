@@ -39,24 +39,8 @@
 int main()
 {
 
-    Librarian abdo;
-    abdo.addBook();
-    /*
-    morad.removeBook();
-    morad.removeBook();
-*/
-
-    /*Librarian morad;
-    morad.addBook();
-    morad.viewMembers();
-    morad.addMember();
-    morad.removeMember();
-=======
-    Librarian Youssef;
-    Youssef.addMember();
->>>>>>> c501c6fe29841e52d252f43980a675d8dd9d8d1e
-
-
+    Librarian librarian;
+    librarian.addMember();
 
     /*
     Member Kareem;
