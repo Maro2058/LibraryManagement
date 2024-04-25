@@ -7,7 +7,6 @@
 #include <cctype>    // for std::isdigit
 #include <vector>*/
 #include "LibraryManagement.h"
-#include "LibraryManagementImplementation.cpp"
 
 /* To Do List:
  * Genre:
