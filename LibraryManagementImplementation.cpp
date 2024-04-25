@@ -27,17 +27,10 @@ bool GenreList:: isValidGenre(const string& genre) const {
     return find(genres.begin(), genres.end(), genre) != genres.end();
 }
 
-void GenreList ::setGenre(string n) {
-    genre = n;
-
-}
-string GenreList:: getGenre() const { // Made public for access
-    return genre;
-}
-
-vector<string> GenreList ::TheGenres() const {
+vector<string> GenreList:: getGenres() const { // Made public for access
     return genres;
 }
+
 
 //-----------------------------------------------------
 // This function is redundant.
@@ -142,10 +135,12 @@ void Book::setTitle(const string n){title = n; }
 void Book::setAuthor(const string n){author = n;}
 void Book::setPublisher(const string n){publisher = n;}
 void Book::setAvailableNum(int n){available = n;}
+void Book::setGenre(const string &n) { genre = n;}
 string Book:: getISBN() const { return ISBN; }
 string Book:: getTitle() const { return title; }
 string Book::getAuthor() const { return author; }
 string Book::getPublisher()const{ return publisher; }
+string Book::getGenre() const {return genre;}
 int Book::getAvailableNum() const { return available; }
 //Unary function overloading:
 // Prefix Increment Operator
@@ -442,21 +437,20 @@ void Librarian::addBook(){ // Adds book to file and returns Book
         getline(cin, Input);
         tempBook.setAuthor(Input);
 
-
-// Enter Genre
         GenreList genreList;
+// Enter Genre
         cout << "Select Genre:\n";
-        for(int i = 0; i < genreList.TheGenres().size();i++)
-        {
-            cout<<i+1<<"."<<" "<<genreList.TheGenres()[i]<<endl;
-
-        }
+        int index = 1;
+        for (const auto& genre : genreList.getGenres()) {
+        cout << index << ". " << genre << '\n';
+        ++index;
+    }
 
         int choice;
         cin >> choice;
         cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear input buffer
 
-        tempBook.setGenre(genreList.TheGenres()[choice-1]);
+        tempBook.setGenre(genreList.getGenres()[choice-1]);
         // Write to file
 
         cout << "Enter the Publisher: ";
@@ -594,9 +588,10 @@ void Librarian::updateBook(){
                 getline(cin, tpublish);
                 books[choice-1].setPublisher(tpublish);
                 break;
+
             case 5:
                 cout << "Select Genre:\n";
-                for (const auto& genre : genreList.TheGenres()) {
+                for (const auto& genre : genreList.getGenres()) {
                     cout << index << ". " << genre << '\n';
                     ++index;
                 }
@@ -604,13 +599,14 @@ void Librarian::updateBook(){
                 cin >> choice3;
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear input buffer
 
-                if (choice >= 1 && choice <= genreList.TheGenres().size()) {
-                    books[choice3-1].setGenre(genreList.TheGenres()[choice3]);
+                if (choice >= 1 && choice <= genreList.getGenres().size()) {
+                    books[choice3-1].setGenre(genreList.getGenres()[choice3]);
                 } else {
                     cout << "Invalid choice. Setting genre to Other." << endl;
                     books[choice3-1].setGenre("Other");
                 }
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear input buffer
+
                 break;
             case 6:
                 cout<<"Please enter the new available number: "<<endl;

@@ -16,7 +16,7 @@
 using namespace std;
 
 class GenreList {
-protected:
+private:
     vector<string> genres = {
             "Fiction",
             "NonFiction",
@@ -31,7 +31,6 @@ protected:
             "Other"
     };
 
-    string genre;
 public:
 
     void displayGenres() const;
@@ -42,11 +41,7 @@ public:
 
     bool isValidGenre(const string& genre) const;
 
-    vector<string> TheGenres()const;
-
-    void setGenre(string n);
-
-    string getGenre() const;
+    vector<string> getGenres() const;
 
 };
 
@@ -91,7 +86,7 @@ public:
 };
 
 
-class Book : public GenreList {
+class Book {
 protected:
     string ISBN; // Easier to use as String, otherwise it would long int, which is incompatible with some functions
     string title;
@@ -111,6 +106,8 @@ public:
 
     void setAuthor(const string n);
 
+    void setGenre(const string& n);
+
     void setPublisher(const string n);
 
     void setAvailableNum(int n);
@@ -125,7 +122,10 @@ public:
 
     string getPublisher() const;
 
+
+    string getGenre() const;
     string serialize() const;
+
 
     int getAvailableNum() const;
 
@@ -227,4 +227,5 @@ public:
     bool is_overdue();
 };
 
+void initializeVectors(vector<Book>& books, vector<Member>& members, vector<Loan>& loans);
 #endif //LIBRARYMANAGEMENT_H
