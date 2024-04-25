@@ -15,18 +15,51 @@
 
 using namespace std;
 
-enum Genre {
-    Fiction,
-    NonFiction,
-    Mystery,
-    Romance,
-    ScienceFiction,
-    Biography,
-    History,
-    Poetry,
-    Philosophy,
-    Other
+class GenreList {
+private:
+    std::vector<std::string> genres = {
+            "Fiction",
+            "NonFiction",
+            "ScienceFiction",
+            "Business",
+            "Philosophy",
+            "History",
+            "Geography",
+            "Programming",
+            "physics",
+            "Calculus",
+            "Other"
+    };
+
+public:
+
+    void displayGenres() const {
+        for (const auto& genre : genres) {
+            std::cout << genre << std::endl;
+        }
+    }
+
+    void addGenre(const std::string& genre) {
+        genres.push_back(genre);
+    }
+
+    void removeGenre(const std::string& genre) {
+        auto it = std::find(genres.begin(), genres.end(), genre);
+        if (it != genres.end()) {
+            genres.erase(it);
+        }
+    }
+
+    bool isValidGenre(const std::string& genre) const {
+        return std::find(genres.begin(), genres.end(), genre) != genres.end();
+    }
+
+    std::vector<std::string> getGenres() const { // Made public for access
+        return genres;
+    }
+
 };
+
 
 enum Role {
     Admin,
@@ -34,11 +67,15 @@ enum Role {
 };
 
 
-
-std::string genreToString(Genre genre);
+/*
+std::string genreToString(GenreList genre);
 
 std::string genreToString(int genre);
+*/
 
+std::string genreToString(const std::string& genre) {
+    return genre; // Return the genre as a string
+}
 
 
 class MyString {
@@ -78,7 +115,7 @@ private:
     string title;
     string author;
     string publisher;
-    Genre genre;
+    std::string genre;
     int publicationYear;
     int available = 0;
     bool availabilityStatus = (available > 0);
@@ -92,7 +129,7 @@ public:
 
     void setAuthor(const string n);
 
-    void setGenre(const int n);
+    void setGenre(const std::string& n);
 
     void setPublisher(const string n);
 
@@ -106,7 +143,7 @@ public:
 
     string getPublisher() const;
 
-    int getGenre() const;
+    std::string getGenre() const;
 
     int getAvailableNum() const;
 

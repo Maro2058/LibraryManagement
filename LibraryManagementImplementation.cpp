@@ -1,30 +1,44 @@
 #include "LibraryManagement.h"
 
 
-std::string genreToString(int genre) {
+/*
+std::string genreToString(GenreList genre) {
     switch (genre) {
         case Genre::Fiction:
             return "Fiction";
-        case Genre::NonFiction:
+        case GenreList::NonFiction:
             return "Non-Fiction";
-        case Genre::Mystery:
+        case GenreList::Mystery:
             return "Mystery";
-        case Genre::Romance:
+        case GenreList::Romance:
             return "Romance";
-        case Genre::ScienceFiction:
+        case GenreList::ScienceFiction:
             return "Science Fiction";
-        case Genre::Biography:
+        case GenreList::Biography:
             return "Biography";
-        case Genre::History:
+        case GenreList::History:
             return "History";
-        case Genre::Poetry:
+        case GenreList::Poetry:
             return "Poetry";
-        case Genre::Philosophy:
+        case GenreList::Philosophy:
             return "Philosophy";
-        default:
+        case GenreList::Business:
+            return "Business";
+        case GenreList::Geography:
+            return "Geography";
+        case GenreList::Programming:
+            return "Programming";
+        case GenreList::Physics:
+            return "Physics";
+        case GenreList::Calculus:
+            return "Calculus";
+        case GenreList::Other:
             return "Other";
+        default:
+            return "Unknown Genre";
     }
 }
+*/
 //-----------------------------------------------------
 // This function is redundant.
 
@@ -74,14 +88,14 @@ bool MyString::operator==(const MyString& other) const {
 void Book::setISBN(const string num){ ISBN = num; }
 void Book::setTitle(const string n){title = n; }
 void Book::setAuthor(const string n){author = n;}
-void Book::setGenre(const int n){genre = static_cast<Genre>(n); }
+void Book::setGenre(const std::string& n) {genre = n;}
 void Book::setPublisher(const string n){publisher = n;}
 void Book::setAvailableNum(int n){available = n;}
 string Book:: getISBN() const { return ISBN; }
 string Book:: getTitle() const { return title; }
 string Book::getAuthor() const { return author; }
-string Book::getPublisher()const{ return publisher; }
-int Book::getGenre() const { return genre; }
+string Book::getPublisher() const{ return publisher; }
+std::string Book:: getGenre() const { return genre; }
 int Book::getAvailableNum() const { return available; }
 //Unary function overloading:
 // Prefix Increment Operator
@@ -222,7 +236,7 @@ vector<Book>  Member:: readFile(string fileName, vector<Book> &books) {
         getline(file, line); tempBook.setTitle(line);
         getline(file, line); tempBook.setAuthor(line);
         getline(file, line); tempBook.setPublisher(line);
-        getline(file, line); tempBook.setGenre(static_cast<Genre>(stoi(line)));
+        getline(file, line); tempBook.setGenre(line);
         getline(file, line); tempBook.setAvailableNum(stoi(line));
         books.push_back(tempBook);  // Add book to vector
     }
@@ -281,8 +295,7 @@ vector<Book> Member::searchBooks(string input) {
     readFile("Books.txt", books);
     vector<Book> searchResults;
     for (const auto & book : books) {
-        if (input == book.getISBN() || input == book.getTitle() || input == book.getAuthor() ||
-        input == to_string(book.getGenre()) || input == book.getPublisher()) {
+        if (input == book.getGenre() || input == book.getPublisher()) {
             searchResults.push_back(book);
         }
     }
@@ -466,36 +479,24 @@ void Librarian::addBook(){ // Adds book to file and returns Book
 
 
 // Enter Genre
+        GenreList genreList;
+        int choice = 0;
+
         cout << "Select Genre:\n";
-        cout << "1. Fiction\n";
-        cout << "2. NonFiction\n";
-        cout << "3. Mystery\n";
-        cout << "4. Romance\n";
-        cout << "5. ScienceFiction\n";
-        cout << "6. Biography\n";
-        cout << "7. History\n";
-        cout << "8. Poetry\n";
-        cout << "9. Philosophy\n";
-        cout << "10. Other\n";
-        int choice;
+        int index = 1;
+        for (const auto& genre : genreList.getGenres()) {
+            cout << index << ". " << genre << '\n';
+            ++index;
+        }
+
         cin >> choice;
         cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear input buffer
 
-        switch(choice) {
-            case 1: tempBook.setGenre(Genre::Fiction); break;
-            case 2: tempBook.setGenre(Genre::NonFiction); break;
-            case 3: tempBook.setGenre(Genre::Mystery); break;
-            case 4: tempBook.setGenre(Genre::Romance); break;
-            case 5: tempBook.setGenre(Genre::ScienceFiction); break;
-            case 6: tempBook.setGenre(Genre::Biography); break;
-            case 7: tempBook.setGenre(Genre::History); break;
-            case 8: tempBook.setGenre(Genre::Poetry); break;
-            case 9: tempBook.setGenre(Genre::Philosophy); break;
-            case 10: tempBook.setGenre(Genre::Other); break;
-            default:
-                cout << "Invalid choice. Setting genre to Other." << endl;
-                tempBook.setGenre(Genre::Other);
-                break;
+        if (choice >= 1 && choice <= genreList.getGenres().size()) {
+            tempBook.setGenre(genreList.getGenres()[choice - 1]);
+        } else {
+            cout << "Invalid choice. Setting genre to Other." << endl;
+            tempBook.setGenre("Other");
         }
         // Write to file
 
@@ -628,38 +629,67 @@ void Librarian::updateBook(){
                 getline(cin, tpublish);
                 books[choice-1].setPublisher(tpublish);
                 break;
-            case 5:
-                cout<<"Please choose the new genre: "<<endl;
+            case 5: {
+                cout << "Current Genre: " << genreToString(books[choice - 1].getGenre()) << endl;
+                cout << "Please choose the new genre: " << endl;
                 cout << "1. Fiction\n";
                 cout << "2. NonFiction\n";
-                cout << "3. Mystery\n";
-                cout << "4. Romance\n";
-                cout << "5. ScienceFiction\n";
-                cout << "6. Biography\n";
-                cout << "7. History\n";
-                cout << "8. Poetry\n";
-                cout << "9. Philosophy\n";
-                cout << "10. Other\n";
+                cout << "3. ScienceFiction\n";
+                cout << "4. Business\n";
+                cout << "5. Philosophy\n";
+                cout << "6. History\n";
+                cout << "7. Geography\n";
+                cout << "8. Programming\n";
+                cout << "9. physics\n";
+                cout << "10. Calculus\n";
+                cout << "11. Other\n";  // Added newline here
                 cin >> choice3;
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear input buffer
 
-                switch(choice3) {
-                    case 1: books[choice-1].setGenre(Genre::Fiction); break;
-                    case 2: books[choice-1].setGenre(Genre::NonFiction); break;
-                    case 3: books[choice-1].setGenre(Genre::Mystery); break;
-                    case 4: books[choice-1].setGenre(Genre::Romance); break;
-                    case 5: books[choice-1].setGenre(Genre::ScienceFiction); break;
-                    case 6: books[choice-1].setGenre(Genre::Biography); break;
-                    case 7: books[choice-1].setGenre(Genre::History); break;
-                    case 8: books[choice-1].setGenre(Genre::Poetry); break;
-                    case 9: books[choice-1].setGenre(Genre::Philosophy); break;
-                    case 10: books[choice-1].setGenre(Genre::Other); break;
+                string newGenre;
+
+                switch (choice3) {
+                    case 1:
+                        newGenre = "Fiction";
+                        break;
+                    case 2:
+                        newGenre = "NonFiction";
+                        break;
+                    case 3:
+                        newGenre = "ScienceFiction";
+                        break;
+                    case 4:
+                        newGenre = "Business";
+                        break;
+                    case 5:
+                        newGenre = "Philosophy";
+                        break;
+                    case 6:
+                        newGenre = "History";
+                        break;
+                    case 7:
+                        newGenre = "Geography";
+                        break;
+                    case 8:
+                        newGenre = "Programming";
+                        break;
+                    case 9:
+                        newGenre = "Physics";
+                        break;
+                    case 10:
+                        newGenre = "Calculus";
+                        break;
+                    case 11:
+                        newGenre = "Other";
+                        break;
                     default:
                         cout << "Invalid choice. Setting genre to Other." << endl;
-                        books[choice-1].setGenre(Genre::Other);
+                        newGenre = "Other";
                         break;
                 }
+                books[choice - 1].setGenre(newGenre);
                 break;
+            }
             case 6:
                 cout<<"Please enter the new available number: "<<endl;
                 cin.ignore();

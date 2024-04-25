@@ -38,7 +38,8 @@
 
 int main()
 {
-
+    Librarian abdo;
+    abdo.removeBook();
     /*Librarian morad;
     morad.addBook();
     morad.viewMembers();
