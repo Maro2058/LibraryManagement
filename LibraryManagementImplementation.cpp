@@ -535,11 +535,7 @@ void Librarian::removeBook() {
     cin >> choice;
 
     if (choice >= 1 && choice <= static_cast<int>(books.size())) {
-            int num = books[choice-1].getAvailableNum();
-            if (num > 0)
-            books[choice-1].setAvailableNum(--(num));
-            else
-                books[choice-1].setAvailableNum(0);
+        books.erase(books.begin() + choice - 1);
 
 
         // Write remaining books back to file

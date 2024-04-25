@@ -7,7 +7,7 @@
 #include <cctype>    // for std::isdigit
 #include <vector>*/
 #include "LibraryManagement.h"
-#include "LibraryManagementImplementation.cpp"
+#include "LibraryManagementImplementation.cpp";
 
 /* To Do List:
  * Genre:
@@ -49,8 +49,7 @@ int main()
     9. log out;
     */
 
-    Librarian librarian;
-    librarian.addMember();
+
     int option = 0;
     Member* member = nullptr;
     member = member->login();
@@ -96,5 +95,6 @@ int main()
     } else if (member->getrole() == 1) {
         cout << "Haven't coded this part yet"<<endl;
     }
+
 
 }
