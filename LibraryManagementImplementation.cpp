@@ -242,6 +242,8 @@ Member* Member::login() {
     cout << "Enter Password: ";
     getline(cin, tempPass);
     //creates a vector of Member objects to read
+
+
     vector<Member> members;
 
     readFile("Members.txt", members);
@@ -653,6 +655,7 @@ void Librarian::viewMembers(){
 void Librarian::addMember() {
     string Input;
     Member tempMember;
+
     members.clear();
     readFile("Members.txt", members);
     int userchoice;
@@ -662,40 +665,62 @@ void Librarian::addMember() {
         cout << "Invalid choice! Pick again." << endl;
         cin >> userchoice;
     }
-    tempMember.setRole(static_cast<Role>(userchoice));
 
-    cout << "Enter the Member's Name: " << endl;
-    cin.ignore();
-    getline(cin, Input);
-    tempMember.setname(Input);
+    fstream file("Members.txt", ios :: app);
 
-    cout << "Enter the Member's ID: ";
-    getline(cin, Input);
-    int i = 0;
-    while(i!=members.size()){
-        if(members[i].getID()==Input)
+    if (file.is_open()){
+        int userchoice;
+        cout << "Enter the Member Info:\n Is the member:\n1. Librarian\n2. Student \n";
+        cin>>userchoice;
+        while(userchoice < 1 || userchoice > 2)
         {
-            cout<<"User Already Registered! Try a different username"<<endl;
-            getline(cin, Input);
-            i = -1;
+            cout<<"Invalid choice! Pick again."<<endl;
+            cin>>userchoice;
         }
-        i++;
+        cin.ignore();
+        tempMember.setRole(static_cast<Role>(userchoice));
+
+        cout << "Enter the Member's Name: ";
+        getline(cin, Input);
+        tempMember.setname(Input);
+
+        bool flag = true;
+
+        while(flag == 1) {
+            flag = false;
+            cout << "Enter the Member's ID: ";
+            getline(cin, Input);
+            //searches if ID exists somewhere
+            for (const auto& member : members) {
+                if (Input == member.getID()) {
+                    cout << "This ID Already Exists" << endl;
+                    flag = true;
+                }
+            }
+        }
+        tempMember.setID(Input);
+
+        cout << "Enter the Member's Password: ";
+        getline(cin, Input);
+        tempMember.setpassword(Input);
+
+        file.close();
+
+
+    } else{
+        cout << "File Failed to Open\n Press any Number to continue"<<endl;
+        cin >> Input;
+        cin.clear();
+
     }
-    tempMember.setID(Input);
 
-    cout << "Enter the Member's Password: ";
-    getline(cin, Input);
-    tempMember.setpassword(Input);
-
-
-    // Add the new member to the vector
     members.push_back(tempMember);
 
     // Write the entire vector back to the file
     writeFile("Members.txt", members);
 }
-
-void Librarian::removeMember(){
+    
+void Librarian :: removeMember() {
     members.clear();
     readFile("Members.txt", members);  // Vector to store books read from file
     // Display available books and prompt user to select a book to remove
@@ -762,7 +787,15 @@ void Librarian ::processLoanRequest(){
     }
 
 }
-void Librarian::generateReports(){}
+void Librarian::generateReports(){
+    /*
+    Loan stats for each genre
+    The lowest loaned genres
+    Stats by term or month
+    Top Borrowers
+    */
+
+}
 
 
 //End of Librarian Derived class functions
@@ -771,12 +804,12 @@ void Librarian::generateReports(){}
 
 //start of loan Derived class functions
 
-Loan::Loan()
-{
-    //member id and book
-    loandate = time(nullptr);
-    duedate = loandate;
-}
+Loan::Loan() {
+        //member id and book
+        loandate = time(nullptr);
+        duedate = loandate;
+    }
+
 void Loan::setloanstatus(int a) {loanstatus = a;}
 
 int Loan::getloanstatus() const {return loanstatus;}
@@ -873,6 +906,9 @@ bool Loan::is_overdue() {
 
 //-----------------------------------------------
 
+vector<Book> allBooks;
+vector<Member> allMembers;
+vector<Loan> allLoans;
 
 void initializeVectors() {
     readFile("Books.txt", books);

@@ -12,6 +12,7 @@
 #include <algorithm> // for std::all_of
 #include <cctype>    // for std::isdigit
 #include <vector>
+#include <string.h>
 
 using namespace std;
 
