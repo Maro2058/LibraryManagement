@@ -16,8 +16,8 @@
 using namespace std;
 
 class GenreList {
-private:
-    std::vector<std::string> genres = {
+protected:
+    vector<string> genres = {
             "Fiction",
             "NonFiction",
             "ScienceFiction",
@@ -31,32 +31,22 @@ private:
             "Other"
     };
 
+    string genre;
 public:
 
-    void displayGenres() const {
-        for (const auto& genre : genres) {
-            std::cout << genre << std::endl;
-        }
-    }
+    void displayGenres() const;
 
-    void addGenre(const std::string& genre) {
-        genres.push_back(genre);
-    }
+    void addGenre(const string& genre);
 
-    void removeGenre(const std::string& genre) {
-        auto it = std::find(genres.begin(), genres.end(), genre);
-        if (it != genres.end()) {
-            genres.erase(it);
-        }
-    }
+    void removeGenre(const string& genre);
 
-    bool isValidGenre(const std::string& genre) const {
-        return std::find(genres.begin(), genres.end(), genre) != genres.end();
-    }
+    bool isValidGenre(const string& genre) const;
 
-    std::vector<std::string> getGenres() const { // Made public for access
-        return genres;
-    }
+    vector<string> TheGenres()const;
+
+    void setGenre(string n);
+
+    string getGenre() const;
 
 };
 
@@ -67,15 +57,7 @@ enum Role {
 };
 
 
-/*
-std::string genreToString(GenreList genre);
 
-std::string genreToString(int genre);
-*/
-
-std::string genreToString(const std::string& genre) {
-    return genre; // Return the genre as a string
-}
 
 
 class MyString {
@@ -109,13 +91,13 @@ public:
 };
 
 
-class Book {
-private:
+class Book : public GenreList {
+protected:
     string ISBN; // Easier to use as String, otherwise it would long int, which is incompatible with some functions
     string title;
     string author;
     string publisher;
-    std::string genre;
+    string genre;
     int publicationYear;
     int available = 0;
     bool availabilityStatus = (available > 0);
@@ -129,11 +111,11 @@ public:
 
     void setAuthor(const string n);
 
-    void setGenre(const std::string& n);
-
     void setPublisher(const string n);
 
     void setAvailableNum(int n);
+
+    void deserialize(string);
 
     string getISBN() const;
 
@@ -143,7 +125,7 @@ public:
 
     string getPublisher() const;
 
-    std::string getGenre() const;
+    string serialize() const;
 
     int getAvailableNum() const;
 
@@ -157,7 +139,7 @@ public:
 
 
 class Member{
-private:
+protected:
     string userID;
     string userName;
     string password;
@@ -180,10 +162,10 @@ public:
     string getID() const;
     string getpassword() const;
     Role getrole()const;
-    static vector<Member> readFile(string fileName, vector<Member> &members);
-    static vector<Book> readFile(string fileName, vector<Book> &book);
-    static void writeFile(string fileName, vector<Book> books);
-    static void writeFile(string fileName, vector<Member> member);
+    string serialize() const;
+    bool is_There(string n);
+    void deserialize(string);
+
     vector<Book> searchBooks(string input);
 };
 
@@ -193,6 +175,10 @@ class Student : public Member, public MyString{
 private:
 
 public:
+    Student();
+    Student(const string& ID, const string& user, const string& pass);
+    Student(const Member& other);
+    ~Student();
     void requestLoan();
     void returnBook();
 };
@@ -202,6 +188,10 @@ private:
 
 public:
     Librarian();
+    Librarian(const string& ID, const string& user, const string& pass);
+    Librarian(const Member& other);
+    ~Librarian();
+
     void addBook();
     void removeBook();
     void updateBook();
@@ -214,7 +204,7 @@ public:
 };
 class Loan :public Member, public Book, public MyString
 {
-private:
+protected:
     time_t loandate;
     time_t duedate;
     struct tm * duetime = localtime(&duedate);
@@ -230,13 +220,11 @@ public:
     void setduedate(time_t a);
     time_t getloandate()const;
     time_t getduedate()const;
-    string formatdate (time_t);
+    string serialize() const;
+    void deserialize(string);
+    string formatdate (time_t) const;
     time_t stringToTime(string& dateStr);
     bool is_overdue();
-    static void readFile(string fileName, vector<Loan> &loans);
-    static void writeFile(string fileName, vector<Loan> loans);
-
 };
 
-void initializeVectors(vector<Book>& books, vector<Member>& members, vector<Loan>& loans);
 #endif //LIBRARYMANAGEMENT_H

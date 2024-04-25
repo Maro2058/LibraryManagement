@@ -14,7 +14,7 @@
  *   Change Genre from enum, to user defined list.
  *   Add Base Genres
  *
- * Make it so there can't be more than one account with the same ID (cout << "ID already exists";)
+ * Make it so there can't be more than one account with the same ID (cout << "ID already exists";)  DONE
  *
  * Make it so there can't be more than one book with the same ISBN (cout << "ISBN already exists" << endl <<
  * "Do you want to add copies?";)
@@ -26,8 +26,6 @@
  *
  * Generate reports function in librarian class
  *
- * Write writeFile and readFile Functions for Loans.
- *
  * Comment Code (+ fix old comments)
  *
  * Three global Vectors that store all the Books/Members/Outgoing Loans.
@@ -36,17 +34,31 @@
  *      Read From file to vector on runtime, and whenever the file is modified.
  */
 
+
+
 int main()
 {
+
     Librarian abdo;
-    abdo.removeBook();
+    abdo.addBook();
+    /*
+    morad.removeBook();
+    morad.removeBook();
+*/
+
     /*Librarian morad;
     morad.addBook();
     morad.viewMembers();
     morad.addMember();
     morad.removeMember();
+=======
+    Librarian Youssef;
+    Youssef.addMember();
+>>>>>>> c501c6fe29841e52d252f43980a675d8dd9d8d1e
 
 
+
+    /*
     Member Kareem;
     vector<Book> nBooks;
     nBooks = Kareem.readFile("Books.txt", nBooks);
