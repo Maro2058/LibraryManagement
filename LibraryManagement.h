@@ -52,10 +52,6 @@ enum Role {
     student
 };
 
-
-
-
-
 class MyString {
 private:
     string str;
@@ -108,6 +104,8 @@ public:
     void setAuthor(const string n);
 
     void setGenre(const string& n);
+
+    void setGenre(const int n);
 
     void setPublisher(const string n);
 
