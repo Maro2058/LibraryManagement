@@ -38,29 +38,8 @@
 int main()
 {
 
-    Librarian librarian;
-    librarian.addMember();
-
-    /*
-    Member Kareem;
-    vector<Book> nBooks;
-    nBooks = Kareem.readFile("Books.txt", nBooks);
-    cout<< nBooks[1].getAvailableNum() << endl;
-    nBooks[1]++;
-    cout<< nBooks[1].getAvailableNum() << endl;
-    nBooks[1]--;
-    cout<< nBooks[1].getAvailableNum() << endl;
-    --nBooks[1];
-    cout<< nBooks[1].getAvailableNum() << endl;
-    --nBooks[1];
-    updateBooksFile(nBooks);
-
-    Book boook;
-    Librarian librarian;
-    Student Amr;
-    Amr.requestLoan();
-
-
-    return 0;
-    */
+    Member* member = nullptr;
+    member =  member->login();
+    member->addBook();
+    member->addMember();
 }

@@ -153,7 +153,19 @@ public:
     Member(const Member& other);
     Member(std::string ID, std::string user, std::string pass);
     ~Member();
-    Member* login();
+
+    static Member* login();
+
+    // Librarian Functions
+    virtual void addBook();
+    virtual void removeBook();
+    virtual void updateBook();
+    virtual void viewMembers();
+    virtual void addMember();
+    virtual void removeMember();
+    virtual void processLoanRequest();
+    virtual void generateReports();
+
     void manageAccount();
     void setRole(Role n);
     void setname (string name);

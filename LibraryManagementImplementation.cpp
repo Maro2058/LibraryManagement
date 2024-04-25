@@ -231,9 +231,6 @@ void Member::deserialize(string serializedData) {
     password = pass;
 }
 
-
-
-
 Member* Member::login() {
     string tempID;
     string tempPass;
@@ -245,30 +242,74 @@ Member* Member::login() {
 
 
     vector<Member> members;
-
     readFile("Members.txt", members);
 
     // Iterate over all members
     for (size_t i = 0; i < members.size(); i++) {
         if(members[i].getrole()==0){
-            if (members[i].getID() == tempID && members[i].getpassword() == tempPass) {
+            if (members[i].getID() == tempID && members[i].getpassword() != tempPass) {
+                cout << "Incorrect Password "<<endl;
+            } else if (members[i].getID() == tempID && members[i].getpassword() == tempPass) {
             // Correct user ID and password, return pointer to Member object
             Member* loggedInMember = new Librarian(members[i]); // copy constructor is called
-            cout<<"Logged in successfull"<<endl;
+            cout<<"Logged in Successfully"<<endl;
             return loggedInMember;
             }
         }
         if(members[i].getrole()==1){
-            if (members[i].getID() == tempID && members[i].getpassword() == tempPass) {
+            if (members[i].getID() == tempID && members[i].getpassword() != tempPass) {
+                cout << "Incorrect Password "<<endl;
+            } else if (members[i].getID() == tempID && members[i].getpassword() == tempPass) {
                 // Correct user ID and password, return pointer to Member object
                 Member* loggedInMember = new Student(members[i]); // copy constructor is called
-                cout<<"Logged in successfull"<<endl;
+                cout<<"Logged in Successfully"<<endl;
                 return loggedInMember;
             }
         }
     }
+    cout << "No Member Found"<< endl;
     // User ID or password incorrect, return nullptr
     return nullptr;
+}
+
+void Member::addBook() {
+    // Virtual Function.
+    //Doesn't do Anything
+}
+
+void Member::removeBook() {
+    // Virtual Function.
+    //Doesn't do Anything
+}
+
+void Member::updateBook() {
+    // Virtual Function.
+    //Doesn't do Anything
+}
+
+void Member::viewMembers() {
+    // Virtual Function.
+    //Doesn't do Anything
+}
+
+void Member::addMember() {
+    // Virtual Function.
+    //Doesn't do Anything
+}
+
+void Member::removeMember() {
+    // Virtual Function.
+    //Doesn't do Anything
+}
+
+void Member::processLoanRequest() {
+    // Virtual Function.
+    //Doesn't do Anything
+}
+
+void Member::generateReports() {
+    // Virtual Function.
+    //Doesn't do Anything
 }
 
 void Member::manageAccount(){
@@ -395,11 +436,11 @@ void Student::returnBook(){
 
 //Start of Librarian Derived class functions
 
-Librarian::Librarian() : Member() {}
+Librarian::Librarian() : Member() {cout << "librarian created" ;}
 // Parameterized constructor
-Librarian::Librarian(const std::string& ID, const std::string& user, const std::string& pass): Member(ID, user, pass) {}
+Librarian::Librarian(const std::string& ID, const std::string& user, const std::string& pass): Member(ID, user, pass) {cout << "librarian created" ;}
 // Copy constructor
-Librarian::Librarian(const Member& other) : Member(other) {}
+Librarian::Librarian(const Member& other) : Member(other) {cout << "librarian created" ;}
 // Destructor
 Librarian::~Librarian() {}
 
@@ -461,9 +502,11 @@ void Librarian::addBook(){ // Adds book to file and returns Book
         int num;
         cout << "Enter The Number of Books Available: "<<endl;
         cin>>num;
-        while(num < 0)
+        while(cin.fail() || num < 0)
         {
             cout<<"Invalid Amount! Please try again.";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(),'\n'); // reads and discards all characters up to the newline character ('\n')
             cin>>num;
         }
         tempBook.setAvailableNum(num);
@@ -661,14 +704,13 @@ void Librarian::addMember() {
     int userchoice;
     cout << "Enter the Member Info:\n Is the member:\n1. Librarian\n2. Student \n";
     cin >> userchoice;
-    while (userchoice < 1 || userchoice > 2) {
+    while (userchoice < 1 || userchoice > 2 || cin.fail()) {
         cout << "Invalid choice! Pick again." << endl;
         cin >> userchoice;
     }
 
-
-    cin.ignore();
     tempMember.setRole(static_cast<Role>(userchoice));
+    cin.ignore();
 
     cout << "Enter the Member's Name: ";
     getline(cin, Input);
