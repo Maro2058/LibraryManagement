@@ -38,15 +38,13 @@
 
 int main()
 {
-    Librarian abdo;
-    abdo.removeBook();
-    /*Librarian morad;
-    morad.addBook();
-    morad.viewMembers();
-    morad.addMember();
-    morad.removeMember();
+
+    Librarian Youssef;
+    Youssef.addMember();
 
 
+
+    /*
     Member Kareem;
     vector<Book> nBooks;
     nBooks = Kareem.readFile("Books.txt", nBooks);

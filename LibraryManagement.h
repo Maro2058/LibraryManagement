@@ -17,7 +17,7 @@ using namespace std;
 
 class GenreList {
 private:
-    std::vector<std::string> genres = {
+    vector<string> genres = {
             "Fiction",
             "NonFiction",
             "ScienceFiction",
@@ -33,30 +33,15 @@ private:
 
 public:
 
-    void displayGenres() const {
-        for (const auto& genre : genres) {
-            std::cout << genre << std::endl;
-        }
-    }
+    void displayGenres() const;
 
-    void addGenre(const std::string& genre) {
-        genres.push_back(genre);
-    }
+    void addGenre(const string& genre);
 
-    void removeGenre(const std::string& genre) {
-        auto it = std::find(genres.begin(), genres.end(), genre);
-        if (it != genres.end()) {
-            genres.erase(it);
-        }
-    }
+    void removeGenre(const string& genre);
 
-    bool isValidGenre(const std::string& genre) const {
-        return std::find(genres.begin(), genres.end(), genre) != genres.end();
-    }
+    bool isValidGenre(const string& genre) const;
 
-    std::vector<std::string> getGenres() const { // Made public for access
-        return genres;
-    }
+    vector<string> getGenres() const;
 
 };
 
@@ -68,12 +53,12 @@ enum Role {
 
 
 /*
-std::string genreToString(GenreList genre);
+string genreToString(GenreList genre);
 
-std::string genreToString(int genre);
+string genreToString(int genre);
 */
 
-std::string genreToString(const std::string& genre) {
+string genreToString(const string& genre) {
     return genre; // Return the genre as a string
 }
 
@@ -115,7 +100,7 @@ private:
     string title;
     string author;
     string publisher;
-    std::string genre;
+    string genre;
     int publicationYear;
     int available = 0;
     bool availabilityStatus = (available > 0);
@@ -129,7 +114,7 @@ public:
 
     void setAuthor(const string n);
 
-    void setGenre(const std::string& n);
+    void setGenre(const string& n);
 
     void setPublisher(const string n);
 
@@ -143,7 +128,7 @@ public:
 
     string getPublisher() const;
 
-    std::string getGenre() const;
+    string getGenre() const;
 
     int getAvailableNum() const;
 
@@ -157,7 +142,7 @@ public:
 
 
 class Member{
-private:
+protected:
     string userID;
     string userName;
     string password;
@@ -193,6 +178,10 @@ class Student : public Member, public MyString{
 private:
 
 public:
+    Student();
+    Student(const string& ID, const string& user, const string& pass);
+    Student(const Member& other);
+    ~Student();
     void requestLoan();
     void returnBook();
 };
@@ -202,6 +191,10 @@ private:
 
 public:
     Librarian();
+    Librarian(const string& ID, const string& user, const string& pass);
+    Librarian(const Member& other);
+    ~Librarian();
+
     void addBook();
     void removeBook();
     void updateBook();
