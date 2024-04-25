@@ -38,9 +38,63 @@
 
 int main()
 {
+    /*void addBook();
+    void removeBook();
+    void updateBook();
+    void viewMembers();
+    void addMember();
+    void removeMember();
+    void processLoanRequest();
+    8. void generateReports();
+    9. log out;
+    */
 
+    Librarian librarian;
+    librarian.addMember();
+    int option = 0;
     Member* member = nullptr;
-    member =  member->login();
-    member->addBook();
-    member->addMember();
+    member = member->login();
+    if (member->getrole() == 0) {
+        cout << "Please choose one of the below options" << endl;
+        while (option != 9) {
+            cout << "1: Add Book" << endl;
+            cout << "2: Remove Book" << endl;
+            cout << "3: Update Book" << endl;
+            cout << "4: View Members" << endl;
+            cout << "5: Add Members" << endl;
+            cout << "6: Remove Members" << endl;
+            cout << "7: Process Loan Requests" << endl;
+            cout << "8: Generate Report" << endl;
+            cout << "9: Manage Account" << endl;
+            cout << "10: Quit" << endl;
+
+            cin >> option;
+            if (option == 1) {
+                member->addBook();
+            } else if (option == 2) {
+                member->removeBook();
+            } else if (option == 3) {
+                member->updateBook();
+            } else if (option == 4) {
+                member->viewMembers();
+            } else if (option == 5) {
+                member->addMember();
+            } else if (option == 6) {
+                member->removeMember();
+            } else if (option == 7) {
+                member->processLoanRequest();
+            } else if (option == 8) {
+                member->generateReports();
+            } else if (option == 9) {
+                member->manageAccount();
+            } else if (option == 10) {
+                return 0;
+            } else {
+                cout << "Invalid Input" << endl;
+            }
+        }
+    } else if (member->getrole() == 1) {
+        cout << "Haven't coded this part yet"<<endl;
+    }
+
 }
