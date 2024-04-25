@@ -52,15 +52,7 @@ enum Role {
 };
 
 
-/*
-string genreToString(GenreList genre);
 
-string genreToString(int genre);
-*/
-
-string genreToString(const string& genre) {
-    return genre; // Return the genre as a string
-}
 
 
 class MyString {
@@ -95,7 +87,7 @@ public:
 
 
 class Book {
-private:
+protected:
     string ISBN; // Easier to use as String, otherwise it would long int, which is incompatible with some functions
     string title;
     string author;
@@ -120,6 +112,8 @@ public:
 
     void setAvailableNum(int n);
 
+    void deserialize(string);
+
     string getISBN() const;
 
     string getTitle() const;
@@ -128,7 +122,10 @@ public:
 
     string getPublisher() const;
 
+
     string getGenre() const;
+    string serialize() const;
+
 
     int getAvailableNum() const;
 
@@ -165,10 +162,10 @@ public:
     string getID() const;
     string getpassword() const;
     Role getrole()const;
-    static vector<Member> readFile(string fileName, vector<Member> &members);
-    static vector<Book> readFile(string fileName, vector<Book> &book);
-    static void writeFile(string fileName, vector<Book> books);
-    static void writeFile(string fileName, vector<Member> member);
+    string serialize() const;
+    bool is_There(string n);
+    void deserialize(string);
+
     vector<Book> searchBooks(string input);
 };
 
@@ -207,7 +204,7 @@ public:
 };
 class Loan :public Member, public Book, public MyString
 {
-private:
+protected:
     time_t loandate;
     time_t duedate;
     struct tm * duetime = localtime(&duedate);
@@ -223,12 +220,11 @@ public:
     void setduedate(time_t a);
     time_t getloandate()const;
     time_t getduedate()const;
-    string formatdate (time_t);
+    string serialize() const;
+    void deserialize(string);
+    string formatdate (time_t) const;
     time_t stringToTime(string& dateStr);
     bool is_overdue();
-    static void readFile(string fileName, vector<Loan> &loans);
-    static void writeFile(string fileName, vector<Loan> loans);
-
 };
 
 void initializeVectors(vector<Book>& books, vector<Member>& members, vector<Loan>& loans);

@@ -1,10 +1,16 @@
 #include "LibraryManagement.h"
 
+
+vector<Book> books;
+vector<Member> members;
+vector<Loan> loans;
+
 void GenreList::displayGenres() const {
     for (const auto& genre : genres) {
         cout << genre << endl;
     }
 }
+
 
 void GenreList::addGenre(const string& genre) {
     genres.push_back(genre);
@@ -25,30 +31,7 @@ vector<string> GenreList:: getGenres() const { // Made public for access
     return genres;
 }
 
-string genreToString(int genre) {
-    switch (genre) {
-        case Genre::Fiction:
-            return "Fiction";
-        case Genre::NonFiction:
-            return "Non-Fiction";
-        case Genre::Mystery:
-            return "Mystery";
-        case Genre::Romance:
-            return "Romance";
-        case Genre::ScienceFiction:
-            return "Science Fiction";
-        case Genre::Biography:
-            return "Biography";
-        case Genre::History:
-            return "History";
-        case Genre::Poetry:
-            return "Poetry";
-        case Genre::Philosophy:
-            return "Philosophy";
-        default:
-            return "Other";
-    }
-}
+
 //-----------------------------------------------------
 // This function is redundant.
 //-----------------------------------------------------
@@ -85,20 +68,79 @@ bool MyString::operator==(const MyString& other) const {
     return (str == other.str);
 }
 
+
+
+template<typename T>
+void writeFile(string fileName,vector<T>& data) {
+    ofstream file(fileName, ios::out | ios::trunc); // Open file for writing (truncating the existing content)
+    if (!file.is_open()) {
+        cout << "Unable to open file." << endl;
+        return;
+    }
+
+    for (const auto& item : data) {
+        file << item.serialize() << '\n';
+    }
+
+    file.close();
+}
+
+template<typename T>
+vector<T> readFile(const string& fileName, vector<T>& data) {
+    ifstream file(fileName);
+    if (!file.is_open()) {
+        cout << "Unable to open file (READ)." << endl;
+        return data;
+    }
+    string line;
+    while (getline(file, line)) {
+        T item;
+        item.deserialize(line);
+        data.push_back(item);
+    }
+    file.close();
+    return data;
+}
+
+
+
 //start of Book class functions
 
 // Setter and Getter methods for each member variable
+string Book::serialize() const {
+    stringstream ss;
+    ss << ISBN << '|'
+       << title << '|'
+       << author << '|'
+       << genre << '|'
+       << publisher << '|'
+       << available;
+    return ss.str();
+}
+void Book::deserialize(string serializedData) {
+    stringstream ss(serializedData);
+    getline(ss, ISBN, '|');
+    getline(ss, title, '|');
+    getline(ss, author, '|');
+    getline(ss, genre,'|');
+    getline(ss, publisher,'|');
+
+    ss >> available;
+
+}
+
+
 void Book::setISBN(const string num){ ISBN = num; }
 void Book::setTitle(const string n){title = n; }
 void Book::setAuthor(const string n){author = n;}
-void Book::setGenre(const int n){genre = static_cast<Genre>(n); }
 void Book::setPublisher(const string n){publisher = n;}
 void Book::setAvailableNum(int n){available = n;}
+void Book::setGenre(const string &n) { genre = n;}
 string Book:: getISBN() const { return ISBN; }
 string Book:: getTitle() const { return title; }
 string Book::getAuthor() const { return author; }
 string Book::getPublisher()const{ return publisher; }
-int Book::getGenre() const { return genre; }
+string Book::getGenre() const {return genre;}
 int Book::getAvailableNum() const { return available; }
 //Unary function overloading:
 // Prefix Increment Operator
@@ -157,7 +199,6 @@ Member::Member(std::string ID, std::string user, std::string pass):userID(ID), u
 Member::Member(const Member& other): userID(other.userID), userName(other.userName), password(other.password) {}
 // Destructor
 Member::~Member() {}
-
 void Member::setRole(Role n){role = (n);}
 void Member::setname (string name) {userName = name;}
 void Member::setID(string id){userID = id;}
@@ -166,6 +207,32 @@ string Member::getname()const{return userName;}
 string Member::getID() const {return userID;}
 string Member::getpassword() const {return password;}
 Role Member::getrole()const{return role;}
+string Member::serialize() const {
+    stringstream ss;
+    ss << role << '|'
+       << userName << '|'
+       << userID << '|'
+       << password;
+    return ss.str();
+}
+void Member::deserialize(string serializedData) {
+    stringstream ss(serializedData);
+    string roleStr, name, id, pass;
+    getline(ss, roleStr, '|');
+    istringstream iss(roleStr);
+    int num;
+    iss >> num;
+    role = static_cast<Role>(num); // Convert role string to enum
+    getline(ss, name,'|');
+    userName = name;
+    getline(ss, id, '|');
+    userID = id;
+    getline(ss, pass, '|');
+    password = pass;
+}
+
+
+
 
 Member* Member::login() {
     string tempID;
@@ -202,115 +269,18 @@ Member* Member::login() {
     return nullptr;
 }
 
-/* Reads from Book file in the following order:
- * Book ISBN
- * Book Title
- * Book Author
- * Book Genre
- * Book Publisher
- * Number Availble of Book
- */
-
-vector<Member> Member::readFile(string fileName, vector<Member> &members) {
-    ifstream file(fileName);  // Open file for reading
-
-    if (!file.is_open()) {
-        cout << "Unable to open file." << endl;
-        return members;
-    }
-
-    int num;
-    string line;
-    Member tempmember;
-
-    while (getline(file, line)) {
-        num = stoi(line);
-        tempmember.setRole(static_cast<Role>(num));
-        getline(file, line); tempmember.setname(line);
-        getline(file, line); tempmember.setID(line);
-        getline(file, line); tempmember.setpassword(line);
-        members.push_back(tempmember);  // Add Member to vector
-    }
-    file.close();
-    return members;
-
-}
-vector<Book>  Member:: readFile(string fileName, vector<Book> &books) {
-    ifstream file(fileName);  // Open file for reading
-    if (!file.is_open()) {
-        cout << "Unable to open file." << endl;
-        return books;
-    }
-
-    string line;
-    while (getline(file, line)) {
-        Book tempBook;
-        tempBook.setISBN(line);
-        getline(file, line); tempBook.setTitle(line);
-        getline(file, line); tempBook.setAuthor(line);
-        getline(file, line); tempBook.setPublisher(line);
-        getline(file, line); tempBook.setGenre(static_cast<Genre>(stoi(line)));
-        getline(file, line); tempBook.setAvailableNum(stoi(line));
-        books.push_back(tempBook);  // Add book to vector
-    }
-    file.close();
-    return books;
-}
-
-void Member ::writeFile(string fileName, vector<Book> books) {
-    // Open file for writing (assuming the path is correct and accessible)
-    ofstream file(fileName, ios::out | ios::trunc); // This will clear the existing content
-    if (!file.is_open()) {
-        cout << "Unable to open file." << endl;
-        return;
-    }
-
-    // Write all books back, including the updated availability of this book
-    for (const auto& book : books) {
-        file << book.getISBN() << '\n';
-        file << book.getTitle() << '\n';
-        file << book.getAuthor() << '\n';
-        file << book.getPublisher() << '\n';
-        file << book.getGenre() << '\n';
-        file << book.getAvailableNum() << '\n';
-    }
-
-    file.close();  // Close the file after writing
-
-}
-void Member ::writeFile(string fileName, vector<Member> members) {
-    // Open file for writing (assuming the path is correct and accessible)
-    ofstream file(fileName, ios::out | ios::trunc); // This will clear the existing content
-    if (!file.is_open()) {
-        cout << "Unable to open file." << endl;
-        return;
-    }
-
-    // Write all books back, including the updated availability of this book
-    for (const auto& member : members) {
-        file << (member.getrole()) << '\n';
-        file << member.getname() << '\n';
-        file << member.getID() << '\n';
-        file << member.getpassword() << '\n';
-    }
-
-    file.close();  // Close the file after writing
-
-}
-
 void Member::manageAccount(){
     //change password?
 
 }
 
 vector<Book> Member::searchBooks(string input) {
-
-    vector<Book> books;
+    books.clear();
     readFile("Books.txt", books);
     vector<Book> searchResults;
     for (const auto & book : books) {
         if (input == book.getISBN() || input == book.getTitle() || input == book.getAuthor() ||
-        input == to_string(book.getGenre()) || input == book.getPublisher()) {
+        input == book.getGenre() || input == book.getPublisher()) {
             searchResults.push_back(book);
         }
     }
@@ -330,9 +300,8 @@ Student::Student(const Member& other) : Member(other) {}
 Student::~Student() {}
 
 void Student :: requestLoan(){
-    vector<Book> books;// Vector to store books read from file
-    vector<Loan> loans;
-    readFile("Book.txt", books);
+    books.clear();
+    readFile("Books.txt", books);
 
     // Display available books and prompt user to select a book to remove
     cout << "Available Books:" << endl;
@@ -351,55 +320,34 @@ void Student :: requestLoan(){
         cin >> days;
         temp.set_loan(days);
 
-        fstream file("Loan.txt", ios :: app);  // Open file for writing (truncating the existing content)
-        if (!file.is_open()) {
-            cout << "Unable to open file." << endl;
-            return;
-        }
+        Member wtv;
+        wtv.setname("amr");
+        wtv.setID("22-101097");
 
-        Member amr;
-        file <<books[choice-1].getISBN() << endl;
-        file <<books[choice-1].getTitle() << endl;
-        file <<books[choice-1].getAuthor() << endl;
-        file << amr.getname()<<endl;
-        file << amr.getID()<<endl;
-        file << temp.formatdate(temp.getloandate()) << endl;
-        file << temp.formatdate(temp.getduedate()) << endl;
-        file << "0" << endl;
-        file.close();  // Close the file
+        readFile("Loan.txt", loans);
+        Loan tempLoan;
+        tempLoan.setISBN(books[choice-1].getISBN());
+        tempLoan.setTitle(books[choice-1].getTitle());
+        tempLoan.setAuthor(books[choice-1].getAuthor());
+        tempLoan.setname(wtv.getname());
+        tempLoan.setID(wtv.getID());
+        tempLoan.setloandate(temp.getloandate());
+        tempLoan.setduedate(temp.getduedate());
+        tempLoan.setloanstatus(0);
+
+        loans.push_back(tempLoan);
+        writeFile("Loan.txt",loans);
+
     }
 }
 void Student::returnBook(){
-    vector<Loan> loans; // Vector to store books read from file
+
     Member amr;
-    fstream file("Loan.txt", ios::in);  // Open file for reading
-
-    if (!file.is_open()) {
-        cout << "Unable to open file." << endl;
-        return;
-    }
-
     // Replace Here with New Loan Function
 
     // Read books from file
-    string line;
-    while (getline(file, line)) {
-        Loan tempLoan;
-        tempLoan.setISBN(line);
-        getline(file, line); tempLoan.setTitle(line);
-        getline(file, line); tempLoan.setAuthor(line);
-        getline(file, line); tempLoan.setname(line);
-        getline(file, line); tempLoan.setID(line);
-        getline(file, line); tempLoan.setloandate(tempLoan.stringToTime(line));
-        getline(file, line); tempLoan.setduedate(tempLoan.stringToTime(line));
-        getline(file, line);
-        if(line == "0")
-        tempLoan.setloanstatus(0);
-        else
-            tempLoan.setloanstatus(1);
-        loans.push_back(tempLoan);  // Add book to vector
-    }
-    file.close();  // Close the file
+    loans.clear();
+    readFile("Loan.txt",loans);
 
     // Display available books and prompt user to select a book to remove
     cout << "Books you've taken:" << endl;
@@ -413,8 +361,7 @@ void Student::returnBook(){
     int choice;
     cout << "Enter the number of the book you want to return: ";
     cin >> choice;
-
-    vector<Book> books;
+    books.clear();
     readFile("Books.txt", books);
 
     if (choice >= 1 && choice <= static_cast<int>(loans.size())) {
@@ -433,24 +380,7 @@ void Student::returnBook(){
 
 
         // Write remaining books back to file
-        file.open("Loan.txt", ios::out | ios::trunc);  // Open file for writing (truncating the existing content)
-        if (!file.is_open()) {
-            cout << "Unable to open file." << endl;
-            return;
-        }
-
-        for (auto& loan : loans) {
-            file << loan.getISBN() << '\n';
-            file << loan.getTitle() << '\n';
-            file << loan.getAuthor() << '\n';
-            file << loan.getname() << '\n';
-            file << loan.getID() << '\n';
-            file << loan.formatdate(loan.getloandate()) << '\n';
-            file << loan.formatdate(loan.getduedate()) << '\n';
-            file << loan.getloanstatus() << '\n';
-
-        }
-        file.close();  // Close the file
+        writeFile("Loan.txt",loans);
         cout << "Book removed successfully." << endl;
     } else {
         cout << "Invalid choice." << endl;
@@ -480,11 +410,13 @@ Librarian::~Librarian() {}
  * Number Availble of Book
  */
 void Librarian::addBook(){ // Adds book to file and returns Book
+
+    books.clear();
+    readFile("Books.txt", books);
     string Input;
     Book tempBook;
-    fstream file("Books.txt", ios :: app);
 
-    if (file.is_open()){
+
         cout << "Enter the Books Info:\n ISBN: ";
         cin>>Input;
         while(Input.length() != 13 || !all_of(Input.begin(), Input.end(), ::isdigit) ) {
@@ -505,39 +437,20 @@ void Librarian::addBook(){ // Adds book to file and returns Book
         getline(cin, Input);
         tempBook.setAuthor(Input);
 
-
+        GenreList genreList;
 // Enter Genre
         cout << "Select Genre:\n";
-        cout << "1. Fiction\n";
-        cout << "2. NonFiction\n";
-        cout << "3. Mystery\n";
-        cout << "4. Romance\n";
-        cout << "5. ScienceFiction\n";
-        cout << "6. Biography\n";
-        cout << "7. History\n";
-        cout << "8. Poetry\n";
-        cout << "9. Philosophy\n";
-        cout << "10. Other\n";
+        int index = 1;
+        for (const auto& genre : genreList.getGenres()) {
+        cout << index << ". " << genre << '\n';
+        ++index;
+    }
+
         int choice;
         cin >> choice;
         cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear input buffer
 
-        switch(choice) {
-            case 1: tempBook.setGenre(Genre::Fiction); break;
-            case 2: tempBook.setGenre(Genre::NonFiction); break;
-            case 3: tempBook.setGenre(Genre::Mystery); break;
-            case 4: tempBook.setGenre(Genre::Romance); break;
-            case 5: tempBook.setGenre(Genre::ScienceFiction); break;
-            case 6: tempBook.setGenre(Genre::Biography); break;
-            case 7: tempBook.setGenre(Genre::History); break;
-            case 8: tempBook.setGenre(Genre::Poetry); break;
-            case 9: tempBook.setGenre(Genre::Philosophy); break;
-            case 10: tempBook.setGenre(Genre::Other); break;
-            default:
-                cout << "Invalid choice. Setting genre to Other." << endl;
-                tempBook.setGenre(Genre::Other);
-                break;
-        }
+        tempBook.setGenre(genreList.getGenres()[choice-1]);
         // Write to file
 
         cout << "Enter the Publisher: ";
@@ -552,26 +465,18 @@ void Librarian::addBook(){ // Adds book to file and returns Book
             cin>>num;
         }
         tempBook.setAvailableNum(num);
+        books.push_back(tempBook);
 
-        file << tempBook.getISBN() << '\n'
-             << tempBook.getTitle() << '\n'
-             << tempBook.getAuthor() << '\n'
-             << tempBook.getPublisher() << '\n'
-             << tempBook.getGenre() << '\n'
-             << tempBook.getAvailableNum() << '\n';
-        file.close();
+    // Add the new member to the vector
 
-    } else{
-        cout << "File Failed to Open\n Press any Number to continue"<<endl;
-        cin >> Input;
-        cin.clear();
-    }
+    // Write the entire vector back to the file
+    writeFile("Books.txt", books);
 
 
 }
 
 void Librarian::removeBook() {
-    vector<Book> books;  // Vector to store books read from file
+    books.clear();
     readFile("Books.txt", books);
 
     // Display available books and prompt user to select a book to remove
@@ -594,7 +499,7 @@ void Librarian::removeBook() {
 
         // Write remaining books back to file
 
-            writeFile("Books.txt", books);
+        writeFile("Books.txt", books);
 
         cout << "Book removed successfully." << endl;
 
@@ -604,7 +509,7 @@ void Librarian::removeBook() {
 }
 
 void Librarian::updateBook(){
-    vector<Book> books;  // Vector to store books read from file
+    books.clear();
     readFile("Books.txt", books);
 
     cout << "Available Books:" << endl;
@@ -624,7 +529,7 @@ void Librarian::updateBook(){
         cout<<"2.Title Name: "<<books[choice-1].getTitle()<<endl;
         cout<<"3.Author's Name: "<<books[choice-1].getAuthor()<<endl;
         cout<<"4.Publisher's Name: "<<books[choice-1].getPublisher()<<endl;
-        cout<<"5.Genre: "<<genreToString(books[choice-1].getGenre())<<endl;
+        cout<<"5.Genre: "<<books[choice-1].getGenre()<<endl;
         cout<<"6.Available no.: "<<books[choice-1].getAvailableNum()<<endl;
         cout<<"What do you want to modify?"<<endl;
         cin>>choice2;
@@ -636,6 +541,9 @@ void Librarian::updateBook(){
         int gnre;
         int tavb;
         int choice3;
+        int i = 0;
+        int index = 1;
+        GenreList genreList;
 
         switch(choice2)
         {
@@ -649,6 +557,17 @@ void Librarian::updateBook(){
                     cin.ignore();
                     getline(cin, tISBN);
                 }
+
+                while(i!=books.size()){
+                    if(books[i].getISBN()==tISBN)
+                    {
+                        cout<<"ISBN Already Registered! Do you want to add"<<endl;
+                        getline(cin, tISBN);
+                        i = -1;
+                    }
+                    i++;
+                }
+
                 books[choice-1].setISBN(tISBN);
                 break;
             case 2:
@@ -669,37 +588,25 @@ void Librarian::updateBook(){
                 getline(cin, tpublish);
                 books[choice-1].setPublisher(tpublish);
                 break;
+
             case 5:
-                cout<<"Please choose the new genre: "<<endl;
-                cout << "1. Fiction\n";
-                cout << "2. NonFiction\n";
-                cout << "3. Mystery\n";
-                cout << "4. Romance\n";
-                cout << "5. ScienceFiction\n";
-                cout << "6. Biography\n";
-                cout << "7. History\n";
-                cout << "8. Poetry\n";
-                cout << "9. Philosophy\n";
-                cout << "10. Other\n";
+                cout << "Select Genre:\n";
+                for (const auto& genre : genreList.getGenres()) {
+                    cout << index << ". " << genre << '\n';
+                    ++index;
+                }
+
                 cin >> choice3;
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear input buffer
 
-                switch(choice3) {
-                    case 1: books[choice-1].setGenre(Genre::Fiction); break;
-                    case 2: books[choice-1].setGenre(Genre::NonFiction); break;
-                    case 3: books[choice-1].setGenre(Genre::Mystery); break;
-                    case 4: books[choice-1].setGenre(Genre::Romance); break;
-                    case 5: books[choice-1].setGenre(Genre::ScienceFiction); break;
-                    case 6: books[choice-1].setGenre(Genre::Biography); break;
-                    case 7: books[choice-1].setGenre(Genre::History); break;
-                    case 8: books[choice-1].setGenre(Genre::Poetry); break;
-                    case 9: books[choice-1].setGenre(Genre::Philosophy); break;
-                    case 10: books[choice-1].setGenre(Genre::Other); break;
-                    default:
-                        cout << "Invalid choice. Setting genre to Other." << endl;
-                        books[choice-1].setGenre(Genre::Other);
-                        break;
+                if (choice >= 1 && choice <= genreList.getGenres().size()) {
+                    books[choice3-1].setGenre(genreList.getGenres()[choice3]);
+                } else {
+                    cout << "Invalid choice. Setting genre to Other." << endl;
+                    books[choice3-1].setGenre("Other");
                 }
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear input buffer
+
                 break;
             case 6:
                 cout<<"Please enter the new available number: "<<endl;
@@ -728,12 +635,12 @@ void Librarian::updateBook(){
     }
 }
 void Librarian::viewMembers(){
-    vector<Member> members;
+    members.clear();
     readFile("Members.txt", members);  
     // Display available books and prompt user to select a book to remove
     cout << "Members:" << endl;
     for (size_t i = 0; i < members.size(); i++) {
-        cout << i + 1 << ". " << members[i].getname() << " || " << members[i].getID() << endl;
+        cout << i + 1 << ". " << members[i].getname() << " || " << members[i].getID() <<endl;
     }
 }
 
@@ -743,53 +650,54 @@ void Librarian::viewMembers(){
  * Member ID
  * Member Password
  */
-void Librarian::addMember(){
+void Librarian::addMember() {
     string Input;
     Member tempMember;
-    fstream file("Members.txt", ios :: app);
-
-    if (file.is_open()){
-        int userchoice;
-        cout << "Enter the Member Info:\n Is the member:\n1. Librarian\n2. Student \n";
-        cin>>userchoice;
-        while(userchoice < 1 || userchoice > 2)
-        {
-            cout<<"Invalid choice! Pick again."<<endl;
-            cin>>userchoice;
-        }
-        file << userchoice << '\n';
-        cin.ignore();
-        tempMember.setRole(static_cast<Role>(userchoice));
-
-
-        cout << "Enter the Member's Name: ";
-        getline(cin, Input);
-        tempMember.setname(Input);
-        file << Input << '\n';
-
-        cout << "Enter the Member's ID: ";
-        getline(cin, Input);
-        //searches if ID exists somewhere
-        tempMember.setID(Input);
-        file << Input << '\n';
-
-        cout << "Enter the Member's Password: ";
-        getline(cin, Input);
-        tempMember.setpassword(Input);
-        file << Input << '\n';
-
-        file.close();
-
-    } else{
-        cout << "File Failed to Open\n Press any Number to continue"<<endl;
-        cin >> Input;
-        cin.clear();
+    members.clear();
+    readFile("Members.txt", members);
+    int userchoice;
+    cout << "Enter the Member Info:\n Is the member:\n1. Librarian\n2. Student \n";
+    cin >> userchoice;
+    while (userchoice < 1 || userchoice > 2) {
+        cout << "Invalid choice! Pick again." << endl;
+        cin >> userchoice;
     }
-}
-void Librarian::removeMember(){
-    vector<Member> members;
-    readFile("Members.txt", members);  // Vector to store books read from file
+    tempMember.setRole(static_cast<Role>(userchoice));
 
+    cout << "Enter the Member's Name: " << endl;
+    cin.ignore();
+    getline(cin, Input);
+    tempMember.setname(Input);
+
+    cout << "Enter the Member's ID: ";
+    getline(cin, Input);
+    int i = 0;
+    while(i!=members.size()){
+        if(members[i].getID()==Input)
+        {
+            cout<<"User Already Registered! Try a different username"<<endl;
+            getline(cin, Input);
+            i = -1;
+        }
+        i++;
+    }
+    tempMember.setID(Input);
+
+    cout << "Enter the Member's Password: ";
+    getline(cin, Input);
+    tempMember.setpassword(Input);
+
+
+    // Add the new member to the vector
+    members.push_back(tempMember);
+
+    // Write the entire vector back to the file
+    writeFile("Members.txt", members);
+}
+
+void Librarian::removeMember(){
+    members.clear();
+    readFile("Members.txt", members);  // Vector to store books read from file
     // Display available books and prompt user to select a book to remove
     cout << "Members:" << endl;
     for (size_t i = 0; i < members.size(); ++i) {
@@ -810,34 +718,10 @@ void Librarian::removeMember(){
     }
 }
 void Librarian ::processLoanRequest(){
-    vector<Loan> loans; // Vector to store books read from file
     Member amr;
-    fstream file("Loan.txt", ios::in);  // Open file for reading
+    loans.clear();
+    readFile("Loan.txt", loans);
 
-    if (!file.is_open()) {
-        cout << "Unable to open file." << endl;
-        return;
-    }
-
-    // Read books from file
-    string line;
-    while (getline(file, line)) {
-        Loan tempLoan;
-        tempLoan.setISBN(line);
-        getline(file, line); tempLoan.setTitle(line);
-        getline(file, line); tempLoan.setAuthor(line);
-        getline(file, line); tempLoan.setname(line);
-        getline(file, line); tempLoan.setID(line);
-        getline(file, line); tempLoan.setloandate(tempLoan.stringToTime(line));
-        getline(file, line); tempLoan.setduedate(tempLoan.stringToTime(line));
-        getline(file, line);
-        if(line == "0")
-            tempLoan.setloanstatus(0);
-        else
-            tempLoan.setloanstatus(1);
-        loans.push_back(tempLoan);  // Add book to vector
-    }
-    file.close();  // Close the file
 
     // Display available books and prompt user to select a book to remove
     cout << "Books that were requested for loan" << endl;
@@ -853,8 +737,7 @@ void Librarian ::processLoanRequest(){
     int choice;
     cout << "Enter the number of the book you want to approve: ";
     cin >> choice;
-    vector<Book> books;
-
+    books.clear();
     readFile("Books.txt", books);
 
     if (choice >= 1 && choice <= static_cast<int>(loans.size())) {
@@ -872,28 +755,8 @@ void Librarian ::processLoanRequest(){
 
             writeFile("Books.txt", books);
 
-
-
-        // Write remaining books back to file
-        file.open("Loan.txt", ios::out | ios::trunc);  // Open file for writing (truncating the existing content)
-        if (!file.is_open()) {
-            cout << "Unable to open file." << endl;
-            return;
-        }
-
-        for (auto& loan : loans) {
-            file << loan.getISBN() << '\n';
-            file << loan.getTitle() << '\n';
-            file << loan.getAuthor() << '\n';
-            file << loan.getname() << '\n';
-            file << loan.getID() << '\n';
-            file << loan.formatdate(loan.getloandate()) << '\n';
-            file << loan.formatdate(loan.getduedate()) << '\n';
-            file << loan.getloanstatus() << '\n';
-
-        }
-        file.close();  // Close the file
-        cout << "Book removed successfully." << endl;
+        writeFile("Loan.txt",loans);
+        cout << "Book request has been approved." << endl;
     } else {
         cout << "Invalid choice." << endl;
     }
@@ -933,6 +796,41 @@ time_t Loan :: getduedate()const
     return duedate;
 }
 
+string Loan::serialize() const {
+    stringstream ss;
+    ss << ISBN << '|'
+       << title << '|'
+       << author << '|'
+       << userName << '|'
+       << userID << '|'
+       << formatdate(duedate)<<'|'
+       << formatdate(loandate)<<'|'
+       << loanstatus;
+
+    return ss.str();
+}
+
+void Loan::deserialize(string serializedData) {
+    stringstream ss(serializedData);
+    getline(ss, ISBN);
+    getline(ss, title);
+    getline(ss, author);
+    getline(ss, userName);
+    getline(ss, userID);
+    string loandateStr;
+    getline(ss, loandateStr);
+    loandate = stringToTime(loandateStr);
+    string duedateStr;
+    getline(ss, duedateStr);
+    duedate = stringToTime(duedateStr);
+    int status;
+    ss >> status;
+    loanstatus = static_cast<char>(status);
+    ss.ignore(); // Ignore the newline character
+}
+
+
+
 void Loan ::setduedate(time_t a) {
     duedate = a;
     duetime = localtime(&duedate);
@@ -943,9 +841,10 @@ void Loan::setloandate(time_t a) {
     loantime = localtime(&loandate);
 }
 
-string Loan ::formatdate(time_t a) {
+string Loan ::formatdate(time_t a) const{
     string s;
-    struct tm * date = localtime(&a);
+    time_t temp = a;
+    struct tm * date = localtime(&temp);
     s = to_string(date->tm_mday) + "/" + to_string(date->tm_mon + 1) + "/" + to_string(date->tm_year + 1900);
     return s;
 }
@@ -969,21 +868,15 @@ bool Loan::is_overdue() {
     return difftime(now, duedate) > 0; // Check if current time is past the due date
 }
 
-void Loan::readFile(string fileName, vector<Loan> &loans) {
-
-}
-
-void Loan::writeFile(string fileName, vector<Loan> loans) {
-
-}
 
 //End of Loan Derived class functions
 
 //-----------------------------------------------
 
 
-void initializeVectors(vector<Book> &books, vector<Member> &members, vector<Loan> &loans) {
-    Member :: readFile("Books.txt", books);
-    Member :: readFile("Members.txt", members);
-    Loan :: readFile("Loans.txt", loans);
+void initializeVectors() {
+    readFile("Books.txt", books);
+    readFile("Members.txt", members);
+    readFile("Loans.txt", loans);
 }
+
