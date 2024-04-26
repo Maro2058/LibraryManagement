@@ -1,0 +1,2 @@
+1234567890123|The Great Gatsby|Fitzgerald|Fiction|somePublisher|5
+1234567890132|newTitle|someAuthor|Programming|somePublisher|7
