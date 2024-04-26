@@ -490,11 +490,17 @@ void Student::returnBook(){
     readFile("Loan.txt",loans);
     vector<size_t> filteredIndices;
 
+    bool flag = false;
 // Populate filteredIndices with indices of loans that meet the criteria
     for (size_t i = 0; i < loans.size(); ++i) {
         if ((loans[i].getID() == this->getID()) && loans[i].getloanstatus() == 1) {
             filteredIndices.push_back(i);
+            flag = true;
         }
+    }
+    if (flag == false) {
+        cout << "You have no books to return"<<endl;
+        return;
     }
 
 // Display available books and prompt user to select a book to return

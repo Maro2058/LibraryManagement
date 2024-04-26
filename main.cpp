@@ -88,6 +88,7 @@ int main() {
                     break;
                 case 3:
                     user->manageAccount();
+                break;
                 case 4:
                     user->UserReport();
                 break;
