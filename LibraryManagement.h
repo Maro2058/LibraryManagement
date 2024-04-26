@@ -10,8 +10,9 @@
 #include <algorithm> // for std::all_of
 #include <cctype>    // for std::isdigit
 #include <vector>
-#include <string.h>
-
+#include <map>
+#include <limits>
+#include <cmath>
 using namespace std;
 
 class GenreList {
@@ -100,13 +101,13 @@ protected:
     string userName;
     string password;
     string role;
-    int fines;
+    double fine;
 
 public:
 
     Member() = default;
     Member(const Member& other);
-    Member(string role, string ID, string user, string pass);
+    Member(string role, string ID, string user, string pass, double f);
     ~Member();
 
 
@@ -115,10 +116,13 @@ public:
     void setname (string name);
     void setID(string id);
     void setpassword(string pass);
+    void setfine(time_t a);
+    void setfine();
     string getname()const;
     string getID() const;
     string getpassword() const;
     string getrole()const;
+    double getfine()const;
 
     string serialize() const;
     void deserialize(string);
@@ -140,6 +144,7 @@ public:
     virtual void generateReports();
     virtual void manageMembers();
     virtual void manageBooks();
+    virtual void UserReport();
 };
 
 
@@ -149,12 +154,13 @@ private:
 
 public:
     Student();
-    Student(const string& role, const string& ID, const string& user, const string& pass);
+    Student(const string& role, const string& ID, const string& user, const string& pass, double f);
     Student(const Member& other);
     ~Student();
 
     void requestLoan();
     void returnBook();
+    void UserReport();
 };
 
 class Librarian : public Member{
@@ -162,7 +168,7 @@ private:
 
 public:
     Librarian();
-    Librarian(const string& role, const string& ID, const string& user, const string& pass);
+    Librarian(const string& role, const string& ID, const string& user, const string& pass, double f);
     Librarian(const Member& other);
     ~Librarian();
 
@@ -173,7 +179,7 @@ public:
     void addMember();
     void removeMember();
     void processLoanRequest();
-    void generateReports();
+    void StudentReports();
     void manageMembers();
     void manageBooks();
 
@@ -192,9 +198,10 @@ public:
     //void set_loan(int days);
     void setloanstatus(int a);
     int getloanstatus () const;
-    void setduedate(int a);
+    void setduedate(double);
+    void setduedate(int);
     time_t getduedate()const;
-    void setLoanDate(time_t a);
+    void setLoanDate();
     time_t getloandate()const;
 
     string serialize() const;

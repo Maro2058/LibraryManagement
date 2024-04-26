@@ -196,9 +196,9 @@ Book Book::operator--(int) {
 
 Member* theuser = nullptr;
 // Parameterized constructor
-Member::Member(string r, string ID, string user, string pass):role(r), userID(ID), userName(user), password(pass) {}
+Member::Member(string r, string ID, string user, string pass, double f):fine(f), role(r), userID(ID), userName(user), password(pass) {}
 // Copy constructor
-Member::Member(const Member& other):role(other.role), userID(other.userID), userName(other.userName), password(other.password) {}
+Member::Member(const Member& other): fine(other.fine),role(other.role), userID(other.userID), userName(other.userName), password(other.password) {}
 // Destructor
 Member::~Member() {}
 
@@ -207,10 +207,29 @@ void Member::setRole(string n){role = (n);}
 void Member::setname (string name) {userName = name;}
 void Member::setID(string id){userID = id;}
 void Member::setpassword(string pass){password = pass;}
+void Member::setfine(time_t a) {
+    double rate = 20;
+    time_t now = time(nullptr);
+    double difference = difftime(now, a);
+
+    if(difference > 0)
+    {
+        int daysLate = static_cast<int>(ceil(difference / (60 * 60 * 24)));
+
+        // Calculate the fine
+        fine += (daysLate * rate);
+    }
+    else
+        fine = 0;
+
+}
+
+void Member :: setfine(){fine = 0;}
 string Member::getname()const{return userName;}
 string Member::getID() const {return userID;}
 string Member::getpassword() const {return password;}
 string Member::getrole()const{return role;}
+double Member::getfine() const {return fine;}
 
 // Formats the way Members are stored in files
 string Member::serialize() const {
@@ -219,7 +238,8 @@ string Member::serialize() const {
     ss << role << '|'
        << userName << '|'
        << userID << '|'
-       << password;
+       << password<<'|'
+       << fine;
     return ss.str(); // Returns string
 }
 
@@ -237,6 +257,8 @@ void Member::deserialize(string serializedData) {
     userID = id;
     getline(ss, pass, '|');
     password = pass;
+    ss >> fine;
+
 }
 
 // Login function
@@ -409,13 +431,15 @@ void Member::manageBooks() {
     //Doesn't do Anything
 }
 
+void Member::UserReport() {}
+
 //end of member class functions
 //-------------------------------------------
 //Start of Student Derived class functions
 
 Student::Student() : Member() {}
 // Parameterized constructor
-Student::Student(const string& role, const string& ID, const string& user, const string& pass): Member(role, ID, user, pass) {}
+Student::Student(const string& role, const string& ID, const string& user, const string& pass, double f): Member(role, ID, user, pass, f) {}
 // Copy constructor
 Student::Student(const Member& other) : Member(other) {}
 // Destructor
@@ -467,7 +491,7 @@ void Student::returnBook(){
 // Display available books and prompt user to select a book to return
     cout << "Books you've taken:" << endl;
     for (size_t i = 0; i < filteredIndices.size(); ++i) {
-        cout << i + 1 << ". " << loans[filteredIndices[i]].getTitle() << " by " << loans[filteredIndices[i]].getAuthor() << " due: " << loans[filteredIndices[i]].formatdate(loans[filteredIndices[i]].getloandate()) << endl;
+        cout << i + 1 << ". " << loans[filteredIndices[i]].getTitle() << " by " << loans[filteredIndices[i]].getAuthor() << " due: " << loans[filteredIndices[i]].formatdate(loans[filteredIndices[i]].getduedate()) << endl;
     }
 
     int choice;
@@ -475,6 +499,9 @@ void Student::returnBook(){
     cin >> choice;
     books.clear();
     readFile("Books.txt", books);
+    members.clear();
+    readFile("Members.txt",members);
+
 
 // Adjust the user's choice to match the correct index in the loans vector
     if (choice >= 1 && choice <= static_cast<int>(filteredIndices.size())) {
@@ -487,16 +514,45 @@ void Student::returnBook(){
                books[i]++;
            }
        }
+
+        for(int i = 0; i< members.size();i++)
+        {
+            if(theuser->getID()==members[i].getID())
+            {
+                members[i].setfine(loans[selectedLoanIndex].getduedate());
+            }
+        }
         loans.erase(loans.begin() + selectedLoanIndex);
 
         // Write remaining books back to file
         // Write remaining loans back to file
         writeFile("Loan.txt", loans);
         writeFile("Books.txt",books);
+        writeFile("Members.txt", members);
         cout << "Book removed successfully." << endl;
     } else {
         cout << "Invalid choice." << endl;
     }
+}
+
+void Student::UserReport() {
+    loans.clear();
+    readFile("Loan.txt", loans);
+    int i = 1;
+    double totalfines = 0;
+    cout<<"User Name: "<<theuser->getname()<<endl;
+    cout<<"User ID: "<<theuser->getID()<<endl;
+    cout<<"Books Loaned:"<<endl;
+    for(const auto &loan: loans)
+    {
+        if(loan.getID() == theuser->getID())
+        {
+            cout<<i<<". "<<loan.getTitle()<<"|| Due Date: "<< loan.formatdate(loan.getduedate())<<endl;
+            totalfines += loan.getfine();
+            ++i;
+        }
+    }
+    cout<<"User fine: "<<theuser->getfine()<<"$"<<endl;
 }
 
 //End of Student Derived class functions
@@ -505,7 +561,7 @@ void Student::returnBook(){
 
 Librarian::Librarian() : Member() {cout << "librarian created" ;}
 // Parameterized constructor
-Librarian::Librarian(const string& role, const string& ID, const string& user, const string& pass): Member(role, ID, user, pass) {cout << "librarian created" ;}
+Librarian::Librarian(const string& role, const string& ID, const string& user, const string& pass, double f): Member(role, ID, user, pass, f) {cout << "librarian created" ;}
 // Copy constructor
 Librarian::Librarian(const Member& other) : Member(other) {cout << "librarian created" ;}
 // Destructor
@@ -773,8 +829,9 @@ void Librarian::addMember() {
     tempMember.setID(Input);
 
     cout << "Enter the Member's Password: ";
-    getline(cin, Input);
+    cin>>Input;
     tempMember.setpassword(Input);
+    tempMember.setfine();
 
     members.push_back(tempMember);
 
@@ -847,6 +904,9 @@ void Librarian ::processLoanRequest(){
             }
         }
         loans[selectedLoanIndex].setloanstatus(1);
+        double days = difftime((loans[selectedLoanIndex].getduedate()),(loans[selectedLoanIndex].getloandate()));
+        loans[selectedLoanIndex].setLoanDate();
+        loans[selectedLoanIndex].setduedate(days);
         writeFile("Books.txt", books);
         writeFile("Loan.txt",loans);
         cout << "Book request has been approved." << endl;
@@ -855,13 +915,18 @@ void Librarian ::processLoanRequest(){
     }
 }
 
-void Librarian::generateReports(){
-    /*
-    Loan stats for each genre
-    The lowest loaned genres
-    Stats by term or month
-    Top Borrowers
-    */
+void Librarian::StudentReports() {
+    // Read loans data from file
+    loans.clear();
+    readFile("Loan.txt", loans);
+    // Map to store user IDs and their corresponding loan counts
+    // Iterate through the loans vector and count loans for each user
+    for(const auto &loan : loans)
+    {
+        if(loan.getloanstatus() == 1)
+        cout<<"User ID: "<< loan.getID()<<"|| Book Loaned: "<< loan.getTitle()<<"|| due date: "<<loan.formatdate(loan.getduedate())<<endl;
+    }
+    // Display the loan counts for each user
 }
 
 // Sub Menu to call Member functions
@@ -932,15 +997,22 @@ Loan:: Loan() {
 // Setter and Getter Functions
 void Loan::setloanstatus(int a) {loanstatus = a;}
 int Loan::getloanstatus() const {return loanstatus;}
-void Loan ::setduedate(int a) {
+void Loan :: setduedate(int a){
     loandate = time(nullptr);
-    duedate = loandate + a *24*60*60;
+    duedate = loandate + a*24*60*60;
     duetime = localtime(&duedate);
     loantime = localtime(&loandate);
 }
+void Loan ::setduedate(double a) {
+    loandate = time(nullptr);
+    duedate = loandate + a;
+    duetime = localtime(&duedate);
+    loantime = localtime(&loandate);
+}
+
 time_t Loan :: getduedate()const {return duedate;}
-void Loan::setLoanDate(time_t a) {
-    loandate = a;
+void Loan::setLoanDate() {
+    loandate = time(nullptr);
     loantime = localtime(&loandate);
 }
 time_t Loan :: getloandate()const {return loandate;}
@@ -976,7 +1048,7 @@ void Loan::deserialize(string serializedData) {
     duedate = stringToTime(duedateStr);
     int status;
     ss >> status;
-    loanstatus =status;
+    loanstatus = status;
 }
 
 // Writes date in dd/mm/yyyy format

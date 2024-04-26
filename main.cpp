@@ -84,6 +84,7 @@ int main() {
         } else if (typeid(*theuser) == typeid(Student)) {
             cout << "1. Request loan"<<endl;
             cout << "2. Return Book"<<endl;
+            cout << "3. UserReport"<<endl;
 
             cin >> option;
             switch(option)
@@ -93,6 +94,9 @@ int main() {
                     break;
                 case 2:
                     theuser->returnBook();
+                    break;
+                case 3:
+                    theuser->UserReport();
                     break;
                 default:
                     break;
