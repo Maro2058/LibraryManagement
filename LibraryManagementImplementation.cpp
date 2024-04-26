@@ -201,6 +201,8 @@ Member::Member(string r, string ID, string user, string pass):role(r), userID(ID
 Member::Member(const Member& other):role(other.role), userID(other.userID), userName(other.userName), password(other.password) {}
 // Destructor
 Member::~Member() {}
+
+// Setter & Getter Functions
 void Member::setRole(string n){role = (n);}
 void Member::setname (string name) {userName = name;}
 void Member::setID(string id){userID = id;}
@@ -210,18 +212,23 @@ string Member::getID() const {return userID;}
 string Member::getpassword() const {return password;}
 string Member::getrole()const{return role;}
 
+// Formats the way Objects are stored in files
 string Member::serialize() const {
-    stringstream ss;
+    stringstream ss; // Makes a string stream called ss
 
     ss << role << '|'
        << userName << '|'
        << userID << '|'
        << password;
-    return ss.str();
+    return ss.str(); // Returns string
 }
+
+// Extracts attributes from serialized text
 void Member::deserialize(string serializedData) {
-    stringstream ss(serializedData);
+    stringstream ss(serializedData); //Passes serialized Data to string stream
     string roleStr, name, id, pass;
+
+    //string stream seperates the serialized data into component attributes
     getline(ss, roleStr, '|');
     role = roleStr;
     getline(ss, name,'|');
@@ -232,6 +239,7 @@ void Member::deserialize(string serializedData) {
     password = pass;
 }
 
+// Login function
 Member* Member::login() {
     string tempID;
     string tempPass;
@@ -239,13 +247,12 @@ Member* Member::login() {
     getline(cin, tempID);
     cout << "Enter Password: ";
     getline(cin, tempPass);
-    //creates a vector of Member objects to read
 
-
+    //creates a vector of Member objects to read into
     vector<Member> members;
     readFile("Members.txt", members);
 
-    // Iterate over all members
+    // Iterate over all members to look for login info
     for (size_t i = 0; i < members.size(); i++) {
         if(members[i].getrole()== "Admin"){
             if (members[i].getID() == tempID && members[i].getpassword() != tempPass) {
@@ -273,6 +280,7 @@ Member* Member::login() {
     return nullptr;
 }
 
+// Virtual Functions
 void Member::addBook() {
     // Virtual Function.
     //Doesn't do Anything
@@ -308,14 +316,21 @@ void Member::processLoanRequest() {
     //Doesn't do Anything
 }
 
-void Member ::requestLoan() {}
-void Member::returnBook() {}
+void Member ::requestLoan() {
+    // Virtual Function.
+    //Doesn't do Anything
+}
+void Member::returnBook() {
+    // Virtual Function.
+    //Doesn't do Anything
+}
 
 void Member::generateReports() {
     // Virtual Function.
     //Doesn't do Anything
 }
 
+// Allows members to change their username or password
 void Member::manageAccount(){
     int inputInt;
     string inputString;
@@ -335,7 +350,8 @@ void Member::manageAccount(){
         return;
     }
 
-    for (auto & member : members) {
+    // Looks for Logged in user, and applies changes
+    for (auto& member : members) {
         if (member.getID() == this->getID()) {
             cout << "User Found";
             if (inputInt == 1) {
@@ -345,17 +361,17 @@ void Member::manageAccount(){
             }
         }
     }
-
     writeFile("Members.txt", members);
-
 }
 
+// Searches Saved Books for Inputted String
 void Member::searchBooks() {
     cout << "Please Enter the term you want to search for"<<endl;
     string input;
     getline(cin, input);
     books.clear();
     readFile("Books.txt", books);
+
     vector<Book> searchResults;
     for (const auto & book : books) {
         if (input == book.getISBN() || input == book.getTitle() || input == book.getAuthor() ||
@@ -381,7 +397,6 @@ Student::Student(const Member& other) : Member(other) {}
 Student::~Student() {}
 
 void Student :: requestLoan(){
-
 
     Member::viewBooks();
     loans.clear();
@@ -859,10 +874,12 @@ void Librarian::manageMembers() {
     } else if (option == 3) {
         removeMember();
     } else if (option == 4) {
-
+        return;
     } else {
         cout << "Invalid Input";
     }
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(),'\n');
 }
 
 void Librarian::manageBooks() {
@@ -887,16 +904,21 @@ void Librarian::manageBooks() {
         }else if (option == 5) {
             viewBooks();
         }else if (option == 6) {
+            return;
         }else {
             cout << "Invalid Input" << endl;
         }
-    }}
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(),'\n');
+    }
+}
 
 void Member::manageBooks() {
     // Virtual Function.
     //Doesn't do Anything
 }
 
+// Prints all Book Title and Authors for reading
 void Member::viewBooks() {
     books.clear();
     readFile("Books.txt", books);

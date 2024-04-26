@@ -59,7 +59,8 @@ int main() {
                         //cout << "2: Remove Book" << endl;
                         //cout << "3: Update Book" << endl;
                         //cout << "4: Search Books " << endl;
-                        //cout << "5: Back" << endl;
+                        //cout << "5: View Books" << endl;
+                        //cout << "6: Back" << endl;
                 cout << "2: Manage Members" << endl;
                         //cout << "1: View Members" << endl;
                         //cout << "2: Add Members" << endl;
@@ -69,6 +70,7 @@ int main() {
                 cout << "4: Generate Report" << endl;
                 cout << "5: Account Settings" << endl;
                 cout << "6: Quit" << endl;
+
                 //use cases you caveman
                 cin >> option;
                 if (option == 1) {
