@@ -13,6 +13,8 @@
 #include <map>
 #include <limits>
 #include <cmath>
+#include <string.h>
+
 using namespace std;
 
 class GenreList {
@@ -101,7 +103,9 @@ protected:
     string userName;
     string password;
     string role;
+
     double fine;
+
 
 public:
 
@@ -122,11 +126,15 @@ public:
     string getID() const;
     string getpassword() const;
     string getrole()const;
+
     double getfine()const;
+
 
     string serialize() const;
     void deserialize(string);
-    static Member* login();
+    static Member* login(string tempID, string tempPass);
+    static int loginGui(string userId, string userPass);
+
     void searchBooks();
     void viewBooks();
     void manageAccount();
@@ -157,8 +165,8 @@ public:
     Student(const string& role, const string& ID, const string& user, const string& pass, double f);
     Student(const Member& other);
     ~Student();
-
     void requestLoan();
+    void calculateFine(time_t now);
     void returnBook();
     void UserReport();
 };
@@ -179,7 +187,7 @@ public:
     void addMember();
     void removeMember();
     void processLoanRequest();
-    void StudentReports();
+    void generateReports();
     void manageMembers();
     void manageBooks();
 
@@ -187,6 +195,8 @@ public:
 };
 class Loan :public Member, public Book, public MyString
 {
+private:
+
 protected:
     time_t loandate;
     time_t duedate;
@@ -203,6 +213,7 @@ public:
     time_t getduedate()const;
     void setLoanDate();
     time_t getloandate()const;
+
 
     string serialize() const;
     void deserialize(string);

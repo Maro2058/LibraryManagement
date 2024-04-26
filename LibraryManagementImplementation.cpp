@@ -1,3 +1,5 @@
+
+
 #include "LibraryManagement.h"
 
 // global vectors to use in code
@@ -194,7 +196,7 @@ Book Book::operator--(int) {
 //---------------------------------------------
 //start of Member class functions
 
-Member* theuser = nullptr;
+
 // Parameterized constructor
 Member::Member(string r, string ID, string user, string pass, double f):fine(f), role(r), userID(ID), userName(user), password(pass) {}
 // Copy constructor
@@ -262,13 +264,8 @@ void Member::deserialize(string serializedData) {
 }
 
 // Login function
-Member* Member::login() {
-    string tempID;
-    string tempPass;
-    cout << "Enter User ID: ";
-    getline(cin, tempID);
-    cout << "Enter Password: ";
-    getline(cin, tempPass);
+Member* Member::login(string tempID, string tempPass) {
+
 
     //creates a vector of Member objects to read into
     vector<Member> members;
@@ -300,6 +297,14 @@ Member* Member::login() {
     cout << "No Member Found"<< endl;
     // User ID or password incorrect, return nullptr
     return nullptr;
+}
+
+int Member :: loginGui(string userId, string userPass) {
+    Member* temp = Member :: login(userId, userPass);
+    if (typeid(*temp) == typeid(Librarian)) {return 2;}
+    if (typeid(*temp) == typeid(Student)) {return 1;}
+    return 0;
+
 }
 // Searches Saved Books for Inputted String
 void Member::searchBooks() {
@@ -362,11 +367,11 @@ void Member::manageAccount(){
     // Looks for Logged in user, and applies changes
     for (auto & member : members) {
         if (member.getID() == this->getID()) {
-            cout << "User Found";
+            cout << "User Found"<<endl;
             if (inputInt == 1) {
                 member.setname(inputString);
             } else if (inputInt == 2) {
-                setpassword(inputString);
+                member.setpassword(inputString);
             }
         }
     }
@@ -445,6 +450,7 @@ Student::Student(const Member& other) : Member(other) {}
 // Destructor
 Student::~Student() {}
 
+
 void Student :: requestLoan(){
 
     Member::viewBooks();
@@ -465,14 +471,17 @@ void Student :: requestLoan(){
         tempLoan.setISBN(books[choice-1].getISBN());
         tempLoan.setTitle(books[choice-1].getTitle());
         tempLoan.setAuthor(books[choice-1].getAuthor());
-        tempLoan.setname(theuser->getname());
-        tempLoan.setID(theuser->getID());
+        tempLoan.setname(this->getname());
+        tempLoan.setID(this->getID());
         tempLoan.setloanstatus(0);
 
         loans.push_back(tempLoan);
         writeFile("Loan.txt",loans);
-
     }
+}
+
+void Student :: calculateFine(time_t now) {
+
 }
 
 void Student::returnBook(){
@@ -483,7 +492,7 @@ void Student::returnBook(){
 
 // Populate filteredIndices with indices of loans that meet the criteria
     for (size_t i = 0; i < loans.size(); ++i) {
-        if ((loans[i].getID() == theuser->getID()) && loans[i].getloanstatus() == 1) {
+        if ((loans[i].getID() == this->getID()) && loans[i].getloanstatus() == 1) {
             filteredIndices.push_back(i);
         }
     }
@@ -517,7 +526,7 @@ void Student::returnBook(){
 
         for(int i = 0; i< members.size();i++)
         {
-            if(theuser->getID()==members[i].getID())
+            if(this->getID()==members[i].getID())
             {
                 members[i].setfine(loans[selectedLoanIndex].getduedate());
             }
@@ -540,19 +549,19 @@ void Student::UserReport() {
     readFile("Loan.txt", loans);
     int i = 1;
     double totalfines = 0;
-    cout<<"User Name: "<<theuser->getname()<<endl;
-    cout<<"User ID: "<<theuser->getID()<<endl;
+    cout<<"User Name: "<<this->getname()<<endl;
+    cout<<"User ID: "<<this->getID()<<endl;
     cout<<"Books Loaned:"<<endl;
     for(const auto &loan: loans)
     {
-        if(loan.getID() == theuser->getID())
+        if(loan.getID() == this->getID())
         {
             cout<<i<<". "<<loan.getTitle()<<"|| Due Date: "<< loan.formatdate(loan.getduedate())<<endl;
             totalfines += loan.getfine();
             ++i;
         }
     }
-    cout<<"User fine: "<<theuser->getfine()<<"$"<<endl;
+    cout<<"User fine: "<<this->getfine()<<"$"<<endl;
 }
 
 //End of Student Derived class functions
@@ -829,9 +838,13 @@ void Librarian::addMember() {
     tempMember.setID(Input);
 
     cout << "Enter the Member's Password: ";
-    cin>>Input;
+
+    cin >> Input;
     tempMember.setpassword(Input);
     tempMember.setfine();
+
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(),'\n');
 
     members.push_back(tempMember);
 
@@ -868,8 +881,11 @@ void Librarian ::processLoanRequest(){
     loans.clear();
     readFile("Loan.txt", loans);
     vector<size_t> filteredIndices; // To store Unprocessed Loan Requests
+    time_t now;
+    time(&now); // Get current time
 
-// Populate filteredIndices with indices of loans that meet the criteria
+
+    // Populate filteredIndices with indices of loans that meet the criteria
     for (size_t i = 0; i < loans.size(); ++i) {
         if (loans[i].getloanstatus() == 0) {
             filteredIndices.push_back(i);
@@ -881,7 +897,7 @@ void Librarian ::processLoanRequest(){
         return;
     }
 
-// Display available books and prompt librarian to approve a book
+    // Display available books and prompt librarian to approve a book
     cout << "Loan Requests:" << endl;
     for (size_t i = 0; i < filteredIndices.size(); ++i) {
         cout << i + 1 << ". " << loans[filteredIndices[i]].getTitle() << " by " << loans[filteredIndices[i]].getAuthor() << " due: " << loans[filteredIndices[i]].formatdate(loans[filteredIndices[i]].getloandate()) << endl;
@@ -904,9 +920,11 @@ void Librarian ::processLoanRequest(){
             }
         }
         loans[selectedLoanIndex].setloanstatus(1);
+
         double days = difftime((loans[selectedLoanIndex].getduedate()),(loans[selectedLoanIndex].getloandate()));
         loans[selectedLoanIndex].setLoanDate();
         loans[selectedLoanIndex].setduedate(days);
+
         writeFile("Books.txt", books);
         writeFile("Loan.txt",loans);
         cout << "Book request has been approved." << endl;
@@ -915,19 +933,26 @@ void Librarian ::processLoanRequest(){
     }
 }
 
-void Librarian::StudentReports() {
+
+
+void Librarian::generateReports(){
     // Read loans data from file
     loans.clear();
     readFile("Loan.txt", loans);
-    // Map to store user IDs and their corresponding loan counts
-    // Iterate through the loans vector and count loans for each user
+
+bool flag = false;
     for(const auto &loan : loans)
     {
-        if(loan.getloanstatus() == 1)
-        cout<<"User ID: "<< loan.getID()<<"|| Book Loaned: "<< loan.getTitle()<<"|| due date: "<<loan.formatdate(loan.getduedate())<<endl;
+        if(loan.getloanstatus() == 1) {
+            cout<<"User ID: "<< loan.getID()<<" Book Loaned: "<< loan.getTitle()<<" due date: "<<loan.formatdate(loan.getduedate())<<endl;
+            flag = true;
+        }
     }
-    // Display the loan counts for each user
+if (flag == false) {
+    cout << "Nothing to report" << endl;
 }
+}
+
 
 // Sub Menu to call Member functions
 void Librarian::manageMembers() {
@@ -1003,6 +1028,7 @@ void Loan :: setduedate(int a){
     duetime = localtime(&duedate);
     loantime = localtime(&loandate);
 }
+
 void Loan ::setduedate(double a) {
     loandate = time(nullptr);
     duedate = loandate + a;
