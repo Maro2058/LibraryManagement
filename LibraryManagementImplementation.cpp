@@ -312,11 +312,43 @@ void Member::generateReports() {
 }
 
 void Member::manageAccount(){
-    //change password?
+    int inputInt;
+    string inputString;
+    members.clear();
+    readFile("Members.txt", members);
+
+    cout << "1. Change Username" << endl << "2. Change Password" << endl;
+    cin >> inputInt;
+    if (inputInt == 1) {
+        cout << "Enter New Username: ";
+        cin >> inputString;
+    } else if (inputInt == 2) {
+        cout << "Enter New Password: ";
+        cin >> inputString;
+    } else {
+        cout << "Invalid Input";
+        return;
+    }
+
+    for (auto & member : members) {
+        if (member.getID() == this->getID()) {
+            cout << "User Found";
+            if (inputInt == 1) {
+                member.setname(inputString);
+            } else if (inputInt == 2) {
+                setpassword(inputString);
+            }
+        }
+    }
+
+    writeFile("Members.txt", members);
 
 }
 
-vector<Book> Member::searchBooks(string input) {
+void Member::searchBooks() {
+    cout << "Please Enter the term you want to search for"<<endl;
+    string input;
+    getline(cin, input);
     books.clear();
     readFile("Books.txt", books);
     vector<Book> searchResults;
@@ -326,7 +358,9 @@ vector<Book> Member::searchBooks(string input) {
             searchResults.push_back(book);
         }
     }
-    return searchResults;
+    for (const auto & result : searchResults) {
+        cout << result.getTitle() << "  by: " << result.getAuthor() << endl;
+    }
 }
 //end of member class functions
 
@@ -487,11 +521,9 @@ void Librarian::addBook(){ // Adds book to file and returns Book
         cout << index << ". " << genre << '\n';
         ++index;
     }
-
         int choice;
         cin >> choice;
         cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear input buffer
-
         tempBook.setGenre(genreList.getGenres()[choice-1]);
         // Write to file
 
@@ -589,14 +621,14 @@ void Librarian::updateBook(){
         {
             case 1:
                 cout<<"Please enter the new ISBN: "<<endl;
-                cin.ignore();
-                getline(cin, tISBN);
-                while(tISBN.length()!= 13)
-                {
-                    cout<<"Invalid ISBN, Please try to enter a 13 digit ISBN"<<endl;
-                    cin.ignore();
-                    getline(cin, tISBN);
-                }
+                cin>>tISBN;
+            while(tISBN.length() != 13 || !all_of(tISBN.begin(), tISBN.end(), ::isdigit) ) {
+                cout << "Error! Make sure the ISBN is 13 digits" << endl;
+                cout << "Enter the Books Info:\n ISBN: ";
+                cin.clear(); // Clear error flags
+                cin.ignore(numeric_limits<streamsize>::max(),'\n'); // reads and discards all characters up to the newline character ('\n')
+                cin >> tISBN;
+            }
 
                 while(i!=books.size()){
                     if(books[i].getISBN()==tISBN)
@@ -630,22 +662,21 @@ void Librarian::updateBook(){
                 break;
 
             case 5:
+
                 cout << "Select Genre:\n";
                 for (const auto& genre : genreList.getGenres()) {
                     cout << index << ". " << genre << '\n';
                     ++index;
                 }
-
                 cin >> choice3;
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear input buffer
 
                 if (choice >= 1 && choice <= genreList.getGenres().size()) {
-                    books[choice3-1].setGenre(genreList.getGenres()[choice3]);
+                    books[choice-1].setGenre(genreList.getGenres()[choice3-1]);
                 } else {
                     cout << "Invalid choice. Setting genre to Other." << endl;
-                    books[choice3-1].setGenre("Other");
+                    books[choice-1].setGenre("Other");
                 }
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear input buffer
 
                 break;
             case 6:
@@ -710,7 +741,6 @@ void Librarian::addMember() {
         tempMember.setRole("Student");
     }
     cin.ignore();
-    cout << tempMember.getrole();
 
     cout << "Enter the Member's Name: ";
     getline(cin, Input);
@@ -737,9 +767,7 @@ void Librarian::addMember() {
     tempMember.setpassword(Input);
 
     members.push_back(tempMember);
-    for (const auto& member : members) {
-        cout << member.getrole()<<endl;
-    }
+
 
     // Write the entire vector back to the file
     writeFile("Members.txt", members);
@@ -820,6 +848,68 @@ void Librarian::generateReports(){
     Top Borrowers
     */
 
+}
+
+void Librarian::manageMembers() {
+    int option = 0;
+    cout << "1: View Members" << endl;
+    cout << "2: Add Members" << endl;
+    cout << "3: Remove Members" << endl;
+    cout << "4: Back" << endl;
+    cin >> option;
+    if (option == 1) {
+        viewMembers();
+    } else if (option == 2) {
+        addMember();
+    } else if (option == 3) {
+        removeMember();
+    } else if (option == 4) {
+
+    } else {
+        cout << "Invalid Input";
+    }
+}
+
+void Librarian::manageBooks() {
+    int option = 0;
+    while (option != 5) {
+        cout << "1: Add Book" << endl;
+        cout << "2: Remove Book" << endl;
+        cout << "3: Update Book" << endl;
+        cout << "4: Search Books " << endl;
+        cout << "5: View Books " << endl;
+        cout << "6: Back" << endl;
+
+        cin >> option;
+        if (option == 1) {
+            addBook();
+        } else if (option == 2) {
+            removeBook();
+        } else if (option == 3) {
+            updateBook();
+        } else if (option == 4) {
+            searchBooks();
+        }else if (option == 5) {
+            viewBooks();
+        }else if (option == 6) {
+        }else {
+            cout << "Invalid Input" << endl;
+        }
+    }}
+
+void Member::manageBooks() {
+    // Virtual Function.
+    //Doesn't do Anything
+}
+
+void Member::viewBooks() {
+    // Hey Amr, I didn't actually write any code here tehe.
+    // Please make this function similar to the viewMember function.
+}
+
+void Member::manageMembers() {
+    // Virtual Function.
+    //Doesn't do Anything
 }
 
 

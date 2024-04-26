@@ -7,7 +7,7 @@
 #include <cctype>    // for std::isdigit
 #include <vector>*/
 #include "LibraryManagement.h"
-#include "LibraryManagementImplementation.cpp";
+#include "LibraryManagementImplementation.cpp"
 
 /* To Do List:
  * Genre:
@@ -28,16 +28,11 @@
  *
  * Comment Code (+ fix old comments)
  *
- * Three global Vectors that store all the Books/Members/Outgoing Loans.
- *
- * Modify Code to work with three global vectors instead of reading in each function.
- *      Read From file to vector on runtime, and whenever the file is modified.
  */
 
 
 
-int main()
-{
+int main() {
     /*void addBook();
     void removeBook();
     void updateBook();
@@ -51,51 +46,50 @@ int main()
 
 
     int option = 0;
+    int bookOption = 0;
+    int memberOption;
     Member* member = nullptr;
     member = member->login();
-    cout << "Here" << member->getrole() << "Bitch" <<endl;
+    cout << "Welcome " << member->getname() << endl;
     if (typeid(*member) == typeid(Librarian)) {
         cout << "Please choose one of the below options" << endl;
-        while (option != 9) {
-            cout << "1: Add Book" << endl;
-            cout << "2: Remove Book" << endl;
-            cout << "3: Update Book" << endl;
-            cout << "4: View Members" << endl;
-            cout << "5: Add Members" << endl;
-            cout << "6: Remove Members" << endl;
-            cout << "7: Process Loan Requests" << endl;
-            cout << "8: Generate Report" << endl;
-            cout << "9: Manage Account" << endl;
-            cout << "10: Quit" << endl;
+        while (option != 6) {
+            cout << "1: Manage Books" << endl;
+                    //cout << "1: Add Book" << endl;
+                    //cout << "2: Remove Book" << endl;
+                    //cout << "3: Update Book" << endl;
+                    //cout << "4: Search Books " << endl;
+                    //cout << "5: Back" << endl;
+            cout << "2: Manage Members" << endl;
+                    //cout << "1: View Members" << endl;
+                    //cout << "2: Add Members" << endl;
+                    //cout << "3: Remove Members" << endl;
+                    //cout << "4: Back" << endl;
+            cout << "3: Loan Requests"<< endl;
+            cout << "4: Generate Report" << endl;
+            cout << "5: Account Settings" << endl;
+            cout << "6: Quit" << endl;
 
             cin >> option;
             if (option == 1) {
-                member->addBook();
+                member->manageBooks();
             } else if (option == 2) {
-                member->removeBook();
-            } else if (option == 3) {
-                member->updateBook();
-            } else if (option == 4) {
-                member->viewMembers();
-            } else if (option == 5) {
-                member->addMember();
-            } else if (option == 6) {
-                member->removeMember();
-            } else if (option == 7) {
+                member->manageMembers();
+            } else if(option == 3){
                 member->processLoanRequest();
-            } else if (option == 8) {
+            } else if(option == 4) {
                 member->generateReports();
-            } else if (option == 9) {
+            }else if(option == 5) {
                 member->manageAccount();
-            } else if (option == 10) {
-                return 0;
-            } else {
+            }else if (option == 6) {
+                //Do nothing.
+            }else {
                 cout << "Invalid Input" << endl;
             }
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(),'\n');
         }
     } else if (typeid(*member) == typeid(Student)) {
         cout << "Haven't coded this part yet"<<endl;
     }
-
-
 }

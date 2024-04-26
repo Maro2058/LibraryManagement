@@ -1,5 +1,3 @@
-
-
 #ifndef LIBRARYMANAGEMENT_H
 #define LIBRARYMANAGEMENT_H
 #include <iostream>
@@ -158,6 +156,10 @@ public:
     virtual void removeMember();
     virtual void processLoanRequest();
     virtual void generateReports();
+    virtual void manageMembers();
+    virtual void manageBooks();
+    void viewBooks();
+
 
     void manageAccount();
     void setRole(string n);
@@ -172,7 +174,8 @@ public:
     bool is_There(string n);
     void deserialize(string);
 
-    vector<Book> searchBooks(string input);
+
+    void searchBooks();
 };
 
 
@@ -206,6 +209,9 @@ public:
     void removeMember();
     void processLoanRequest();
     void generateReports();
+    void manageMembers();
+    void manageBooks();
+
 
 };
 class Loan :public Member, public Book, public MyString
