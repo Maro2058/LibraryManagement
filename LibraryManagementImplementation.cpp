@@ -1,21 +1,55 @@
 #include "LibraryManagement.h"
 
-
+// global vectors to use in code
 vector<Book> books;
 vector<Member> members;
 vector<Loan> loans;
 
+
+// Writes File, works with Members/Books/Loans
+template<typename T>
+void writeFile(string fileName,vector<T> data) {
+    ofstream file(fileName, ios::out | ios::trunc); // Open file for writing (truncating the existing content)
+    if (!file.is_open()) {
+        cout << "Unable to open file." << endl;
+        return;
+    }
+    for (const auto& item : data) {
+        file << item.serialize() << '\n';
+    }
+    file.close();
+}
+//Reads Files, works with Members/Books/Loans
+template<typename T>
+vector<T> readFile(const string& fileName, vector<T>& data) {
+    string line;
+    ifstream file(fileName);
+    if (!file.is_open()) {
+        cout << "Unable to open file (READ)." << endl;
+        return data;
+    }
+    while (getline(file, line)) {
+        T item;
+        item.deserialize(line);
+        data.push_back(item);
+    }
+    file.close();
+    return data;
+}
+
+// Prints out all genres to screen
 void GenreList::displayGenres() const {
     for (const auto& genre : genres) {
         cout << genre << endl;
     }
 }
 
-
+// Adds Genre to list of genres
 void GenreList::addGenre(const string& genre) {
     genres.push_back(genre);
 }
 
+//Removes genre
 void GenreList::removeGenre(const string& genre) {
     auto it = std::find(genres.begin(), genres.end(), genre);
     if (it != genres.end()) {
@@ -23,19 +57,19 @@ void GenreList::removeGenre(const string& genre) {
     }
 }
 
+//Checks if inputted string is a valid genre
 bool GenreList:: isValidGenre(const string& genre) const {
     return find(genres.begin(), genres.end(), genre) != genres.end();
 }
 
+//returns list of genre values for a vector
 vector<string> GenreList:: getGenres() const { // Made public for access
     return genres;
 }
 
-
-//-----------------------------------------------------
-// This function is redundant.
 //-----------------------------------------------------
 
+// Default constructor
 MyString::MyString() : str("") {}
 // Parameterized constructor
 MyString::MyString(const std::string& s) : str(s) {}
@@ -43,6 +77,7 @@ MyString::MyString(const std::string& s) : str(s) {}
 MyString::MyString(const MyString& other) : str(other.str) {}
 // Destructor
 MyString::~MyString() {}
+
 // Display method
 void MyString::display() const {
     std::cout << str;
@@ -63,75 +98,16 @@ MyString& MyString::operator=(const MyString& other) {
     return *this;
 }
 
-
-
 // Comparison operator
 bool MyString::operator==(const MyString& other) const {
     return (str == other.str);
 }
 
-
-
-template<typename T>
-void writeFile(string fileName,vector<T> data) {
-    ofstream file(fileName, ios::out | ios::trunc); // Open file for writing (truncating the existing content)
-    if (!file.is_open()) {
-        cout << "Unable to open file." << endl;
-        return;
-    }
-
-    for (const auto& item : data) {
-        file << item.serialize() << '\n';
-    }
-
-    file.close();
-}
-
-template<typename T>
-vector<T> readFile(const string& fileName, vector<T>& data) {
-    ifstream file(fileName);
-    if (!file.is_open()) {
-        cout << "Unable to open file (READ)." << endl;
-        return data;
-    }
-    string line;
-    while (getline(file, line)) {
-        T item;
-        item.deserialize(line);
-        data.push_back(item);
-    }
-    file.close();
-    return data;
-}
-
-
-
-//start of Book class functions
+// End of MyString class functions
+//-----------------------------------------------------
+//Start of Book class functions
 
 // Setter and Getter methods for each member variable
-string Book::serialize() const {
-    stringstream ss;
-    ss << ISBN << '|'
-       << title << '|'
-       << author << '|'
-       << genre << '|'
-       << publisher << '|'
-       << available;
-    return ss.str();
-}
-void Book::deserialize(string serializedData) {
-    stringstream ss(serializedData);
-    getline(ss, ISBN, '|');
-    getline(ss, title, '|');
-    getline(ss, author, '|');
-    getline(ss, genre,'|');
-    getline(ss, publisher,'|');
-
-    ss >> available;
-
-}
-
-
 void Book::setISBN(const string num){ ISBN = num; }
 void Book::setTitle(const string n){title = n; }
 void Book::setAuthor(const string n){author = n;}
@@ -144,6 +120,30 @@ string Book::getAuthor() const { return author; }
 string Book::getPublisher()const{ return publisher; }
 string Book::getGenre() const {return genre;}
 int Book::getAvailableNum() const { return available; }
+
+// Formats the way Books are stored in files
+string Book::serialize() const {
+    stringstream ss;
+    ss << ISBN << '|'
+       << title << '|'
+       << author << '|'
+       << genre << '|'
+       << publisher << '|'
+       << available;
+    return ss.str();
+}
+// Extracts book attributes from serialized text
+void Book::deserialize(string serializedData) {
+    stringstream ss(serializedData);
+    getline(ss, ISBN, '|');
+    getline(ss, title, '|');
+    getline(ss, author, '|');
+    getline(ss, genre,'|');
+    getline(ss, publisher,'|');
+
+    ss >> available;
+}
+
 //Unary function overloading:
 // Prefix Increment Operator
 Book& Book::operator++() {
@@ -189,11 +189,11 @@ Book Book::operator--(int) {
     }
     return temp; // Return the saved state
 }
+
 //end of Book class functions
-
 //---------------------------------------------
-
 //start of Member class functions
+
 Member* theuser = nullptr;
 // Parameterized constructor
 Member::Member(string r, string ID, string user, string pass):role(r), userID(ID), userName(user), password(pass) {}
@@ -212,7 +212,7 @@ string Member::getID() const {return userID;}
 string Member::getpassword() const {return password;}
 string Member::getrole()const{return role;}
 
-// Formats the way Objects are stored in files
+// Formats the way Members are stored in files
 string Member::serialize() const {
     stringstream ss; // Makes a string stream called ss
 
@@ -223,7 +223,7 @@ string Member::serialize() const {
     return ss.str(); // Returns string
 }
 
-// Extracts attributes from serialized text
+// Extracts member attributes from serialized text
 void Member::deserialize(string serializedData) {
     stringstream ss(serializedData); //Passes serialized Data to string stream
     string roleStr, name, id, pass;
@@ -279,6 +279,77 @@ Member* Member::login() {
     // User ID or password incorrect, return nullptr
     return nullptr;
 }
+// Searches Saved Books for Inputted String
+void Member::searchBooks() {
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(),'\n');
+    cout << "Please Enter the term you want to search for"<<endl;
+    string input;
+    getline(cin, input);
+    books.clear();
+    readFile("Books.txt", books);
+
+    bool flag = false;
+    vector<Book> searchResults;
+    for (const auto& book : books) {
+        if (input == book.getISBN() || input == book.getTitle() || input == book.getAuthor() ||
+        input == book.getGenre() || input == book.getPublisher()) {
+            flag = true;
+            searchResults.push_back(book);
+        }
+    }
+    if (flag == false) {
+        cout << "No books found.";
+        return;
+    }
+    for (const auto & result : searchResults) {
+        cout << result.getTitle() << "  by: " << result.getAuthor() << endl;
+    }
+}
+// Prints all Book Title and Authors for reading
+void Member::viewBooks() {
+    books.clear();
+    readFile("Books.txt", books);
+
+    for(int i = 0; i < books.size(); i++)
+    {
+        cout<<i+1 <<". "<<books[i].getTitle()<<" by "<<books[i].getAuthor()<<endl;
+    }
+}
+
+// Allows members to change their username or password
+void Member::manageAccount(){
+    int inputInt;
+    string inputString;
+    members.clear();
+    readFile("Members.txt", members);
+
+    cout << "1. Change Username" << endl << "2. Change Password" << endl;
+    cin >> inputInt;
+    if (inputInt == 1) {
+        cout << "Enter New Username: ";
+        cin >> inputString;
+    } else if (inputInt == 2) {
+        cout << "Enter New Password: ";
+        cin >> inputString;
+    } else {
+        cout << "Invalid Input";
+        return;
+    }
+
+    // Looks for Logged in user, and applies changes
+    for (auto & member : members) {
+        if (member.getID() == this->getID()) {
+            cout << "User Found";
+            if (inputInt == 1) {
+                member.setname(inputString);
+            } else if (inputInt == 2) {
+                setpassword(inputString);
+            }
+        }
+    }
+    writeFile("Members.txt", members);
+}
 
 // Virtual Functions
 void Member::addBook() {
@@ -329,65 +400,19 @@ void Member::generateReports() {
     // Virtual Function.
     //Doesn't do Anything
 }
-
-// Allows members to change their username or password
-void Member::manageAccount(){
-    int inputInt;
-    string inputString;
-    members.clear();
-    readFile("Members.txt", members);
-
-    cout << "1. Change Username" << endl << "2. Change Password" << endl;
-    cin >> inputInt;
-    if (inputInt == 1) {
-        cout << "Enter New Username: ";
-        cin >> inputString;
-    } else if (inputInt == 2) {
-        cout << "Enter New Password: ";
-        cin >> inputString;
-    } else {
-        cout << "Invalid Input";
-        return;
-    }
-
-    // Looks for Logged in user, and applies changes
-    for (auto& member : members) {
-        if (member.getID() == this->getID()) {
-            cout << "User Found";
-            if (inputInt == 1) {
-                member.setname(inputString);
-            } else if (inputInt == 2) {
-                setpassword(inputString);
-            }
-        }
-    }
-    writeFile("Members.txt", members);
+void Member::manageMembers() {
+    // Virtual Function.
+    //Doesn't do Anything
+}
+void Member::manageBooks() {
+    // Virtual Function.
+    //Doesn't do Anything
 }
 
-// Searches Saved Books for Inputted String
-void Member::searchBooks() {
-    cout << "Please Enter the term you want to search for"<<endl;
-    string input;
-    getline(cin, input);
-    books.clear();
-    readFile("Books.txt", books);
-
-    vector<Book> searchResults;
-    for (const auto & book : books) {
-        if (input == book.getISBN() || input == book.getTitle() || input == book.getAuthor() ||
-        input == book.getGenre() || input == book.getPublisher()) {
-            searchResults.push_back(book);
-        }
-    }
-    for (const auto & result : searchResults) {
-        cout << result.getTitle() << "  by: " << result.getAuthor() << endl;
-    }
-}
 //end of member class functions
-
 //-------------------------------------------
-
 //Start of Student Derived class functions
+
 Student::Student() : Member() {}
 // Parameterized constructor
 Student::Student(const string& role, const string& ID, const string& user, const string& pass): Member(role, ID, user, pass) {}
@@ -402,8 +427,10 @@ void Student :: requestLoan(){
     loans.clear();
     readFile("Loan.txt",loans);
     int choice;
+
     cout<<"Enter the Book you want to request to Loan: "<<endl;
     cin>>choice;
+
     if(choice>=1 && choice <= (books.size()) && (books[choice-1].getAvailableNum())> 0)
     {
         Loan tempLoan;
@@ -423,8 +450,8 @@ void Student :: requestLoan(){
 
     }
 }
-void Student::returnBook(){
 
+void Student::returnBook(){
     // Read books from file
     loans.clear();
     readFile("Loan.txt",loans);
@@ -448,6 +475,7 @@ void Student::returnBook(){
     cin >> choice;
     books.clear();
     readFile("Books.txt", books);
+
 // Adjust the user's choice to match the correct index in the loans vector
     if (choice >= 1 && choice <= static_cast<int>(filteredIndices.size())) {
         size_t selectedLoanIndex = filteredIndices[choice - 1];
@@ -459,7 +487,6 @@ void Student::returnBook(){
                books[i]++;
            }
        }
-
         loans.erase(loans.begin() + selectedLoanIndex);
 
         // Write remaining books back to file
@@ -473,9 +500,7 @@ void Student::returnBook(){
 }
 
 //End of Student Derived class functions
-
 //------------------------------------------
-
 //Start of Librarian Derived class functions
 
 Librarian::Librarian() : Member() {cout << "librarian created" ;}
@@ -487,79 +512,67 @@ Librarian::Librarian(const Member& other) : Member(other) {cout << "librarian cr
 Librarian::~Librarian() {}
 
 /* Writes to Book file in the following order:
- * Book ISBN
- * Book Title
- * Book Author
- * Book Publisher
- * Book Genre
- * Number Availble of Book
- */
+Book ISBN | Book Title | Book Author | Book Genre | Book Publisher | Number Availble of Book*/
 void Librarian::addBook(){ // Adds book to file and returns Book
-
     books.clear();
     readFile("Books.txt", books);
     string Input;
     Book tempBook;
 
-
+    cout << "Enter the Books Info:\n ISBN: ";
+    cin>>Input;
+    while(Input.length() != 13 || !all_of(Input.begin(), Input.end(), ::isdigit) ) {
+        cout << "Error! Make sure the ISBN is 13 digits" << endl;
         cout << "Enter the Books Info:\n ISBN: ";
-        cin>>Input;
-        while(Input.length() != 13 || !all_of(Input.begin(), Input.end(), ::isdigit) ) {
-            cout << "Error! Make sure the ISBN is 13 digits" << endl;
-            cout << "Enter the Books Info:\n ISBN: ";
-            cin.clear(); // Clear error flags
-            cin.ignore(numeric_limits<streamsize>::max(),'\n'); // reads and discards all characters up to the newline character ('\n')
-            cin >> Input;
-        }
-        tempBook.setISBN(Input);
-        cin.ignore(); //discards
-
-        cout << "Enter the Book's title: ";
-        getline(cin, Input);
-        tempBook.setTitle(Input);
-
-        cout << "Enter the Author's name: ";
-        getline(cin, Input);
-        tempBook.setAuthor(Input);
-
-        GenreList genreList;
-// Enter Genre
-        cout << "Select Genre:\n";
-        int index = 1;
-        for (const auto& genre : genreList.getGenres()) {
-        cout << index << ". " << genre << '\n';
-        ++index;
+        cin.clear(); // Clear error flags
+        cin.ignore(numeric_limits<streamsize>::max(),'\n'); // reads and discards all characters up to the newline character ('\n')
+        cin >> Input;
     }
-        int choice;
-        cin >> choice;
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear input buffer
-        tempBook.setGenre(genreList.getGenres()[choice-1]);
-        // Write to file
+    tempBook.setISBN(Input);
+    cin.ignore(); //discards
 
-        cout << "Enter the Publisher: ";
-        getline(cin, Input);
-        tempBook.setPublisher(Input);
-        int num;
-        cout << "Enter The Number of Books Available: "<<endl;
+    cout << "Enter the Book's title: ";
+    getline(cin, Input);
+    tempBook.setTitle(Input);
+
+    cout << "Enter the Author's name: ";
+    getline(cin, Input);
+    tempBook.setAuthor(Input);
+
+    GenreList genreList;
+// Enter Genre
+    cout << "Select Genre:\n";
+    int index = 1;
+    for (const auto& genre : genreList.getGenres()) {
+    cout << index << ". " << genre << '\n';
+    ++index;
+}
+    int choice;
+    cin >> choice;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Clear input buffer
+    tempBook.setGenre(genreList.getGenres()[choice-1]);
+    // Write to file
+
+    cout << "Enter the Publisher: ";
+    getline(cin, Input);
+    tempBook.setPublisher(Input);
+    int num;
+    cout << "Enter The Number of Books Available: "<<endl;
+    cin>>num;
+    while(cin.fail() || num < 0)
+    {
+        cout<<"Invalid Amount! Please try again.";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(),'\n'); // reads and discards all characters up to the newline character ('\n')
         cin>>num;
-        while(cin.fail() || num < 0)
-        {
-            cout<<"Invalid Amount! Please try again.";
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(),'\n'); // reads and discards all characters up to the newline character ('\n')
-            cin>>num;
-        }
-        tempBook.setAvailableNum(num);
-        books.push_back(tempBook);
+    }
+    tempBook.setAvailableNum(num);
 
-    // Add the new member to the vector
-
-    // Write the entire vector back to the file
-    writeFile("Books.txt", books);
-
-
+    books.push_back(tempBook); // Add the new Book to the vector
+    writeFile("Books.txt", books); // Write the entire vector back to the file
 }
 
+// Removes Book from file
 void Librarian::removeBook() {
     books.clear();
     readFile("Books.txt", books);
@@ -569,41 +582,35 @@ void Librarian::removeBook() {
     for (size_t i = 0; i < books.size(); ++i) {
         cout << i + 1 << ". " << books[i].getTitle() << " by " << books[i].getAuthor() << endl;
     }
-
     int choice;
     cout << "Enter the number of the book to remove: ";
     cin >> choice;
 
     if (choice >= 1 && choice <= static_cast<int>(books.size())) {
         books.erase(books.begin() + choice - 1);
-
-
         // Write remaining books back to file
-
         writeFile("Books.txt", books);
-
         cout << "Book removed successfully." << endl;
-
     } else {
         cout << "Invalid choice." << endl;
     }
 }
 
+// Changes the stored infromation of the Books
 void Librarian::updateBook(){
     books.clear();
     readFile("Books.txt", books);
 
+    //choose which book to modify
     cout << "Available Books:" << endl;
     for (size_t i = 0; i < books.size(); ++i) {
         cout << i + 1 << ". " << books[i].getTitle() << " by " << books[i].getAuthor() << endl;
     }
-
     int choice;
     cout << "Enter the number of the book to modify: ";
     cin >> choice;
 
-    // Replace Here, add Options to modify only 1 thing or < n things
-
+    // Choosing what to modify in the book
     if (choice >= 1 && choice <= static_cast<int>(books.size())) {
         int choice2;
         cout<<"1.ISBN: "<<books[choice-1].getISBN()<<endl;
@@ -615,6 +622,8 @@ void Librarian::updateBook(){
         cout<<"What do you want to modify?"<<endl;
         cin>>choice2;
 
+        // More Variables than we'll ever need.
+        // If it ain't broke don't fix it.
         string tISBN;
         string ttitle;
         string tauthor;
@@ -626,6 +635,7 @@ void Librarian::updateBook(){
         int index = 1;
         GenreList genreList;
 
+        // Performing the modifications
         switch(choice2)
         {
             case 1:
@@ -638,7 +648,6 @@ void Librarian::updateBook(){
                 cin.ignore(numeric_limits<streamsize>::max(),'\n'); // reads and discards all characters up to the newline character ('\n')
                 cin >> tISBN;
             }
-
                 while(i!=books.size()){
                     if(books[i].getISBN()==tISBN)
                     {
@@ -648,7 +657,6 @@ void Librarian::updateBook(){
                     }
                     i++;
                 }
-
                 books[choice-1].setISBN(tISBN);
                 break;
             case 2:
@@ -669,9 +677,7 @@ void Librarian::updateBook(){
                 getline(cin, tpublish);
                 books[choice-1].setPublisher(tpublish);
                 break;
-
             case 5:
-
                 cout << "Select Genre:\n";
                 for (const auto& genre : genreList.getGenres()) {
                     cout << index << ". " << genre << '\n';
@@ -686,7 +692,6 @@ void Librarian::updateBook(){
                     cout << "Invalid choice. Setting genre to Other." << endl;
                     books[choice-1].setGenre("Other");
                 }
-
                 break;
             case 6:
                 cout<<"Please enter the new available number: "<<endl;
@@ -699,25 +704,24 @@ void Librarian::updateBook(){
                 }
                 books[choice - 1].setAvailableNum(tavb);
                 break;
-
             default:
                 cout<<"Invalid choice, Try Again."<<endl;
                 break;
         }
 
         // Write remaining books back to file
-            writeFile("Books.txt", books);
-
-
+        writeFile("Books.txt", books);
         cout << "Book modified successfully." << endl;
     }else{
         cout<<"Invalid choice";
     }
 }
+
+// Display all Members
 void Librarian::viewMembers(){
     members.clear();
     readFile("Members.txt", members);  
-    // Display available books and prompt user to select a book to remove
+
     cout << "Members:" << endl;
     for (size_t i = 0; i < members.size(); i++) {
         cout << i + 1 << ". " << members[i].getname() << " || " << members[i].getID() <<endl;
@@ -725,17 +729,14 @@ void Librarian::viewMembers(){
 }
 
 /*Writes to Member file in the following order:
- * Member Role
- * Member Name
- * Member ID
- * Member Password
- */
+Member Role | Member Name | Member ID | Member Password */
 void Librarian::addMember() {
     members.clear();
     readFile("Members.txt", members);
     string Input;
     Member tempMember;
 
+    // Gets User Info
     int userchoice;
     cout << "Enter the Member Info:\n Is the member:\n1. Librarian\n2. Student \n";
     cin >> userchoice;
@@ -757,7 +758,7 @@ void Librarian::addMember() {
 
     bool flag = true;
 
-    while(flag == 1) {
+    while(flag == 1) { // Makes sure the Id isn't already taken
         flag = false;
         cout << "Enter the Member's ID: ";
         getline(cin, Input);
@@ -782,33 +783,34 @@ void Librarian::addMember() {
     writeFile("Members.txt", members);
 }
 
+// Removes a chosen member
 void Librarian :: removeMember() {
     members.clear();
-    readFile("Members.txt", members);  // Vector to store books read from file
-    // Display available books and prompt user to select a book to remove
+    readFile("Members.txt", members);  // Vector to store members read from file
+    // Display available members
     cout << "Members:" << endl;
     for (size_t i = 0; i < members.size(); ++i) {
         cout << i + 1 << ". " << members[i].getname() << " || " << members[i].getID() << endl;
     }
 
+    // Erases Member from vector
     int choice;
     cout << "Enter the number of the Member to remove: ";
     cin >> choice;
-
     if (choice >= 1 && choice <= static_cast<int>(members.size())) {
-        members.erase(members.begin() + choice - 1);  // Remove selected book from vector
-
-        writeFile("Members.txt", members);
+        members.erase(members.begin() + choice - 1);
+        writeFile("Members.txt", members); // Writes new vector back to file
         cout << "Member removed successfully." << endl;
     } else {
         cout << "Invalid choice." << endl;
     }
 }
+
+// Allows the Librarian to Accept Loan Requests
 void Librarian ::processLoanRequest(){
     loans.clear();
     readFile("Loan.txt", loans);
-
-    vector<size_t> filteredIndices;
+    vector<size_t> filteredIndices; // To store Unprocessed Loan Requests
 
 // Populate filteredIndices with indices of loans that meet the criteria
     for (size_t i = 0; i < loans.size(); ++i) {
@@ -817,7 +819,12 @@ void Librarian ::processLoanRequest(){
         }
     }
 
-// Display available books and prompt user to select a book to return
+    if (filteredIndices.empty()) {
+        cout << "No Incoming Loan Requests" << endl;
+        return;
+    }
+
+// Display available books and prompt librarian to approve a book
     cout << "Loan Requests:" << endl;
     for (size_t i = 0; i < filteredIndices.size(); ++i) {
         cout << i + 1 << ". " << loans[filteredIndices[i]].getTitle() << " by " << loans[filteredIndices[i]].getAuthor() << " due: " << loans[filteredIndices[i]].formatdate(loans[filteredIndices[i]].getloandate()) << endl;
@@ -840,16 +847,14 @@ void Librarian ::processLoanRequest(){
             }
         }
         loans[selectedLoanIndex].setloanstatus(1);
-
-            writeFile("Books.txt", books);
-
+        writeFile("Books.txt", books);
         writeFile("Loan.txt",loans);
         cout << "Book request has been approved." << endl;
     } else {
         cout << "Invalid choice." << endl;
     }
-
 }
+
 void Librarian::generateReports(){
     /*
     Loan stats for each genre
@@ -857,9 +862,9 @@ void Librarian::generateReports(){
     Stats by term or month
     Top Borrowers
     */
-
 }
 
+// Sub Menu to call Member functions
 void Librarian::manageMembers() {
     int option = 0;
     cout << "1: View Members" << endl;
@@ -882,6 +887,7 @@ void Librarian::manageMembers() {
     cin.ignore(numeric_limits<streamsize>::max(),'\n');
 }
 
+// Sub menu to call Book Functions
 void Librarian::manageBooks() {
     int option = 0;
     while (option != 5) {
@@ -913,32 +919,8 @@ void Librarian::manageBooks() {
     }
 }
 
-void Member::manageBooks() {
-    // Virtual Function.
-    //Doesn't do Anything
-}
-
-// Prints all Book Title and Authors for reading
-void Member::viewBooks() {
-    books.clear();
-    readFile("Books.txt", books);
-
-    for(int i = 0; i < books.size(); i++)
-    {
-        cout<<i+1 <<". "<<books[i].getTitle()<<" by "<<books[i].getAuthor()<<endl;
-    }
-}
-
-void Member::manageMembers() {
-    // Virtual Function.
-    //Doesn't do Anything
-}
-
-
 //End of Librarian Derived class functions
-
 //-----------------------------------------------
-
 //start of loan Derived class functions
 
 Loan:: Loan() {
@@ -947,26 +929,23 @@ Loan:: Loan() {
         duedate = loandate;
     }
 
+// Setter and Getter Functions
 void Loan::setloanstatus(int a) {loanstatus = a;}
-
 int Loan::getloanstatus() const {return loanstatus;}
-/*
-void Loan::set_loan(int days)
-{
-    duedate = loandate+ days *24*60*60;
+void Loan ::setduedate(int a) {
+    loandate = time(nullptr);
+    duedate = loandate + a *24*60*60;
     duetime = localtime(&duedate);
     loantime = localtime(&loandate);
 }
-*/
-time_t Loan :: getloandate()const
-{
-    return loandate;
+time_t Loan :: getduedate()const {return duedate;}
+void Loan::setLoanDate(time_t a) {
+    loandate = a;
+    loantime = localtime(&loandate);
 }
-time_t Loan :: getduedate()const
-{
-    return duedate;
-}
+time_t Loan :: getloandate()const {return loandate;}
 
+// Formats the way Loan are stored in files
 string Loan::serialize() const {
     stringstream ss;
     ss << ISBN << '|'
@@ -981,6 +960,7 @@ string Loan::serialize() const {
     return ss.str();
 }
 
+// Extracts loan attributes from serialized text
 void Loan::deserialize(string serializedData) {
     stringstream ss(serializedData);
     getline(ss, ISBN,'|');
@@ -997,35 +977,22 @@ void Loan::deserialize(string serializedData) {
     int status;
     ss >> status;
     loanstatus =status;
-    // Ignore the newline character
 }
 
-
-
-void Loan ::setduedate(int a) {
-    loandate = time(nullptr);
-    duedate = loandate + a *24*60*60;
-    duetime = localtime(&duedate);
-    loantime = localtime(&loandate);
-}
-
-/*
-void Loan::setloandate(time_t a) {
-    loandate = a;
-    loantime = localtime(&loandate);
-}
-*/
+// Writes date in dd/mm/yyyy format
 string Loan ::formatdate(time_t a) const{
     string s;
     time_t temp = a;
-    struct tm * date = localtime(&temp);
+    tm * date = localtime(&temp);
     s = to_string(date->tm_mday) + "/" + to_string(date->tm_mon + 1) + "/" + to_string(date->tm_year + 1900);
     return s;
 }
 
+// Converts input from string format to time format (Used for deserialization)
 time_t Loan::stringToTime(string& dateStr) {
     struct tm timeStruct = {};
-    stringstream ss(dateStr);
+    stringstream ss(dateStr); // Reads the string to stream
+    // Converts the string to tm automatically using streams.
     ss >> timeStruct.tm_mday;
     ss.ignore(); // Skip the '/'
     ss >> timeStruct.tm_mon;
@@ -1036,21 +1003,12 @@ time_t Loan::stringToTime(string& dateStr) {
     return mktime(&timeStruct);
 }
 
+// Checks if Loan is overdue
 bool Loan::is_overdue() {
     time_t now;
     time(&now); // Get current time
     return difftime(now, duedate) > 0; // Check if current time is past the due date
 }
 
-
 //End of Loan Derived class functions
-
 //-----------------------------------------------
-
-
-void initializeVectors() {
-    readFile("Books.txt", books);
-    readFile("Members.txt", members);
-    readFile("Loans.txt", loans);
-}
-

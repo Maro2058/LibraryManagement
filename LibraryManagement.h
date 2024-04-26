@@ -29,55 +29,35 @@ private:
             "Calculus",
             "Other"
     };
-
 public:
-
     void displayGenres() const;
-
     void addGenre(const string& genre);
-
     void removeGenre(const string& genre);
-
     bool isValidGenre(const string& genre) const;
-
     vector<string> getGenres() const;
-
 };
-
-
-
 
 class MyString {
 private:
     string str;
-
 public:
     // Default constructor
     MyString();
-
     // Parameterized constructor
     MyString(const string& s);
-
     // Copy constructor
     MyString(const MyString& other);
-
     // Destructor
     ~MyString();
-
     // Display method
     void display() const;
-
     // Concatenation operator
     MyString operator+(const MyString& other) const;
-
     // Assignment operator
     MyString& operator=(const MyString& other);
-
-
     // Comparison operator
     bool operator==(const MyString& other) const;
 };
-
 
 class Book {
 protected:
@@ -89,45 +69,28 @@ protected:
     int publicationYear;
     int available = 0;
     bool availabilityStatus = (available > 0);
-
 public:
-
     // Setter and Getter methods for each member variable
     void setISBN(const string num);
-
     void setTitle(const string n);
-
     void setAuthor(const string n);
-
     void setGenre(const string& n);
-
     void setPublisher(const string n);
-
     void setAvailableNum(int n);
-
-    void deserialize(string);
-
     string getISBN() const;
-
     string getTitle() const;
-
     string getAuthor() const;
-
     string getPublisher() const;
-
-
     string getGenre() const;
-    string serialize() const;
-
-
     int getAvailableNum() const;
 
+    string serialize() const;
+    void deserialize(string);
     // Prototypes for the Unary Functions Overloading
     Book& operator++();
     Book operator++(int);
     Book& operator--();
     Book operator--(int);
-
 };
 
 
@@ -137,18 +100,34 @@ protected:
     string userName;
     string password;
     string role;
-    Book *checkedOut;
     int fines;
 
 public:
+
     Member() = default;
     Member(const Member& other);
     Member(string role, string ID, string user, string pass);
     ~Member();
 
-    static Member* login();
 
-    // Librarian Functions
+    // Setter and Getter
+    void setRole(string n);
+    void setname (string name);
+    void setID(string id);
+    void setpassword(string pass);
+    string getname()const;
+    string getID() const;
+    string getpassword() const;
+    string getrole()const;
+
+    string serialize() const;
+    void deserialize(string);
+    static Member* login();
+    void searchBooks();
+    void viewBooks();
+    void manageAccount();
+
+    // Librarian & Student Virtual Functions
     virtual void addBook();
     virtual void removeBook();
     virtual void updateBook();
@@ -161,24 +140,6 @@ public:
     virtual void generateReports();
     virtual void manageMembers();
     virtual void manageBooks();
-    void viewBooks();
-
-
-    void manageAccount();
-    void setRole(string n);
-    void setname (string name);
-    void setID(string id);
-    void setpassword(string pass);
-    string getname()const;
-    string getID() const;
-    string getpassword() const;
-    string getrole()const;
-    string serialize() const;
-    bool is_There(string n);
-    void deserialize(string);
-
-
-    void searchBooks();
 };
 
 
@@ -191,6 +152,7 @@ public:
     Student(const string& role, const string& ID, const string& user, const string& pass);
     Student(const Member& other);
     ~Student();
+
     void requestLoan();
     void returnBook();
 };
@@ -231,8 +193,10 @@ public:
     void setloanstatus(int a);
     int getloanstatus () const;
     void setduedate(int a);
-    time_t getloandate()const;
     time_t getduedate()const;
+    void setLoanDate(time_t a);
+    time_t getloandate()const;
+
     string serialize() const;
     void deserialize(string);
     string formatdate (time_t) const;
