@@ -63,6 +63,8 @@ MyString& MyString::operator=(const MyString& other) {
     return *this;
 }
 
+
+
 // Comparison operator
 bool MyString::operator==(const MyString& other) const {
     return (str == other.str);
@@ -192,7 +194,7 @@ Book Book::operator--(int) {
 //---------------------------------------------
 
 //start of Member class functions
-
+Member* theuser = nullptr;
 // Parameterized constructor
 Member::Member(string r, string ID, string user, string pass):role(r), userID(ID), userName(user), password(pass) {}
 // Copy constructor
@@ -306,6 +308,9 @@ void Member::processLoanRequest() {
     //Doesn't do Anything
 }
 
+void Member ::requestLoan() {}
+void Member::returnBook() {}
+
 void Member::generateReports() {
     // Virtual Function.
     //Doesn't do Anything
@@ -376,39 +381,26 @@ Student::Student(const Member& other) : Member(other) {}
 Student::~Student() {}
 
 void Student :: requestLoan(){
-    books.clear();
-    readFile("Books.txt", books);
 
-    // Display available books and prompt user to select a book to remove
-    cout << "Available Books:" << endl;
-    for (size_t i = 0; i < books.size(); ++i) {
-        cout << i + 1 << ". " << books[i].getTitle() << " by " << books[i].getAuthor() << endl;
-    }
 
+    Member::viewBooks();
+    loans.clear();
+    readFile("Loan.txt",loans);
     int choice;
     cout<<"Enter the Book you want to request to Loan: "<<endl;
     cin>>choice;
-    if(choice>=1 && choice <= (books.size()))
+    if(choice>=1 && choice <= (books.size()) && (books[choice-1].getAvailableNum())> 0)
     {
-        Loan temp;
+        Loan tempLoan;
         int days;
         cout<<"How long will you take the book for? (in days): "<<endl;
         cin >> days;
-        temp.set_loan(days);
-
-        Member wtv;
-        wtv.setname("amr");
-        wtv.setID("22-101097");
-
-        readFile("Loan.txt", loans);
-        Loan tempLoan;
+        tempLoan.setduedate(days);
         tempLoan.setISBN(books[choice-1].getISBN());
         tempLoan.setTitle(books[choice-1].getTitle());
         tempLoan.setAuthor(books[choice-1].getAuthor());
-        tempLoan.setname(wtv.getname());
-        tempLoan.setID(wtv.getID());
-        tempLoan.setloandate(temp.getloandate());
-        tempLoan.setduedate(temp.getduedate());
+        tempLoan.setname(theuser->getname());
+        tempLoan.setID(theuser->getID());
         tempLoan.setloanstatus(0);
 
         loans.push_back(tempLoan);
@@ -418,20 +410,22 @@ void Student :: requestLoan(){
 }
 void Student::returnBook(){
 
-    Member amr;
-    // Replace Here with New Loan Function
-
     // Read books from file
     loans.clear();
     readFile("Loan.txt",loans);
+    vector<size_t> filteredIndices;
 
-    // Display available books and prompt user to select a book to remove
-    cout << "Books you've taken:" << endl;
-    int count = 1;
+// Populate filteredIndices with indices of loans that meet the criteria
     for (size_t i = 0; i < loans.size(); ++i) {
-        if((loans[i].getID()==amr.getID()) && loans[i].getloanstatus() == 1)
-        cout << count << ". " << loans[i].getTitle() << " by " << loans[i].getAuthor() << " due: "<<loans[i].formatdate(loans[i].getloandate()) << endl;
-        count++;
+        if ((loans[i].getID() == theuser->getID()) && loans[i].getloanstatus() == 1) {
+            filteredIndices.push_back(i);
+        }
+    }
+
+// Display available books and prompt user to select a book to return
+    cout << "Books you've taken:" << endl;
+    for (size_t i = 0; i < filteredIndices.size(); ++i) {
+        cout << i + 1 << ". " << loans[filteredIndices[i]].getTitle() << " by " << loans[filteredIndices[i]].getAuthor() << " due: " << loans[filteredIndices[i]].formatdate(loans[filteredIndices[i]].getloandate()) << endl;
     }
 
     int choice;
@@ -439,24 +433,24 @@ void Student::returnBook(){
     cin >> choice;
     books.clear();
     readFile("Books.txt", books);
+// Adjust the user's choice to match the correct index in the loans vector
+    if (choice >= 1 && choice <= static_cast<int>(filteredIndices.size())) {
+        size_t selectedLoanIndex = filteredIndices[choice - 1];
 
-    if (choice >= 1 && choice <= static_cast<int>(loans.size())) {
-            for(auto & book : books)
-            {
-                if(book.getISBN() == loans[choice-1].getISBN())
-                {
-                    int n = book.getAvailableNum();
-                    book.setAvailableNum(++(n));
-                }
-            }
-        loans.erase(loans.begin() + choice - 1);
+       for(int i = 0; i < books.size(); i++)
+       {
+           if(books[i].getISBN() == loans[selectedLoanIndex].getISBN())
+           {
+               books[i]++;
+           }
+       }
 
-        // Write remaining books back to file
-        writeFile("Books.txt", books);
-
+        loans.erase(loans.begin() + selectedLoanIndex);
 
         // Write remaining books back to file
-        writeFile("Loan.txt",loans);
+        // Write remaining loans back to file
+        writeFile("Loan.txt", loans);
+        writeFile("Books.txt",books);
         cout << "Book removed successfully." << endl;
     } else {
         cout << "Invalid choice." << endl;
@@ -796,40 +790,41 @@ void Librarian :: removeMember() {
     }
 }
 void Librarian ::processLoanRequest(){
-    Member amr;
     loans.clear();
     readFile("Loan.txt", loans);
 
+    vector<size_t> filteredIndices;
 
-    // Display available books and prompt user to select a book to remove
-    cout << "Books that were requested for loan" << endl;
-    int count = 1;
+// Populate filteredIndices with indices of loans that meet the criteria
     for (size_t i = 0; i < loans.size(); ++i) {
-        if(loans[i].getloanstatus() == 0) {
-            cout << count << ". " << loans[i].getTitle() << " by " << loans[i].getAuthor() << " Student ID: "
-                 << loans[i].getID() << " till: " << loans[i].formatdate(loans[i].getduedate()) << endl;
-            count++;
+        if (loans[i].getloanstatus() == 0) {
+            filteredIndices.push_back(i);
         }
+    }
+
+// Display available books and prompt user to select a book to return
+    cout << "Loan Requests:" << endl;
+    for (size_t i = 0; i < filteredIndices.size(); ++i) {
+        cout << i + 1 << ". " << loans[filteredIndices[i]].getTitle() << " by " << loans[filteredIndices[i]].getAuthor() << " due: " << loans[filteredIndices[i]].formatdate(loans[filteredIndices[i]].getloandate()) << endl;
     }
 
     int choice;
     cout << "Enter the number of the book you want to approve: ";
     cin >> choice;
+
+    size_t selectedLoanIndex = filteredIndices[choice - 1];
     books.clear();
     readFile("Books.txt", books);
 
     if (choice >= 1 && choice <= static_cast<int>(loans.size())) {
         for(int i = 0; i < books.size();i++)
         {
-            if(books[i].getISBN() == loans[choice-1].getISBN())
+            if(books[i].getISBN() == loans[selectedLoanIndex].getISBN())
             {
-                int n = books[i].getAvailableNum();
-                books[i].setAvailableNum(--(n));
+                books[i]--;
             }
         }
-        loans[choice-1].setloanstatus(1);
-
-
+        loans[selectedLoanIndex].setloanstatus(1);
 
             writeFile("Books.txt", books);
 
@@ -903,8 +898,13 @@ void Member::manageBooks() {
 }
 
 void Member::viewBooks() {
-    // Hey Amr, I didn't actually write any code here tehe.
-    // Please make this function similar to the viewMember function.
+    books.clear();
+    readFile("Books.txt", books);
+
+    for(int i = 0; i < books.size(); i++)
+    {
+        cout<<i+1 <<". "<<books[i].getTitle()<<" by "<<books[i].getAuthor()<<endl;
+    }
 }
 
 void Member::manageMembers() {
@@ -919,7 +919,7 @@ void Member::manageMembers() {
 
 //start of loan Derived class functions
 
-Loan::Loan() {
+Loan:: Loan() {
         //member id and book
         loandate = time(nullptr);
         duedate = loandate;
@@ -928,13 +928,14 @@ Loan::Loan() {
 void Loan::setloanstatus(int a) {loanstatus = a;}
 
 int Loan::getloanstatus() const {return loanstatus;}
+/*
 void Loan::set_loan(int days)
 {
-    duedate = loandate+days *24*60*60;
+    duedate = loandate+ days *24*60*60;
     duetime = localtime(&duedate);
     loantime = localtime(&loandate);
 }
-
+*/
 time_t Loan :: getloandate()const
 {
     return loandate;
@@ -951,8 +952,8 @@ string Loan::serialize() const {
        << author << '|'
        << userName << '|'
        << userID << '|'
+       << formatdate(loandate) <<'|'
        << formatdate(duedate)<<'|'
-       << formatdate(loandate)<<'|'
        << loanstatus;
 
     return ss.str();
@@ -960,35 +961,38 @@ string Loan::serialize() const {
 
 void Loan::deserialize(string serializedData) {
     stringstream ss(serializedData);
-    getline(ss, ISBN);
-    getline(ss, title);
-    getline(ss, author);
-    getline(ss, userName);
-    getline(ss, userID);
+    getline(ss, ISBN,'|');
+    getline(ss, title, '|');
+    getline(ss, author, '|');
+    getline(ss, userName, '|');
+    getline(ss, userID,'|');
     string loandateStr;
-    getline(ss, loandateStr);
+    getline(ss, loandateStr, '|');
     loandate = stringToTime(loandateStr);
     string duedateStr;
-    getline(ss, duedateStr);
+    getline(ss, duedateStr, '|');
     duedate = stringToTime(duedateStr);
     int status;
     ss >> status;
-    loanstatus = static_cast<char>(status);
-    ss.ignore(); // Ignore the newline character
+    loanstatus =status;
+    // Ignore the newline character
 }
 
 
 
-void Loan ::setduedate(time_t a) {
-    duedate = a;
+void Loan ::setduedate(int a) {
+    loandate = time(nullptr);
+    duedate = loandate + a *24*60*60;
     duetime = localtime(&duedate);
+    loantime = localtime(&loandate);
 }
 
+/*
 void Loan::setloandate(time_t a) {
     loandate = a;
     loantime = localtime(&loandate);
 }
-
+*/
 string Loan ::formatdate(time_t a) const{
     string s;
     time_t temp = a;

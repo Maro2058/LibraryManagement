@@ -73,6 +73,7 @@ public:
     // Assignment operator
     MyString& operator=(const MyString& other);
 
+
     // Comparison operator
     bool operator==(const MyString& other) const;
 };
@@ -155,6 +156,8 @@ public:
     virtual void addMember();
     virtual void removeMember();
     virtual void processLoanRequest();
+    virtual void requestLoan();
+    virtual void returnBook();
     virtual void generateReports();
     virtual void manageMembers();
     virtual void manageBooks();
@@ -180,7 +183,7 @@ public:
 
 
 
-class Student : public Member, public MyString{
+class Student : public Member{
 private:
 
 public:
@@ -221,15 +224,13 @@ protected:
     time_t duedate;
     struct tm * duetime = localtime(&duedate);
     struct tm * loantime = localtime(&loandate);
-    int days;
-    char loanstatus;
+    int loanstatus;
 public:
     Loan();
-    void set_loan(int days);
+    //void set_loan(int days);
     void setloanstatus(int a);
     int getloanstatus () const;
-    void setloandate(time_t a);
-    void setduedate(time_t a);
+    void setduedate(int a);
     time_t getloandate()const;
     time_t getduedate()const;
     string serialize() const;
