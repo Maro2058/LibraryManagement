@@ -226,6 +226,7 @@ void Member::setfine(time_t a) {
 
 }
 
+
 void Member :: setfine(){fine = 0;}
 string Member::getname()const{return userName;}
 string Member::getID() const {return userID;}
@@ -279,7 +280,6 @@ Member* Member::login(string tempID, string tempPass) {
             } else if (members[i].getID() == tempID && members[i].getpassword() == tempPass) {
             // Correct user ID and password, return pointer to Member object
             Member* loggedInMember = new Librarian(members[i]); // copy constructor is called
-            cout<<"Logged in Successfully"<<endl;
             return loggedInMember;
             }
         }
@@ -289,7 +289,6 @@ Member* Member::login(string tempID, string tempPass) {
             } else if (members[i].getID() == tempID && members[i].getpassword() == tempPass) {
                 // Correct user ID and password, return pointer to Member object
                 Member* loggedInMember = new Student(members[i]); // copy constructor is called
-                cout<<"Logged in Successfully"<<endl;
                 return loggedInMember;
             }
         }
@@ -301,8 +300,8 @@ Member* Member::login(string tempID, string tempPass) {
 
 int Member :: loginGui(string userId, string userPass) {
     Member* temp = Member :: login(userId, userPass);
-    if (typeid(*temp) == typeid(Librarian)) {return 2;}
-    if (typeid(*temp) == typeid(Student)) {return 1;}
+    if (typeid(*temp) == typeid(Librarian)) {cout<<"Logged in Successfully"<<endl; return 2;}
+    if (typeid(*temp) == typeid(Student)) {cout<<"Logged in Successfully"<<endl;return 1;}
     return 0;
 
 }
@@ -367,11 +366,12 @@ void Member::manageAccount(){
     // Looks for Logged in user, and applies changes
     for (auto & member : members) {
         if (member.getID() == this->getID()) {
-            cout << "User Found"<<endl;
             if (inputInt == 1) {
                 member.setname(inputString);
+                cout << "Username Changed"<<endl;
             } else if (inputInt == 2) {
                 member.setpassword(inputString);
+                cout << "Password Changed"<<endl;
             }
         }
     }
@@ -574,11 +574,11 @@ void Student::UserReport() {
 //------------------------------------------
 //Start of Librarian Derived class functions
 
-Librarian::Librarian() : Member() {cout << "librarian created" ;}
+Librarian::Librarian() : Member() {}
 // Parameterized constructor
 Librarian::Librarian(const string& role, const string& ID, const string& user, const string& pass, double f): Member(role, ID, user, pass, f) {cout << "librarian created" ;}
 // Copy constructor
-Librarian::Librarian(const Member& other) : Member(other) {cout << "librarian created" ;}
+Librarian::Librarian(const Member& other) : Member(other) {}
 // Destructor
 Librarian::~Librarian() {}
 
@@ -795,7 +795,7 @@ void Librarian::viewMembers(){
 
     cout << "Members:" << endl;
     for (size_t i = 0; i < members.size(); i++) {
-        cout << i + 1 << ". " << members[i].getname() << " || " << members[i].getID() <<endl;
+        cout << i + 1 << ". " << members[i].getname() << " || " << members[i].getID() << "||" << members[i].getrole() <<endl;
     }
 }
 
@@ -1116,3 +1116,6 @@ bool Loan::is_overdue() {
 
 //End of Loan Derived class functions
 //-----------------------------------------------
+
+
+// how we could do it using design pattern
